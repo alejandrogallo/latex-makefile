@@ -309,7 +309,7 @@ unwatch: ## Cancel Watching
 GH_REPO_FILE=https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/Makefile
 update: ## Update the makefile from the repository
 	$(ECHO) "Getting makefile from $(GH_REPO_FILE)"
-	wget $(GH_REPO_FILE)
+	wget $(GH_REPO_FILE) -O Makefile
 
 test: ## See some make variables for debugging
 	$(ECHO) DEPENDENCIES =
