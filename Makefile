@@ -30,7 +30,7 @@ ECHO            ?= @echo "\033[0;35m===>\033[0m"
 # Function to try to discover automatically
 # the main latex document
 discoverMain = $(shell \
-                   $(GREP) -H '\\begin{document}' *.tex \
+                   $(GREP) -H '\\begin{document}' *.tex 2>/dev/null \
                    | head -1 \
                    | $(AWK) -F ":" '{print $$1}')
 
@@ -75,6 +75,8 @@ else
 	FD_OUTPUT =
 endif
 
+# Do this only if MAIN_SRC is defined
+ifneq ($(strip $(MAIN_SRC)),)
 
 PDF_DOCUMENT   = $(shell $(READLINK) -f $(patsubst %.tex,%.pdf,$(MAIN_SRC)))
 DVI_DOCUMENT   = $(shell $(READLINK) -f $(patsubst %.tex,%.dvi,$(MAIN_SRC)))
@@ -98,6 +100,7 @@ FIGS_DEP       = $(DEPS_DIR)/figs.d
 include $(INCLUDES_DEP)
 include $(FIGS_DEP)
 
+endif #MAIN_SRC exists
 
 
 
