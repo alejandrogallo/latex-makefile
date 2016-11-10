@@ -95,8 +95,8 @@ TOC_DEP        = $(DEPS_DIR)/toc.d
 INCLUDES_DEP   = $(DEPS_DIR)/includes.d
 FIGS_DEP       = $(DEPS_DIR)/figs.d
 
-include $(INCLUDES_DEP)
-include $(FIGS_DEP)
+#include $(INCLUDES_DEP)
+#include $(FIGS_DEP)
 
 
 
@@ -305,6 +305,11 @@ watch: ## Build if changes
 	(echo $(MAIN_SRC) | entr make )&
 unwatch: ## Cancel Watching
 	killall entr
+
+GH_REPO_FILE=https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/Makefile
+update: ## Update the makefile from the repository
+	$(ECHO) "Getting makefile from $(GH_REPO_FILE)"
+	wget $(GH_REPO_FILE)
 
 test: ## See some make variables for debugging
 	$(ECHO) DEPENDENCIES =
