@@ -95,8 +95,8 @@ TOC_DEP        = $(DEPS_DIR)/toc.d
 INCLUDES_DEP   = $(DEPS_DIR)/includes.d
 FIGS_DEP       = $(DEPS_DIR)/figs.d
 
-#include $(INCLUDES_DEP)
-#include $(FIGS_DEP)
+include $(INCLUDES_DEP)
+include $(FIGS_DEP)
 
 
 
