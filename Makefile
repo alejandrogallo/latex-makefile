@@ -129,9 +129,17 @@ force: ## Force creation of BUILD_DOCUMENT
 	-rm $(BUILD_DOCUMENT)
 	$(MAKE) $(BUILD_DOCUMENT)
 
+# =======================
+# Bibliography generation
+# =======================
+#
+# This generates a bbl file from a  bib file For documents without a bib
+# file, this  will also be  targeted, bit  the '-' before  the $(BIBTEX)
+# ensures that the whole building doesn't fail because of it
+#
 $(BIBITEM_FILE): $(BIBTEX_FILE)
 	$(ECHO) "Compiling the bibliography"
-	$(BIBTEX) $(patsubst %.bib,%,$(BIBTEX_FILE)) $(FD_OUTPUT)
+	-$(BIBTEX) $(patsubst %.bib,%,$(BIBTEX_FILE)) $(FD_OUTPUT)
 	$(ECHO) Compiling again $(BUILD_DOCUMENT) to update refs
 	$(MAKE) force
 
@@ -253,6 +261,15 @@ todo: $(INCLUDES_DEP) ## Print the todos from the main document
 		p\
 	}" $(MAIN_SRC) $(INCLUDES)
 
+# ===========================
+# Presenter console generator
+# ===========================
+#
+# pdfpc is a nice program for presenting beamer presentations with notes
+# and a speaker clock. This target implements a simple script to convert
+# the standard \notes{ } beamer  command into pdfpc compatible files, so
+# that you can also see your beamer notes inside the pdfpc program.
+#
 pdf-presenter-console: $(PDFPC_FILE) ## Create annotations file for the pdfpc program
 $(PDFPC_FILE): $(MAIN_SRC)
 	echo "[file]" > $@
@@ -309,7 +326,15 @@ watch: ## Build if changes
 unwatch: ## Cancel Watching
 	killall entr
 
-GH_REPO_FILE=https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/Makefile
+# ===============================
+# Update the makefile from source
+# ===============================
+#
+# You can always get the  last latex-makefile version using this target.
+# You may override the GH_REPO_FILE to  any path where you save your own
+# personal makefile
+#
+GH_REPO_FILE ?= https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/Makefile
 update: ## Update the makefile from the repository
 	$(ECHO) "Getting makefile from $(GH_REPO_FILE)"
 	wget $(GH_REPO_FILE) -O Makefile
@@ -325,6 +350,13 @@ test: ## See some make variables for debugging
 	$(ECHO) "PDF_VIEWER  = $(PDF_VIEWER)"
 	$(ECHO) "$(call discoverMain)"
 
+# ====================================
+# Ctags generation for latex documents
+# ====================================
+#
+# Generate a tags  file so that you can navigate  through the tags using
+# compatible editors such as emacs or (n)vi(m).
+#
 tags: $(MAIN_SRC) $(INCLUDES_DEP) ## Create TeX exhuberant ctags
 	$(CTAGS) --language-force=tex -R *
 
