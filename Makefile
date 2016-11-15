@@ -39,13 +39,13 @@ MAIN_SRC        ?= $(call discoverMain) # Discover automatically
 BIBTEX_FILE     ?= $(patsubst %.tex,%.bib,$(MAIN_SRC))
 DEPS_DIR        ?= deps
 PDF_VIEWER      ?= $(or \
-$(shell $(WHICH) zathura),\
-$(shell $(WHICH) mupdf),\
-$(shell $(WHICH) mupdf-x11),\
-$(shell $(WHICH) evince),\
-$(shell $(WHICH) okular),\
-$(shell $(WHICH) xdg-open),\
-$(shell $(WHICH) open),\
+$(shell $(WHICH) zathura 2>&1 >/dev/null),\
+$(shell $(WHICH) mupdf 2>&1 >/dev/null),\
+$(shell $(WHICH) mupdf-x11 2>&1 >/dev/null),\
+$(shell $(WHICH) evince 2>&1 >/dev/null),\
+$(shell $(WHICH) okular 2>&1 >/dev/null),\
+$(shell $(WHICH) xdg-open 2>&1 >/dev/null),\
+$(shell $(WHICH) open 2>&1 >/dev/null),\
 )
 LATEX           ?= pdflatex
 PDFLATEX        ?= pdflatex
