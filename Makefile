@@ -25,7 +25,7 @@ XARGS           ?= xargs
 TR              ?= tr
 GIT             ?= git
 WHICH           ?= which
-ECHO            ?= @echo "\033[0;35m===>\033[0m"
+ECHO            ?= @echo -e "\033[0;35m===>\033[0m"
 
 # Function to try to discover automatically
 # the main latex document
