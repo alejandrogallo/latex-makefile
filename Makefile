@@ -159,7 +159,7 @@ open-pdf: ## Open pdf build document
 	| $(GREP) -q "$(BUILD_DOCUMENT)" \
 	||  $(PDF_VIEWER) "$(BUILD_DOCUMENT)" 2>&1 > /dev/null &
 
-mupdf: ## Refresh mupdf
+mupdf /usr/bin/mupdf: ## Refresh mupdf
 	-@ps aux \
 	| $(GREP) -v $(GREP) \
 	| $(GREP) "$(PDF_VIEWER)" \
