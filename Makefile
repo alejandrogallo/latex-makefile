@@ -323,7 +323,7 @@ dist: $(BUILD_DOCUMENT) ## Create a dist folder with the bare minimum to compile
 	 | $(XARGS) -n1 -I FF cp FF $(DIST_DIR)/FF
 
 lint: $(INCLUDES_DEP) ## Check syntax of latex sources (TEX_LINTER)
-	chktex $(MAIN_SRC) $(INCLUDES)
+	$(TEX_LINTER) $(MAIN_SRC) $(INCLUDES)
 
 watch: ## Build if changes
 	(echo $(MAIN_SRC) | entr make )&
