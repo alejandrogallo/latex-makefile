@@ -48,6 +48,7 @@ $(shell $(WHICH) xdg-open 2> /dev/null),\
 $(shell $(WHICH) open 2> /dev/null),\
 )
 LATEX           ?= pdflatex
+TEX_LINTER      ?= chktex
 PDFLATEX        ?= pdflatex
 ASYMPTOTE       ?= asy
 GNUPLOT         ?= gnuplot
@@ -320,6 +321,9 @@ dist: $(BUILD_DOCUMENT) ## Create a dist folder with the bare minimum to compile
 	@echo $(DEPENDENCIES)\
 	 | $(TR) " " "\n" \
 	 | $(XARGS) -n1 -I FF cp FF $(DIST_DIR)/FF
+
+lint: $(INCLUDES_DEP) ## Check syntax of latex sources (TEX_LINTER)
+	chktex $(MAIN_SRC) $(INCLUDES)
 
 watch: ## Build if changes
 	(echo $(MAIN_SRC) | entr make )&
