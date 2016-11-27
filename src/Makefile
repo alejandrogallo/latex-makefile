@@ -239,6 +239,14 @@ clean: ## Remove build and temporary files
 ###################
 
 # FIXME: It doesn't work out of the box
+#
+# ======================
+# Reveal.js presentation
+# ======================
+#
+# This creates a revealjs presentation using the the pandoc program stored in
+# the make variable PANDOC.
+#
 REVEALJS_SRC ?= https://github.com/hakimel/reveal.js/
 revealjs: $(MAIN_SRC) ## Create a revealjs presentation
 	$(ECHO) Creating revealjs presentation...
@@ -306,6 +314,15 @@ releases: $(BUILD_DOCUMENT) ## Create all releases (according to tags)
 		$(GIT) archive --format=$(RELEASES_FMT) --prefix=$$tag/ $$tag > $(RELEASES_DIR)/$$tag.$(RELEASES_FMT); \
 	done
 
+# ============
+# Distribution
+# ============
+#
+# Create a distribution folder wit the bare minimum to compile your project.
+# For example it will consider the files in the DEPENDENCIES variable, so make
+# sure to update or add DEPENDENCIES to it in the config.mk per user
+# configuration.
+#
 dist: $(BUILD_DOCUMENT) ## Create a dist folder with the bare minimum to compile
 	$(ECHO) "Creating dist folder"
 	@mkdir -p $(DIST_DIR)
@@ -322,6 +339,13 @@ dist: $(BUILD_DOCUMENT) ## Create a dist folder with the bare minimum to compile
 	 | $(TR) " " "\n" \
 	 | $(XARGS) -n1 -I FF cp FF $(DIST_DIR)/FF
 
+# ============
+# Check syntax
+# ============
+#
+# It checks the syntax (lints) of all the tex sources using the program in the
+# TEX_LINTER variable.
+#
 lint: $(INCLUDES_DEP) ## Check syntax of latex sources (TEX_LINTER)
 	$(TEX_LINTER) $(MAIN_SRC) $(INCLUDES)
 
@@ -338,7 +362,7 @@ unwatch: ## Cancel Watching
 # You may override the GH_REPO_FILE to  any path where you save your own
 # personal makefile
 #
-GH_REPO_FILE ?= https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/Makefile
+GH_REPO_FILE ?= https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile
 update: ## Update the makefile from the repository
 	$(ECHO) "Getting makefile from $(GH_REPO_FILE)"
 	wget $(GH_REPO_FILE) -O Makefile
@@ -372,6 +396,11 @@ purge: clean ## Remove recursively with suffixes in PURGE_SUFFIXES
 	| while read i; do echo $$i ; rm $$i; done
 
 
+# ================
+# Print quick help
+# ================
+#
+# It prints a quick help in the terminal
 help: ## Prints help for targets with comments
 	@$(AWK) 'BEGIN {FS = ":.*?## "}; /^[a-zA-Z_-]+:.*?## .*$$/{printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
