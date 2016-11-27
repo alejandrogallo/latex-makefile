@@ -126,6 +126,13 @@ all: $(BUILD_DOCUMENT) view-pdf ## (Default) Create BUILD_DOCUMENT
 
 $(BUILD_DOCUMENT): $(DEPENDENCIES)
 
+# =================
+# Force compilation
+# =================
+#
+# This makefile only compiles the TeX document if it is strictly necessary, so
+# sometimes to force compilation this target comes in handy.
+#
 force: ## Force creation of BUILD_DOCUMENT
 	-rm $(BUILD_DOCUMENT)
 	$(MAKE) $(BUILD_DOCUMENT)
@@ -134,8 +141,8 @@ force: ## Force creation of BUILD_DOCUMENT
 # Bibliography generation
 # =======================
 #
-# This generates a bbl file from a  bib file For documents without a bib
-# file, this  will also be  targeted, bit  the '-' before  the $(BIBTEX)
+# This generates a `bbl` file from a  `bib` file For documents without a `bib`
+# file, this  will also be  targeted, bit  the '-' before  the `$(BIBTEX)`
 # ensures that the whole building doesn't fail because of it
 #
 $(BIBITEM_FILE): $(BIBTEX_FILE)
@@ -151,15 +158,33 @@ $(BIBITEM_FILE): $(BIBTEX_FILE)
 	$(ECHO) "Creating pythontex"
 	$(PYTHONTEX) $<
 
-#Open a viewer if there is none open viewing $(BUILD_DOCUMENT)
+# =============
+# View document
+# =============
+#
+# Open and refresh pdf.
+#
 view-pdf: $(PDF_VIEWER) open-pdf ## Refresh and open pdf
 
+# ===============
+# Open pdf viewer
+# ===============
+#
+# Open a viewer if there is none open viewing `$(BUILD_DOCUMENT)`
+#
 open-pdf: ## Open pdf build document
 	-@ps aux | $(GREP) -v $(GREP) \
 	| $(GREP) "$(PDF_VIEWER)" \
 	| $(GREP) -q "$(BUILD_DOCUMENT)" \
 	||  $(PDF_VIEWER) "$(BUILD_DOCUMENT)" 2>&1 > /dev/null &
 
+# =============
+# Refresh mupdf
+# =============
+#
+# If the opened document is being viewed with `mupdf` this target uses the
+# mupdf signal API to refresh the document.
+#
 mupdf /usr/bin/mupdf: ## Refresh mupdf
 	-@ps aux \
 	| $(GREP) -v $(GREP) \
@@ -215,6 +240,13 @@ $(FIGS_DEP): $(MAIN_SRC) $(INCLUDES_DEP)
 	@$(GREP) -E '\\include(graphic|pdf).' $(MAIN_SRC) $(INCLUDES)  \
 	| $(SED) 's/.*{\(.*\)}.*/\1 \\/' >> $@
 
+# =============
+# Main cleaning
+# =============
+#
+# This does a main cleaning of the produced auxiliary files.  Before using it
+# check which files are going to be cleaned up.
+#
 clean: ## Remove build and temporary files
 	$(ECHO) Cleaning up...
 	-@rm $(patsubst %.tex,%.aux,$(MAIN_SRC)) 2> /dev/null
@@ -253,9 +285,23 @@ revealjs: $(MAIN_SRC) ## Create a revealjs presentation
 	$(ECHO) Gettin revealjs from $(REVEALJS_SRC)
 	$(GIT) clone --depth=1 $(REVEALJS_SRC) && rm -rf reveal.js/.git
 	$(PANDOC) --mathjax -s -f latex -t revealjs $(MAIN_SRC) -o $(HTML_DOCUMENT)
+
+# =================
+# Unix man document
+# =================
+#
+# This creates a man page using `pandoc`.
+#
 man: $(MAIN_SRC) ## Create a man document
 	$(ECHO) Creating man pages...
 	$(PANDOC) -s -f latex -t man $(MAIN_SRC) -o $(MAN_DOCUMENT)
+
+# =============
+# HTML document
+# =============
+#
+# This creates an html page using `pandoc`.
+#
 html: $(MAIN_SRC) ## Create an html5 document
 	$(ECHO) Compiling html document...
 	$(PANDOC) --mathjax -s -f latex -t html5 $(MAIN_SRC) -o $(HTML_DOCUMENT)
@@ -274,10 +320,10 @@ todo: $(INCLUDES_DEP) ## Print the todos from the main document
 # Presenter console generator
 # ===========================
 #
-# pdfpc is a nice program for presenting beamer presentations with notes
+# `pdfpc` is a nice program for presenting beamer presentations with notes
 # and a speaker clock. This target implements a simple script to convert
-# the standard \notes{ } beamer  command into pdfpc compatible files, so
-# that you can also see your beamer notes inside the pdfpc program.
+# the standard `\notes{ }` beamer  command into `pdfpc` compatible files, so
+# that you can also see your beamer notes inside the `pdfpc` program.
 #
 pdf-presenter-console: $(PDFPC_FILE) ## Create annotations file for the pdfpc program
 $(PDFPC_FILE): $(MAIN_SRC)
@@ -358,8 +404,8 @@ unwatch: ## Cancel Watching
 # Update the makefile from source
 # ===============================
 #
-# You can always get the  last latex-makefile version using this target.
-# You may override the GH_REPO_FILE to  any path where you save your own
+# You can always get the  last `latex-makefile` version using this target.
+# You may override the `GH_REPO_FILE` to  any path where you save your own
 # personal makefile
 #
 GH_REPO_FILE ?= https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile
