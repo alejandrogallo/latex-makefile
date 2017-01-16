@@ -226,12 +226,17 @@ $(FIGS_SUFFIXES): %.tex
 	$(ECHO) Compiling $<
 	@mkdir -p $(BUILD_DIR)
 	cd $(dir $< ) && $(PDFLATEX) -output-directory $(BUILD_DIR) $(notdir $< ) $(FD_OUTPUT)
+ifneq ($(BUILD_DIR),.)
 	mv $(dir $< )/$(BUILD_DIR)/$(notdir $@) $(dir $<)/$(notdir $@)
+endif
 
 $(TOC_FILE): $(TOC_DEP)
 	$(ECHO) Creating $(TOC_FILE)
+	@mkdir -p $(BUILD_DIR)
 	cd $(dir $(MAIN_SRC) ) && $(PDFLATEX) -output-directory $(BUILD_DIR) $(notdir $(MAIN_SRC) ) $(FD_OUTPUT)
+ifneq ($(BUILD_DIR),.)
 	mv $(dir $< )/$(BUILD_DIR)/$(notdir $@) $(dir $<)/$(notdir $@)
+endif
 
 $(TOC_DEP): $(MAIN_SRC) $(INCLUDES_DEP)
 	$(ECHO) Parsing the toc entries
