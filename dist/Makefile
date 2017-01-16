@@ -53,7 +53,7 @@ $(shell $(WHICH) open 2> /dev/null),\
 )
 LATEX           ?= pdflatex
 TEX_LINTER      ?= chktex
-PDFLATEX        ?= pdflatex -output-directory $(BUILD_DIR)
+PDFLATEX        ?= pdflatex
 ASYMPTOTE       ?= asy
 GNUPLOT         ?= gnuplot
 PANDOC          ?= pandoc
@@ -119,6 +119,10 @@ $(FIGURES) \
 $(if $(call hasToc,$(MAIN_SRC)),$(TOC_FILE),) \
 $(if $(wildcard $(BIBTEX_FILE)),$(BIBITEM_FILE)) \
 $(if $(WITH_PYTHONTEX),$(PYTHONTEX_FILE)) \
+
+#ifneq ($(BUILD_DIR),.)
+#DEPENDENCIES += $(BUILD_DIR)/$(BUILD_DOCUMENT)
+#endif
 
 
 
@@ -215,11 +219,14 @@ $(FIGS_SUFFIXES): %.py
 
 $(FIGS_SUFFIXES): %.tex
 	$(ECHO) Compiling $<
-	cd $(dir $< ) && $(PDFLATEX) $(notdir $< ) $(FD_OUTPUT)
+	@mkdir -p $(BUILD_DIR)
+	cd $(dir $< ) && $(PDFLATEX) -output-directory $(BUILD_DIR) $(notdir $< ) $(FD_OUTPUT)
+	mv $(dir $< )/$(BUILD_DIR)/$(notdir $@) $(dir $<)/$(notdir $@)
 
 $(TOC_FILE): $(TOC_DEP)
 	$(ECHO) Creating $(TOC_FILE)
-	cd $(dir $(MAIN_SRC) ) && $(PDFLATEX) $(notdir $(MAIN_SRC) ) $(FD_OUTPUT)
+	cd $(dir $(MAIN_SRC) ) && $(PDFLATEX) -output-directory $(BUILD_DIR) $(notdir $(MAIN_SRC) ) $(FD_OUTPUT)
+	mv $(dir $< )/$(BUILD_DIR)/$(notdir $@) $(dir $<)/$(notdir $@)
 
 $(TOC_DEP): $(MAIN_SRC) $(INCLUDES_DEP)
 	$(ECHO) Parsing the toc entries
@@ -266,10 +273,12 @@ clean: ## Remove build and temporary files
 	-@rm $(DVI_DOCUMENT) 2> /dev/null
 	-@rm $(HTML_DOCUMENT) 2> /dev/null
 	-@rm $(MAN_DOCUMENT) 2> /dev/null
-#-@rm $(FIGURES) 2> /dev/null
 	-@rm $(PYTHONTEX_FILE) 2> /dev/null
 	-@rm -rf pythontex-files-main/ 2> /dev/null
 	-@rm -rf $(DEPS_DIR) 2> /dev/null
+ifneq ($(BUILD_DIR),.)
+	-@rm -r $(BUILD_DIR)
+endif
 
 #PANDOC CONVERSIONS
 ###################
