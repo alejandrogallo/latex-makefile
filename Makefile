@@ -32,5 +32,5 @@ clean:
 
 
 
-test:
-	@echo SOURCES = $(SOURCES)
+test: $(MAIN_BIN)
+	make -C tests/
