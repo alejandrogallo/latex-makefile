@@ -1,7 +1,11 @@
 DOCUMENTATION.md
+test.out
+tests/**/Makefile
+deps
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
+*.pdf
 *.lof
 *.log
 *.lot
