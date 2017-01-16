@@ -41,6 +41,7 @@ hasToc = $(shell\
 MAIN_SRC        ?= $(call discoverMain) # Discover automatically
 BIBTEX_FILE     ?= $(patsubst %.tex,%.bib,$(MAIN_SRC))
 DEPS_DIR        ?= deps
+BUILD_DIR       ?= .
 PDF_VIEWER      ?= $(or \
 $(shell $(WHICH) zathura 2> /dev/null),\
 $(shell $(WHICH) mupdf 2> /dev/null),\
@@ -52,7 +53,7 @@ $(shell $(WHICH) open 2> /dev/null),\
 )
 LATEX           ?= pdflatex
 TEX_LINTER      ?= chktex
-PDFLATEX        ?= pdflatex
+PDFLATEX        ?= pdflatex -output-directory $(BUILD_DIR)
 ASYMPTOTE       ?= asy
 GNUPLOT         ?= gnuplot
 PANDOC          ?= pandoc
@@ -82,17 +83,17 @@ endif
 # Do this only if MAIN_SRC is defined
 ifneq ($(strip $(MAIN_SRC)),)
 
-PDF_DOCUMENT   = $(shell $(READLINK) -f $(patsubst %.tex,%.pdf,$(MAIN_SRC)))
-DVI_DOCUMENT   = $(shell $(READLINK) -f $(patsubst %.tex,%.dvi,$(MAIN_SRC)))
-MAN_DOCUMENT   = $(patsubst %.tex,%.1,$(MAIN_SRC))
-HTML_DOCUMENT  = $(patsubst %.tex,%.html,$(MAIN_SRC))
-TOC_FILE       = $(patsubst %.tex,%.toc,$(MAIN_SRC))
-BIBITEM_FILE   = $(patsubst %.bib,%.bbl,$(BIBTEX_FILE))
-PYTHONTEX_FILE = $(patsubst %.tex,%.pytxcode,$(MAIN_SRC))
-PDFPC_FILE     = $(shell $(READLINK) -f $(patsubst %.tex,%.pdfpc,$(MAIN_SRC)))
-FIGS_SUFFIXES  = %.pdf %.eps %.png %.jpg %.jpeg %.gif %.dvi %.bmp %.svg %.ps
-PURGE_SUFFIXES = %.aux %.bbl %.blg %.fdb_latexmk %.fls %.log %.out %.ilg %.toc
-BUILD_DOCUMENT = $(PDF_DOCUMENT)
+PDF_DOCUMENT         = $(shell $(READLINK) -f $(patsubst %.tex,%.pdf,$(MAIN_SRC)))
+DVI_DOCUMENT         = $(shell $(READLINK) -f $(patsubst %.tex,%.dvi,$(MAIN_SRC)))
+MAN_DOCUMENT         = $(patsubst %.tex,%.1,$(MAIN_SRC))
+HTML_DOCUMENT        = $(patsubst %.tex,%.html,$(MAIN_SRC))
+TOC_FILE             = $(BUILD_DIR)/$(patsubst %.tex,%.toc,$(MAIN_SRC))
+BIBITEM_FILE         = $(BUILD_DIR)/$(patsubst %.bib,%.bbl,$(BIBTEX_FILE))
+PYTHONTEX_FILE       = $(patsubst %.tex,%.pytxcode,$(MAIN_SRC))
+PDFPC_FILE           = $(shell $(READLINK) -f $(patsubst %.tex,%.pdfpc,$(MAIN_SRC)))
+FIGS_SUFFIXES        = %.pdf %.eps %.png %.jpg %.jpeg %.gif %.dvi %.bmp %.svg %.ps
+PURGE_SUFFIXES       = %.aux %.bbl %.blg %.fdb_latexmk %.fls %.log %.out %.ilg %.toc
+BUILD_DOCUMENT       = $(PDF_DOCUMENT)
 
 # These files  are to keep  track of the  dependencies for latex  or pdf
 # includes, table of contents generation or figure recognition
