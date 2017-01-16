@@ -35,7 +35,7 @@ discoverMain = $(shell \
                    | $(AWK) -F ":" '{print $$1}')
 
 hasToc = $(shell\
-             $(GREP) '\section|\chapter|\part' $(1))
+             $(GREP) '\\tableofcontents' $(1))
 
 #MAIN_SRC        ?= main.tex
 MAIN_SRC        ?= $(call discoverMain) # Discover automatically
@@ -116,7 +116,7 @@ DEPENDENCIES += \
 $(MAIN_SRC) \
 $(INCLUDES) \
 $(FIGURES) \
-$(if $(call hasToc,$(MAIN_SRC)),$(TOC_FILE)) \
+$(if $(call hasToc,$(MAIN_SRC)),$(TOC_FILE),) \
 $(if $(wildcard $(BIBTEX_FILE)),$(BIBITEM_FILE)) \
 $(if $(WITH_PYTHONTEX),$(PYTHONTEX_FILE)) \
 
