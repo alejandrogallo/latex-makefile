@@ -25,7 +25,12 @@ XARGS           ?= xargs
 TR              ?= tr
 GIT             ?= git
 WHICH           ?= which
+WITH_COLOR      ?= 1
+ifeq ($(WITH_COLOR),1)
 ECHO            ?= @echo -e "\033[0;35m===>\033[0m"
+else
+ECHO            ?= @echo -e "===>"
+endif
 
 # Function to try to discover automatically
 # the main latex document
