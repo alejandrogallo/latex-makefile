@@ -194,7 +194,7 @@ mupdf /usr/bin/mupdf: ## Refresh mupdf
 	| $(GREP) "$(PDF_VIEWER)" \
 	| $(GREP) "$(BUILD_DOCUMENT)" \
 	| $(AWK) '{print $$2}'\
-	| $(XARGS) -n1 kill -s SIGHUP
+	| { read pid; [[ -z "$$pid" ]] || kill -s HUP $$pid; }
 
 $(FIGS_SUFFIXES): %.asy
 	$(ECHO) Compiling $<
