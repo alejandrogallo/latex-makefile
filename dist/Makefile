@@ -34,6 +34,9 @@ discoverMain = $(shell \
                    | head -1 \
                    | $(AWK) -F ":" '{print $$1}')
 
+hasToc = $(shell\
+             $(GREP) '\section|\chapter|\part' $(1))
+
 #MAIN_SRC        ?= main.tex
 MAIN_SRC        ?= $(call discoverMain) # Discover automatically
 BIBTEX_FILE     ?= $(patsubst %.tex,%.bib,$(MAIN_SRC))
@@ -98,8 +101,8 @@ TOC_DEP        = $(DEPS_DIR)/toc.d
 INCLUDES_DEP   = $(DEPS_DIR)/includes.d
 FIGS_DEP       = $(DEPS_DIR)/figs.d
 
-include $(INCLUDES_DEP)
-include $(FIGS_DEP)
+-include $(INCLUDES_DEP)
+-include $(FIGS_DEP)
 
 endif #MAIN_SRC exists
 
@@ -112,7 +115,7 @@ DEPENDENCIES += \
 $(MAIN_SRC) \
 $(INCLUDES) \
 $(FIGURES) \
-$(TOC_FILE) \
+$(if $(call hasToc,$(MAIN_SRC)),$(TOC_FILE)) \
 $(if $(wildcard $(BIBTEX_FILE)),$(BIBITEM_FILE)) \
 $(if $(WITH_PYTHONTEX),$(PYTHONTEX_FILE)) \
 
