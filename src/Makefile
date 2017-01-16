@@ -98,8 +98,8 @@ TOC_DEP        = $(DEPS_DIR)/toc.d
 INCLUDES_DEP   = $(DEPS_DIR)/includes.d
 FIGS_DEP       = $(DEPS_DIR)/figs.d
 
-include $(INCLUDES_DEP)
-include $(FIGS_DEP)
+-include $(INCLUDES_DEP)
+-include $(FIGS_DEP)
 
 endif #MAIN_SRC exists
 
@@ -112,7 +112,7 @@ DEPENDENCIES += \
 $(MAIN_SRC) \
 $(INCLUDES) \
 $(FIGURES) \
-$(TOC_FILE) \
+$(if $(call hasToc,$(MAIN_SRC)),$(TOC_FILE)) \
 $(if $(wildcard $(BIBTEX_FILE)),$(BIBITEM_FILE)) \
 $(if $(WITH_PYTHONTEX),$(PYTHONTEX_FILE)) \
 
@@ -191,7 +191,7 @@ mupdf /usr/bin/mupdf: ## Refresh mupdf
 	| $(GREP) "$(PDF_VIEWER)" \
 	| $(GREP) "$(BUILD_DOCUMENT)" \
 	| $(AWK) '{print $$2}'\
-	| $(XARGS) -n1 kill -s SIGHUP
+	| { read pid; [[ -z "$$pid" ]] || kill -s HUP $$pid; }
 
 $(FIGS_SUFFIXES): %.asy
 	$(ECHO) Compiling $<
@@ -441,6 +441,14 @@ purge: clean ## Remove recursively with suffixes in PURGE_SUFFIXES
 	| $(XARGS) -n1  $(FIND) . -name \
 	| while read i; do echo $$i ; rm $$i; done
 
+# This is used for printing defined variables from Some other scripts. For
+# instance if you want to know the value of the PDF_VIEWER defined in the
+# Makefile, then you would do
+#    make print-PDF_VIEWER
+# and this would output PDF_VIEWER=mupdf for instance.
+FORCE:
+print-%:
+	@echo '$*=$($*)'
 
 # ================
 # Print quick help
