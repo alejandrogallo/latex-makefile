@@ -47,6 +47,7 @@ MAIN_SRC        ?= $(call discoverMain) # Discover automatically
 BIBTEX_FILE     ?= $(patsubst %.tex,%.bib,$(MAIN_SRC))
 DEPS_DIR        ?= deps
 BUILD_DIR       ?= .
+VIEW_PDF        ?= 1
 PDF_VIEWER      ?= $(or \
 $(shell $(WHICH) zathura 2> /dev/null),\
 $(shell $(WHICH) mupdf 2> /dev/null),\
@@ -134,7 +135,7 @@ $(if $(WITH_PYTHONTEX),$(PYTHONTEX_FILE)) \
 
 .PHONY: view-pdf open-pdf $(PDF_VIEWER) todo help test force purge dist releases
 
-all: $(BUILD_DOCUMENT) view-pdf ## (Default) Create BUILD_DOCUMENT
+all: $(BUILD_DOCUMENT) $(if $(VIEW_PDF),view-pdf) ## (Default) Create BUILD_DOCUMENT
 
 
 $(BUILD_DOCUMENT): $(DEPENDENCIES)

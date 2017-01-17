@@ -11,11 +11,13 @@ eval $(make --no-print-directory print-TOC_DEP)
 echo "${TOC_FILE}"
 echo "${TOC_DEP}"
 
-make --no-print-directory QUIET=1
+make --no-print-directory QUIET=1 VIEW_PDF=
 
 if [[ ! -f "${TOC_DEP}" ]]; then
+  echo "${TOC_DEP} file not found!"
   TEST_RESULT=1
 elif [[ ! -f "${TOC_FILE}" ]]; then
+  echo "${TOC_FILE} file not found!"
   TEST_RESULT=1
 else
   TEST_RESULT=0

@@ -7,7 +7,7 @@ eval $(make --no-print-directory print-BUILD_DOCUMENT)
 eval $(make --no-print-directory print-BUILD_DIR)
 
 
-make --no-print-directory QUIET=1
+make --no-print-directory QUIET=1 VIEW_PDF=
 
 main=$(basename ${MAIN_SRC} .tex)
 
