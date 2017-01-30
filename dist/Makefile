@@ -1,3 +1,14 @@
+## <<HELP
+#
+#                           The ultimate
+#  _    ____ ___ ____ _  _    _  _ ____ _  _ ____ ____ _ _    ____
+#  |    |__|  |  |___  \/     |\/| |__| |_/  |___ |___ | |    |___
+#  |___ |  |  |  |___ _/\_    |  | |  | | \_ |___ |    | |___ |___
+#
+#
+#
+## HELP
+
 #local configuration
 -include config.mk
 
@@ -480,7 +491,27 @@ print-%:
 #
 # It prints a quick help in the terminal
 help: ## Prints help for targets with comments
-	@$(AWK) 'BEGIN {FS = ":.*?## "}; /^[a-zA-Z_-]+:.*?## .*$$/{printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+	@$(or $(AWK),awk) ' \
+		BEGIN {FS = ":.*?## "}; \
+		/^## *<<HELP/,/^## *HELP/ { \
+			help=$$1; \
+			gsub("#","",help); \
+			if (! match(help, "HELP")) \
+				print help ; \
+		}; \
+		/^[a-zA-Z0-9_\-.]+:.*?## .*$$/{ \
+			printf "\033[36m%-30s\033[0m %s\n", $$1, $$2 ; \
+		};' \
+		$(MAKEFILE_LIST)
 
+
+
+## <<HELP
+#
+# v1.0.0
+# https://github.com/alejandrogallo/latex-makefile
+# By Alejandro Gallo
+#
+## HELP
 
 # vim: nospell fdm=marker
