@@ -5,10 +5,10 @@
 include() { source $@; }
 
 # main logging functions
-function header()   { echo -e "\n\033[1m$@\033[0m"; }
-function success()  { echo -e " \033[1;32m==>\033[0m  $@"; }
-function error()    { echo -e " \033[1;31mX\033[0m  $@"; }
-function arrow()    { echo -e " \033[1;34m==>\033[0m  $@"; }
+function header()   { echo -e "$(tput bold)\n$@$(tput sgr0)"; }
+function success()  { echo -e "$(tput setaf 2) ==> $(tput sgr0) $@"; }
+function error()    { echo -e "$(tput setaf 1) X $(tput sgr0) $@"; }
+function arrow()    { echo -e "$(tput setaf 4) ==> $(tput sgr0) $@"; }
 
 # READONLY PARAMETERS
 declare -r TEST_OUT_FILE=test.out
