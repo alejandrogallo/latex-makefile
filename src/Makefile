@@ -37,11 +37,20 @@ TR              ?= tr
 GIT             ?= git
 WHICH           ?= which
 WITH_COLOR      ?= 1
+# If the ECHO messages should be also muted
+QQUIET          ?=
+
+ifndef QQUIET
+
 ifeq ($(WITH_COLOR),1)
 ECHO            ?= @echo -e "\033[0;35m===>\033[0m"
 else
 ECHO            ?= @echo -e "===>"
-endif
+endif #WITH_COLOR
+
+else
+ECHO            := @ > /dev/null echo
+endif #QQUIET
 
 # Function to try to discover automatically
 # the main latex document
