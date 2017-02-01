@@ -8,6 +8,9 @@ eval $(make --no-print-directory print-DIFF_SRC_NAME)
 eval $(make --no-print-directory MAIN_SRC=${DIFF_BUILD_DIR}/${DIFF_SRC_NAME} print-TOC_FILE)
 eval $(make --no-print-directory MAIN_SRC=${DIFF_BUILD_DIR}/${DIFF_SRC_NAME} print-TOC_DEP)
 
+git config user.email "me@latex-makefile.com"
+git config user.name "Test job"
+
 git init
 git add .
 git commit -m "Initial commit"
