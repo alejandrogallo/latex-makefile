@@ -557,7 +557,7 @@ help: ## Prints help for targets with comments
 
 ## <<HELP
 #
-# v1.0.2
+# v1.1.0
 # https://github.com/alejandrogallo/latex-makefile
 # By Alejandro Gallo
 #
