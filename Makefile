@@ -27,6 +27,7 @@ $(README): $(SOURCES) README.md.in
 
 clean:
 	rm -rf dist build
+	make -C tests clean
 
 
 
