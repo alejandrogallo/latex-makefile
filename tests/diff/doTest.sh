@@ -1,5 +1,7 @@
 #cp ../../dist/Makefile .
 
+TEST_DESCRIPTION="Check that latexdiff works with git commits"
+
 eval $(make --no-print-directory print-TOC_FILE)
 eval $(make --no-print-directory print-TOC_DEP)
 eval $(make --no-print-directory print-MAIN_SRC)
@@ -17,20 +19,18 @@ no sea takimata sanctus est Lorem ipsum dolor sit amet.
 \\end{document}
 EOF
 
+git commit -am "Second commit"
+
+
+make --no-print-directory QUIET=1 VIEW_PDF= diff
+
 rm -rf .git
+git checkout ${MAIN_SRC}
 
 exit 0
 
-TEST_DESCRIPTION="Check that latexdiff works with git commits"
 
 
-eval $(make --no-print-directory print-TOC_FILE)
-eval $(make --no-print-directory print-TOC_DEP)
-
-echo "${TOC_FILE}"
-echo "${TOC_DEP}"
-
-make --no-print-directory QUIET=1 VIEW_PDF=
 
 if [[ ! -f "${TOC_DEP}" ]]; then
   echo "${TOC_DEP} file not found!"
