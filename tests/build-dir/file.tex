@@ -3,6 +3,8 @@
 \documentclass[A4paper, 12pt]{article}
 
 
+\usepackage{cite}
+\usepackage{url}
 
 \title{Hello World}
 \author{Fulano}
@@ -13,9 +15,11 @@
 %%%%%%%%%%%%%%%%%%
 \begin{document}
 
+\nocite{*}
 \tableofcontents
 \maketitle
 
+\cite{asyatoms}
 
 \section{Hello World} %{{{1
 \label{sec:hello_world}
@@ -28,6 +32,8 @@
 
 Hello World
 
+\bibliography{file}{}
+\bibliographystyle{plain}
 
 \end{document}
 % vim: spell ft=tex

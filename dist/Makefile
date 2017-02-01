@@ -181,7 +181,8 @@ force: ## Force creation of BUILD_DOCUMENT
 #
 $(BIBITEM_FILE): $(BIBTEX_FILE)
 	$(ECHO) "Compiling the bibliography"
-	-$(BIBTEX) $(patsubst %.bib,%,$(BIBTEX_FILE)) $(FD_OUTPUT)
+	-cp $< $(BUILD_DIR)
+	cd $(BUILD_DIR); $(BIBTEX) $(patsubst %.bib,%,$(BIBTEX_FILE)) $(FD_OUTPUT)
 	$(ECHO) Compiling again $(BUILD_DOCUMENT) to update refs
 	$(MAKE) force
 
@@ -514,7 +515,7 @@ help: ## Prints help for targets with comments
 
 ## <<HELP
 #
-# v1.0.0
+# v1.0.1
 # https://github.com/alejandrogallo/latex-makefile
 # By Alejandro Gallo
 #

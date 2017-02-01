@@ -7,6 +7,7 @@ eval $(make --no-print-directory print-BUILD_DOCUMENT)
 eval $(make --no-print-directory print-BUILD_DIR)
 eval $(make --no-print-directory print-TOC_FILE)
 eval $(make --no-print-directory print-TOC_DEP)
+eval $(make --no-print-directory print-BIBITEM_FILE)
 
 echo "${TOC_FILE}"
 echo "${TOC_DEP}"
@@ -29,6 +30,9 @@ elif [[ ! -f "${TOC_DEP}" ]]; then
   TEST_RESULT=1
 elif [[ ! -f "${TOC_FILE}" ]]; then
   echo "${TOC_FILE} file not found!"
+  TEST_RESULT=1
+elif [[ ! -f "${BIBITEM_FILE}" ]]; then
+  echo "${BIBITEM_FILE} file not found!"
   TEST_RESULT=1
 else
   TEST_RESULT=0
