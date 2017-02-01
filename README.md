@@ -117,7 +117,7 @@ If you want to compare the HEAD commit with the commit three times older than
 HEAD. You can also provide a *commit hash*. The default value is `HEAD HEAD~1`.
 
 The target creates a distribution folder located in the variable
-DIFF_BUILD_DIR.
+DIFF_BUILD_DIR. *Warning*: It only works for single document tex projects.
 ```bash 
 make diff
 ```

@@ -448,7 +448,7 @@ DIFF_SRC_NAME  ?= diff.tex
 # HEAD. You can also provide a *commit hash*. The default value is `HEAD HEAD~1`.
 #
 # The target creates a distribution folder located in the variable
-# DIFF_BUILD_DIR.
+# DIFF_BUILD_DIR. *Warning*: It only works for single document tex projects.
 diff: ## Create a latexdiff using git versions
 	$(ECHO) Creating diff between $(NEW_COMMIT) and $(OLD_COMMIT)
 	mkdir -p $(DIFF_BUILD_DIR)
@@ -466,6 +466,7 @@ diff: ## Create a latexdiff using git versions
 		DIST_DIR=$(DIFF_BUILD_DIR) \
 		dist
 	rm $(DIFF_SRC_NAME) $(patsubst %.tex,%.pdf,$(DIFF_SRC_NAME))
+	git checkout HEAD $(MAIN_SRC)
 
 
 # ============
