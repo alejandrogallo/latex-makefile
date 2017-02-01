@@ -78,6 +78,7 @@ $(shell $(WHICH) xdg-open 2> /dev/null),\
 $(shell $(WHICH) open 2> /dev/null),\
 )
 LATEX           ?= pdflatex
+LATEXDIFF       ?= latexdiff
 TEX_LINTER      ?= chktex
 PDFLATEX        ?= pdflatex
 ASYMPTOTE       ?= asy
@@ -427,6 +428,46 @@ dist: $(BUILD_DOCUMENT) ## Create a dist folder with the bare minimum to compile
 	 | $(TR) " " "\n" \
 	 | $(XARGS) -n1 -I FF cp FF $(DIST_DIR)/FF
 
+DIFF ?=HEAD HEAD~1
+NEW_COMMIT = $(word 1,$(DIFF))
+OLD_COMMIT = $(word 2,$(DIFF))
+DIFF_BUILD_DIR ?= diffs/$(NEW_COMMIT)_$(OLD_COMMIT)
+DIFF_SRC_NAME  ?= diff.tex
+# ====
+# Diff
+# ====
+#
+# This target creates differences between older versions of the main latex file
+# by means of [GIT](https://git-scm.com/). You have to specify the commits that
+# you want to compare by doing
+#
+# ```bash
+# make DIFF="HEAD HEAD~3" diff
+# ```
+# If you want to compare the HEAD commit with the commit three times older than
+# HEAD. You can also provide a *commit hash*. The default value is `HEAD HEAD~1`.
+#
+# The target creates a distribution folder located in the variable
+# DIFF_BUILD_DIR.
+diff: ## Create a latexdiff using git versions
+	$(ECHO) Creating diff between $(NEW_COMMIT) and $(OLD_COMMIT)
+	mkdir -p $(DIFF_BUILD_DIR)
+	git checkout $(NEW_COMMIT) $(MAIN_SRC)
+	cp $(MAIN_SRC) $(DIFF_BUILD_DIR)/$(strip $(MAIN_SRC)).$(NEW_COMMIT)
+	git checkout $(OLD_COMMIT) $(MAIN_SRC)
+	cp $(MAIN_SRC) $(DIFF_BUILD_DIR)/$(strip $(MAIN_SRC)).$(OLD_COMMIT)
+	$(LATEXDIFF) \
+		$(DIFF_BUILD_DIR)/$(strip $(MAIN_SRC)).$(OLD_COMMIT) \
+		$(DIFF_BUILD_DIR)/$(strip $(MAIN_SRC)).$(NEW_COMMIT) \
+		> $(DIFF_SRC_NAME)
+	$(MAKE) \
+		BUILD_DIR=$(DIFF_BUILD_DIR) \
+		MAIN_SRC=$(DIFF_SRC_NAME) \
+		DIST_DIR=$(DIFF_BUILD_DIR) \
+		dist
+	rm $(DIFF_SRC_NAME) $(patsubst %.tex,%.pdf,$(DIFF_SRC_NAME))
+
+
 # ============
 # Check syntax
 # ============
@@ -515,7 +556,7 @@ help: ## Prints help for targets with comments
 
 ## <<HELP
 #
-# v1.0.1
+# v1.0.2
 # https://github.com/alejandrogallo/latex-makefile
 # By Alejandro Gallo
 #

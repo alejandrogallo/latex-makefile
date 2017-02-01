@@ -103,6 +103,24 @@ configuration.
 ```bash 
 make dist
 ```
+Diff
+====
+
+This target creates differences between older versions of the main latex file
+by means of [GIT](https://git-scm.com/). You have to specify the commits that
+you want to compare by doing
+
+```bash
+make DIFF="HEAD HEAD~3" diff
+```
+If you want to compare the HEAD commit with the commit three times older than
+HEAD. You can also provide a *commit hash*. The default value is `HEAD HEAD~1`.
+
+The target creates a distribution folder located in the variable
+DIFF_BUILD_DIR.
+```bash 
+make diff
+```
 Check syntax
 ============
 
