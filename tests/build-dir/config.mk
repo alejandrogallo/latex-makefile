@@ -1,2 +1,2 @@
 BUILD_DIR=build
-QQUIET=
+QQUIET=1
