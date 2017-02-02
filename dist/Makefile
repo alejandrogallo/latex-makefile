@@ -553,11 +553,18 @@ help: ## Prints help for targets with comments
 		};' \
 		$(MAKEFILE_LIST)
 
+FORCE:
+help-%:
+	@sed -n "/[#] [=]\+/,/^$*: / { /"$*":/{q}; p; } " $(MAKEFILE_LIST) \
+		| tac \
+		| sed -n "1,/===/ {/===/n; s/^# //p}" \
+		| tac \
+		| sed -n "p; 1s/./=/gp; 1a\ "
 
 
 ## <<HELP
 #
-# v1.1.0
+# v1.2.0
 # https://github.com/alejandrogallo/latex-makefile
 # By Alejandro Gallo
 #
