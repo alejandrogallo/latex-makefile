@@ -149,11 +149,11 @@ endif #MAIN_SRC exists
 DEPENDENCIES += \
 $(MAIN_SRC) \
 $(INCLUDES) \
+$(PACKAGES_FILES_BUILD) \
 $(FIGURES) \
 $(if $(call hasToc,$(MAIN_SRC)),$(TOC_FILE),) \
 $(if $(wildcard $(BIBTEX_FILE)),$(BIBITEM_FILE)) \
 $(if $(WITH_PYTHONTEX),$(PYTHONTEX_FILE)) \
-$(PACKAGES_FILES_BUILD) \
 
 CLEAN_FILES += \
 $(wildcard $(PACKAGES_FILES_BUILD)) \
@@ -571,7 +571,7 @@ help-%:
 
 ## <<HELP
 #
-# v1.3.2
+# v1.3.3
 # https://github.com/alejandrogallo/latex-makefile
 # By Alejandro Gallo
 #
