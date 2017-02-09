@@ -94,7 +94,11 @@ QUIET           ?= 0
 PREFIX          ?= $(PWD)
 DIST_DIR        ?= $(PREFIX)/dist
 PACKAGES_DIR    ?= libtex
-PACKAGES_FILES  ?= $(wildcard $(PACKAGES_DIR)/*.sty $(PACKAGES_DIR)/*.tex)
+PACKAGES_FILES  ?= $(wildcard $(PACKAGES_DIR)/*.sty \
+$(PACKAGES_DIR)/*.rtx \
+$(PACKAGES_DIR)/*.cls \
+$(PACKAGES_DIR)/*.bst \
+$(PACKAGES_DIR)/*.tex)
 CLEAN_FILES     ?=
 
 .DEFAULT_GOAL   := all
@@ -550,7 +554,7 @@ help-%:
 
 ## <<HELP
 #
-# v1.3
+# v1.3.1
 # https://github.com/alejandrogallo/latex-makefile
 # By Alejandro Gallo
 #
