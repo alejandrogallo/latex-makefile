@@ -14,6 +14,7 @@ should recognise the main document automatically by looking for a
 
 
   * Build in a different directory.
+  * Multi bibtex files.
   * Automatic handling of the table of contents (smart recompilation).
   * Automatic handling of [bibtex](http://www.bibtex.org/) (smart recompilation).
   * Import `.sty` files (latex packages) from custom directory.

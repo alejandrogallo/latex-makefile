@@ -63,7 +63,7 @@ hasToc = $(shell\
              $(GREP) '\\tableofcontents' $(1))
 
 MAIN_SRC        ?= $(call discoverMain) # Discover automatically
-BIBTEX_FILE     ?= $(patsubst %.tex,%.bib,$(MAIN_SRC))
+BIBTEX_FILE     ?= $(wildcard *.bib)
 DEPS_DIR        ?= deps
 BUILD_DIR       ?= .
 VIEW_PDF        ?= 1
@@ -94,11 +94,13 @@ QUIET           ?= 0
 PREFIX          ?= $(PWD)
 DIST_DIR        ?= $(PREFIX)/dist
 PACKAGES_DIR    ?= libtex
-PACKAGES_FILES  ?= $(wildcard $(PACKAGES_DIR)/*.sty \
+PACKAGES_FILES  ?= $(wildcard \
+$(PACKAGES_DIR)/*.sty \
 $(PACKAGES_DIR)/*.rtx \
 $(PACKAGES_DIR)/*.cls \
 $(PACKAGES_DIR)/*.bst \
-$(PACKAGES_DIR)/*.tex)
+$(PACKAGES_DIR)/*.tex \
+)
 CLEAN_FILES     ?=
 
 .DEFAULT_GOAL   := all
@@ -117,9 +119,11 @@ DVI_DOCUMENT         = $(shell $(READLINK) -f $(patsubst %.tex,%.dvi,$(MAIN_SRC)
 MAN_DOCUMENT         = $(patsubst %.tex,%.1,$(MAIN_SRC))
 HTML_DOCUMENT        = $(patsubst %.tex,%.html,$(MAIN_SRC))
 TOC_FILE             = $(BUILD_DIR)/$(patsubst %.tex,%.toc,$(MAIN_SRC))
-BIBITEM_FILE         = $(BUILD_DIR)/$(patsubst %.bib,%.bbl,$(BIBTEX_FILE))
+BIBITEM_FILE         = $(patsubst %.tex,$(BUILD_DIR)/%.bbl,$(MAIN_SRC))
+AUX_FILE             = $(patsubst %.tex,$(BUILD_DIR)/%.aux,$(MAIN_SRC))
 PYTHONTEX_FILE       = $(patsubst %.tex,%.pytxcode,$(MAIN_SRC))
 PDFPC_FILE           = $(shell $(READLINK) -f $(patsubst %.tex,%.pdfpc,$(MAIN_SRC)))
+PACKAGES_FILES_BUILD = $(patsubst $(PACKAGES_DIR)/%,$(BUILD_DIR)/%,$(PACKAGES_FILES))
 FIGS_SUFFIXES        = %.pdf %.eps %.png %.jpg %.jpeg %.gif %.dvi %.bmp %.svg %.ps
 PURGE_SUFFIXES       = %.aux %.bbl %.blg %.fdb_latexmk %.fls %.log %.out \
                        %.ilg %.toc %.nav %.snm
@@ -149,14 +153,16 @@ $(FIGURES) \
 $(if $(call hasToc,$(MAIN_SRC)),$(TOC_FILE),) \
 $(if $(wildcard $(BIBTEX_FILE)),$(BIBITEM_FILE)) \
 $(if $(WITH_PYTHONTEX),$(PYTHONTEX_FILE)) \
-$(notdir $(PACKAGES_FILES)) \
+$(PACKAGES_FILES_BUILD) \
 
 CLEAN_FILES += \
-$(wildcard $(notdir $(PACKAGES_FILES))) \
+$(wildcard $(PACKAGES_FILES_BUILD)) \
 $(wildcard $(PYTHONTEX_FILE)) \
 $(wildcard $(BUILD_DOCUMENT)) \
 $(wildcard $(subst %,*,$(PURGE_SUFFIXES))) \
 $(wildcard $(DEPS_DIR)) \
+$(wildcard $(PDFPC_FILE)) \
+$(wildcard $(DIST_DIR)) \
 
 
 
@@ -170,7 +176,8 @@ all: $(BUILD_DOCUMENT) $(if $(VIEW_PDF),view-pdf) ## (Default) Create BUILD_DOCU
 $(BUILD_DOCUMENT): $(DEPENDENCIES)
 
 
-%: $(PACKAGES_DIR)/%
+$(BUILD_DIR)/%: $(PACKAGES_DIR)/%
+	@mkdir -p $(BUILD_DIR)
 	cp $^ $@
 
 # =================
@@ -192,10 +199,10 @@ force: ## Force creation of BUILD_DOCUMENT
 # file, this  will also be  targeted, bit  the '-' before  the `$(BIBTEX)`
 # ensures that the whole building doesn't fail because of it
 #
-$(BIBITEM_FILE): $(BIBTEX_FILE)
+$(BIBITEM_FILE): $(AUX_FILE) $(BIBTEX_FILE)
 	$(ECHO) "Compiling the bibliography"
-	-cp $< $(BUILD_DIR)
-	cd $(BUILD_DIR); $(BIBTEX) $(patsubst %.bib,%,$(BIBTEX_FILE)) $(FD_OUTPUT)
+	-cp $^ $(BUILD_DIR)/
+	cd $(BUILD_DIR); $(BIBTEX) $(patsubst %.tex,%,$(MAIN_SRC)) $(FD_OUTPUT)
 	$(ECHO) Compiling again $(BUILD_DOCUMENT) to update refs
 	$(MAKE) force
 
@@ -258,13 +265,14 @@ $(FIGS_SUFFIXES): %.py
 	$(ECHO) Compiling $<
 	cd $(dir $< ) && $(PY) $(notdir $< ) $(FD_OUTPUT)
 
-$(FIGS_SUFFIXES): %.tex
-	$(ECHO) Compiling $<
+$(AUX_FILE): $(PACKAGES_FILES_BUILD)
+$(FIGS_SUFFIXES) $(BUILD_DIR)/%.aux: %.tex
+	$(ECHO) Compiling $*
 	@mkdir -p $(BUILD_DIR)
-	cd $(dir $< ) && $(PDFLATEX) \
-		-output-directory $(BUILD_DIR) $(notdir $< ) $(FD_OUTPUT)
+	$(PDFLATEX) \
+		-output-directory $(BUILD_DIR) $(notdir $*.tex ) $(FD_OUTPUT)
 ifneq ($(BUILD_DIR),.)
-	mv $(dir $< )/$(BUILD_DIR)/$(notdir $@) $(dir $<)/$(notdir $@)
+	-[[  $@ = *.aux ]] || cp $(PWD)/$(BUILD_DIR)/$(notdir $@) $(PWD)/$(notdir $@)
 endif
 
 $(TOC_FILE): $(TOC_DEP)
@@ -276,7 +284,8 @@ $(TOC_FILE): $(TOC_DEP)
 $(TOC_DEP): $(MAIN_SRC) $(INCLUDES_DEP)
 	$(ECHO) Parsing the toc entries
 	@mkdir -p $(dir $@)
-	@$(GREP) -E '\\(section|subsection|subsubsection|chapter|part|subsubsubsection).' $(MAIN_SRC) $(INCLUDES)  \
+	@$(GREP) -E '\\(section|subsection|subsubsection|chapter|part|subsubsubsection).' \
+	$(MAIN_SRC) $(INCLUDES)  \
 	| $(SED) 's/.*{\(.*\)}.*/\1/' > $@.control
 	@if ! diff $@ $@.control > /dev/null ; then mv $@.control $@; fi
 
@@ -426,6 +435,14 @@ dist: $(BUILD_DOCUMENT) ## Create a dist folder with the bare minimum to compile
 	 | $(XARGS) -n1 -I FF mkdir -p $(DIST_DIR)/FF
 	$(ECHO) "Copying dependencies"
 	@echo $(DEPENDENCIES)\
+	 | $(TR) " " "\n" \
+	 | $(XARGS) -n1 -I FF cp FF $(DIST_DIR)/FF
+	$(ECHO) "Creating folder for latex libraries"
+	@echo $(PACKAGES_FILES)\
+	 | $(XARGS) -n1 dirname\
+	 | $(XARGS) -n1 -I FF mkdir -p $(DIST_DIR)/FF
+	$(ECHO) "Copying latex libraries"
+	@echo $(PACKAGES_FILES)\
 	 | $(TR) " " "\n" \
 	 | $(XARGS) -n1 -I FF cp FF $(DIST_DIR)/FF
 
