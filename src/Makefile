@@ -571,7 +571,7 @@ help-%:
 
 ## <<HELP
 #
-# v1.3.1
+# v1.3.2
 # https://github.com/alejandrogallo/latex-makefile
 # By Alejandro Gallo
 #
