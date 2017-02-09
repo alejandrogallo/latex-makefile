@@ -62,7 +62,6 @@ discoverMain = $(shell \
 hasToc = $(shell\
              $(GREP) '\\tableofcontents' $(1))
 
-#MAIN_SRC        ?= main.tex
 MAIN_SRC        ?= $(call discoverMain) # Discover automatically
 BIBTEX_FILE     ?= $(patsubst %.tex,%.bib,$(MAIN_SRC))
 DEPS_DIR        ?= deps
@@ -89,14 +88,14 @@ DEPENDENCIES    ?=
 FIGURES         ?=
 # sources included through \include
 INCLUDES        ?=
-WITH_PYTHONTEX  ?=
-# Do you use pythontex?
-PYTHONTEX       ?= pythontex
-# if 1 run commands quietly
+WITH_PYTHONTEX  ?= # Do you use pythontex?
+PYTHONTEX       ?= pythontex # if 1 run commands quietly
 QUIET           ?= 0
 PREFIX          ?= $(PWD)
 DIST_DIR        ?= $(PREFIX)/dist
-
+PACKAGES_DIR    ?= libtex
+PACKAGES_FILES  ?= $(wildcard $(PACKAGES_DIR)/*.sty $(PACKAGES_DIR)/*.tex)
+CLEAN_FILES     ?=
 
 .DEFAULT_GOAL   := all
 
@@ -107,8 +106,7 @@ else
 	FD_OUTPUT =
 endif
 
-# Do this only if MAIN_SRC is defined
-ifneq ($(strip $(MAIN_SRC)),)
+ifneq ($(strip $(MAIN_SRC)),) # Do this only if MAIN_SRC is defined
 
 PDF_DOCUMENT         = $(shell $(READLINK) -f $(patsubst %.tex,%.pdf,$(MAIN_SRC)))
 DVI_DOCUMENT         = $(shell $(READLINK) -f $(patsubst %.tex,%.dvi,$(MAIN_SRC)))
@@ -119,7 +117,8 @@ BIBITEM_FILE         = $(BUILD_DIR)/$(patsubst %.bib,%.bbl,$(BIBTEX_FILE))
 PYTHONTEX_FILE       = $(patsubst %.tex,%.pytxcode,$(MAIN_SRC))
 PDFPC_FILE           = $(shell $(READLINK) -f $(patsubst %.tex,%.pdfpc,$(MAIN_SRC)))
 FIGS_SUFFIXES        = %.pdf %.eps %.png %.jpg %.jpeg %.gif %.dvi %.bmp %.svg %.ps
-PURGE_SUFFIXES       = %.aux %.bbl %.blg %.fdb_latexmk %.fls %.log %.out %.ilg %.toc
+PURGE_SUFFIXES       = %.aux %.bbl %.blg %.fdb_latexmk %.fls %.log %.out \
+                       %.ilg %.toc %.nav %.snm
 BUILD_DOCUMENT       = $(PDF_DOCUMENT)
 
 # These files  are to keep  track of the  dependencies for latex  or pdf
@@ -146,10 +145,15 @@ $(FIGURES) \
 $(if $(call hasToc,$(MAIN_SRC)),$(TOC_FILE),) \
 $(if $(wildcard $(BIBTEX_FILE)),$(BIBITEM_FILE)) \
 $(if $(WITH_PYTHONTEX),$(PYTHONTEX_FILE)) \
+$(notdir $(PACKAGES_FILES)) \
 
-#ifneq ($(BUILD_DIR),.)
-#DEPENDENCIES += $(BUILD_DIR)/$(BUILD_DOCUMENT)
-#endif
+CLEAN_FILES += \
+$(wildcard $(notdir $(PACKAGES_FILES))) \
+$(wildcard $(PYTHONTEX_FILE)) \
+$(wildcard $(BUILD_DOCUMENT)) \
+$(wildcard $(subst %,*,$(PURGE_SUFFIXES))) \
+$(wildcard $(DEPS_DIR)) \
+
 
 
 
@@ -160,6 +164,10 @@ all: $(BUILD_DOCUMENT) $(if $(VIEW_PDF),view-pdf) ## (Default) Create BUILD_DOCU
 
 
 $(BUILD_DOCUMENT): $(DEPENDENCIES)
+
+
+%: $(PACKAGES_DIR)/%
+	cp $^ $@
 
 # =================
 # Force compilation
@@ -231,7 +239,8 @@ mupdf /usr/bin/mupdf: ## Refresh mupdf
 
 $(FIGS_SUFFIXES): %.asy
 	$(ECHO) Compiling $<
-	cd $(dir $<) && $(ASYMPTOTE) -f $(shell echo $(suffix $@) | $(TR) -d "\.") $(notdir $< ) $(FD_OUTPUT)
+	cd $(dir $<) && $(ASYMPTOTE) -f \
+		$(shell echo $(suffix $@) | $(TR) -d "\.") $(notdir $< ) $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.gnuplot
 	$(ECHO) Compiling $<
@@ -248,7 +257,8 @@ $(FIGS_SUFFIXES): %.py
 $(FIGS_SUFFIXES): %.tex
 	$(ECHO) Compiling $<
 	@mkdir -p $(BUILD_DIR)
-	cd $(dir $< ) && $(PDFLATEX) -output-directory $(BUILD_DIR) $(notdir $< ) $(FD_OUTPUT)
+	cd $(dir $< ) && $(PDFLATEX) \
+		-output-directory $(BUILD_DIR) $(notdir $< ) $(FD_OUTPUT)
 ifneq ($(BUILD_DIR),.)
 	mv $(dir $< )/$(BUILD_DIR)/$(notdir $@) $(dir $<)/$(notdir $@)
 endif
@@ -256,7 +266,8 @@ endif
 $(TOC_FILE): $(TOC_DEP)
 	$(ECHO) Creating $(TOC_FILE)
 	@mkdir -p $(BUILD_DIR)
-	cd $(dir $(MAIN_SRC) ) && $(PDFLATEX) -output-directory $(BUILD_DIR) $(notdir $(MAIN_SRC) ) $(FD_OUTPUT)
+	cd $(dir $(MAIN_SRC) ) && $(PDFLATEX) \
+		-output-directory $(BUILD_DIR) $(notdir $(MAIN_SRC) ) $(FD_OUTPUT)
 
 $(TOC_DEP): $(MAIN_SRC) $(INCLUDES_DEP)
 	$(ECHO) Parsing the toc entries
@@ -290,22 +301,7 @@ $(FIGS_DEP): $(MAIN_SRC) $(INCLUDES_DEP)
 #
 clean: ## Remove build and temporary files
 	$(ECHO) Cleaning up...
-	-@rm $(patsubst %.tex,%.aux,$(MAIN_SRC)) 2> /dev/null
-	-@rm $(patsubst %.tex,%.bbl,$(MAIN_SRC)) 2> /dev/null
-	-@rm $(patsubst %.tex,%.blg,$(MAIN_SRC)) 2> /dev/null
-	-@rm $(patsubst %.tex,%.fdb_latexmk,$(MAIN_SRC)) 2> /dev/null
-	-@rm $(patsubst %.tex,%.fls,$(MAIN_SRC)) 2> /dev/null
-	-@rm $(patsubst %.tex,%.log,$(MAIN_SRC)) 2> /dev/null
-	-@rm $(patsubst %.tex,%.out,$(MAIN_SRC)) 2> /dev/null
-	-@rm $(patsubst %.tex,%.ilg,$(MAIN_SRC)) 2> /dev/null
-	-@rm $(patsubst %.tex,%.toc,$(MAIN_SRC)) 2> /dev/null
-	-@rm $(PDF_DOCUMENT) 2> /dev/null
-	-@rm $(DVI_DOCUMENT) 2> /dev/null
-	-@rm $(HTML_DOCUMENT) 2> /dev/null
-	-@rm $(MAN_DOCUMENT) 2> /dev/null
-	-@rm $(PYTHONTEX_FILE) 2> /dev/null
-	-@rm -rf pythontex-files-main/ 2> /dev/null
-	-@rm -rf $(DEPS_DIR) 2> /dev/null
+	-rm -rf $(CLEAN_FILES)
 ifneq ($(BUILD_DIR),.)
 	-@rm -r $(BUILD_DIR)
 endif
@@ -400,7 +396,8 @@ releases: $(BUILD_DOCUMENT) ## Create all releases (according to tags)
 	@mkdir -p $(RELEASES_DIR)
 	@for tag in $$($(GIT) tag); do\
 		echo "Processing $$tag"; \
-		$(GIT) archive --format=$(RELEASES_FMT) --prefix=$$tag/ $$tag > $(RELEASES_DIR)/$$tag.$(RELEASES_FMT); \
+		$(GIT) archive --format=$(RELEASES_FMT) \
+		--prefix=$$tag/ $$tag > $(RELEASES_DIR)/$$tag.$(RELEASES_FMT); \
 	done
 
 # ============
@@ -497,17 +494,6 @@ update: ## Update the makefile from the repository
 	$(ECHO) "Getting makefile from $(GH_REPO_FILE)"
 	wget $(GH_REPO_FILE) -O Makefile
 
-test: ## See some make variables for debugging
-	$(ECHO) DEPENDENCIES =
-	@echo $(DEPENDENCIES) | $(TR) " " "\n"
-	$(ECHO) "MAIN_SRC    = $(MAIN_SRC)"
-	$(ECHO) "Makefiles   = $(MAKEFILE_LIST)"
-	$(ECHO) "LINUX       = $(LINUX)"
-	$(ECHO) "OSX         = $(OSX)"
-	$(ECHO) "readlink    = $(READLINK)"
-	$(ECHO) "PDF_VIEWER  = $(PDF_VIEWER)"
-	$(ECHO) "$(call discoverMain)"
-
 # ====================================
 # Ctags generation for latex documents
 # ====================================
@@ -564,7 +550,7 @@ help-%:
 
 ## <<HELP
 #
-# v1.2.0
+# v1.3
 # https://github.com/alejandrogallo/latex-makefile
 # By Alejandro Gallo
 #

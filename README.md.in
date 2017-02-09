@@ -3,3 +3,23 @@
 
 # The ultimate TeX Makefile #
 
+## Quick start ##
+
+Just drop the Makefile in your project directory and hit make.  The makefile
+should recognise the main document automatically by looking for a
+`\begin{document}` in the `tex` file of the current directory.
+
+
+## Features overview ##
+
+
+  * Build in a different directory.
+  * Automatic handling of the table of contents (smart recompilation).
+  * Automatic handling of [bibtex](http://www.bibtex.org/) (smart recompilation).
+  * Import `.sty` files (latex packages) from custom directory.
+  * Distribution making for sending documents to the publisher.
+  * Automatic recognition of included graphics.
+    - Automatic [asymptote](http://asymptote.sourceforge.net/) compilation.
+    - Automatic [gnuplot](http://www.gnuplot.info/) compilation.
+    - Automatic `python` figures compilation.
+
