@@ -1,4 +1,5 @@
 cp ../../dist/Makefile .
+set -x
 
 TEST_DESCRIPTION="Check that latexdiff works with git commits"
 
@@ -27,7 +28,7 @@ cat ${MAIN_SRC}
 git commit -am "Second commit"
 git log | cat
 
-make --no-print-directory QUIET=0 QQUIET= VIEW_PDF= diff
+make --no-print-directory diff
 
 rm -rf .git
 git checkout ${MAIN_SRC}
@@ -36,7 +37,7 @@ git checkout ${MAIN_SRC}
 
 
 
-if [[ ! -f "${DIFF_BUILD_DIR}/${TOC_FILE}" ]]; then
+if [[ ! -f "${TOC_FILE}" ]]; then
   echo "${TOC_FILE} file not found!"
   TEST_RESULT=1
 elif [[ ! -f "${DIFF_BUILD_DIR}/$(basename ${DIFF_SRC_NAME} .tex).pdf" ]]; then

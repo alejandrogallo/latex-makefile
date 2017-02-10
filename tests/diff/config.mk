@@ -1,1 +1,3 @@
-QQUIET=1
+QQUIET   = 1
+VIEW_PDF =
+QUIET    = 0
