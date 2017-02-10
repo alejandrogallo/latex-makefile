@@ -7,3 +7,5 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -y texlive
   - sudo apt-get install -y latexdiff
+  - sudo apt-get install -y asymptote
+  - sudo apt-get install -y gnuplot
