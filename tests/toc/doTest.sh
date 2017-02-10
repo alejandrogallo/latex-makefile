@@ -19,6 +19,9 @@ if [[ ! -f "${TOC_DEP}" ]]; then
 elif [[ ! -f "${TOC_FILE}" ]]; then
   echo "${TOC_FILE} file not found!"
   TEST_RESULT=1
+elif [[ ! -f "images/test.pdf" ]]; then
+  echo "images/test.pdf file not found!"
+  TEST_RESULT=1
 else
   TEST_RESULT=0
 fi
