@@ -94,7 +94,7 @@ FMT             ?= pdf
 # Bibtex files in the current directory
 BIBTEX_FILE     ?= $(wildcard *.bib)
 # Folder to keep makefile dependencies
-DEPS_DIR        ?= deps
+DEPS_DIR        ?= .deps
 # Folder to build the project
 BUILD_DIR       ?= .
 # If pdf should be previewed after building
@@ -303,11 +303,12 @@ $(FIGS_SUFFIXES): %.py
 $(AUX_FILE): $(PACKAGES_FILES_BUILD)
 $(FIGS_SUFFIXES) $(BUILD_DIR)/%.aux: %.tex
 	$(ECHO) Compiling $*
-	@mkdir -p $(BUILD_DIR)
-	$(PDFLATEX) \
+	@mkdir -p $(dir $<)/$(BUILD_DIR)
+	cd $(dir $<) && $(PDFLATEX) \
 		-output-directory $(BUILD_DIR) $(notdir $*.tex ) $(FD_OUTPUT)
 ifneq ($(strip $(BUILD_DIR)),.)
-	-test ! "$@ = *.aux" || cp $(PWD)/$(BUILD_DIR)/$(notdir $@) $(PWD)/$(notdir $@)
+	-test ! "$@ = *.aux" || cp \
+		$(PWD)/$(dir $<)/$(BUILD_DIR)/$(notdir $@) $(PWD)/$(dir $<)/$(notdir $@)
 endif
 
 $(TOC_FILE): $(TOC_DEP)
