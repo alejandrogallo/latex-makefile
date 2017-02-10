@@ -49,15 +49,16 @@ elif [[ ! -f "${DIFF_BUILD_DIR}/${DIFF_SRC_NAME}" ]]; then
 elif [[ ! -d "${DIFF_BUILD_DIR}" ]]; then
   echo "${DIFF_BUILD_DIR} directory not found!"
   TEST_RESULT=1
-elif [[ -f "${DIFF_SRC_NAME}" ]]; then
-  echo "${DIFF_BUILD_DIR} file  found, this should not be the case!"
+elif [[ ! -f "${DIFF_SRC_NAME}" ]]; then
+  echo "${DIFF_SRC_NAME} file  not found, this should not be the case!"
   TEST_RESULT=1
-elif [[ -f "$(basename ${DIFF_SRC_NAME} .tex).pdf" ]]; then
-  echo "$(basename ${DIFF_SRC_NAME} .tex).pdf file  found, this should not be the case!"
+elif [[ ! -f "$(basename ${DIFF_SRC_NAME} .tex).pdf" ]]; then
+  echo "$(basename ${DIFF_SRC_NAME} .tex).pdf file not found, this should not be the case!"
   TEST_RESULT=1
 else
   TEST_RESULT=0
 fi
 
+echo "TEST_RESULT = ${TEST_RESULT}"
 
 #vim-run: bash %
