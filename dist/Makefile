@@ -69,7 +69,8 @@ ifndef QQUIET
 
 ifeq ($(strip $(WITH_COLOR)),1)
 COLOR_B         ?= $(if $(TPUT),$(shell $(TPUT) setaf 5),"\033[0;35m")
-ECHO            ?= @echo "$(COLOR_B)===>\033[0m"
+COLOR_E         ?= $(if $(TPUT),$(shell $(TPUT) setaf 0),"\033[0m")
+ECHO            ?= @echo "$(COLOR_B)===>$(COLOR_E)"
 else
 ECHO            ?= @echo "===>"
 endif #WITH_COLOR
@@ -342,6 +343,7 @@ $(FIGS_DEP): $(MAIN_SRC) $(INCLUDES_DEP)
 	$(DEBUG)mkdir -p $(dir $@)
 	$(DEBUG)echo FIGURES = \\ > $@
 	$(DEBUG)$(GREP) -E '\\include(graphic|pdf).' $(MAIN_SRC) $(INCLUDES)  \
+	| $(GREP) -v "%" \
 	| $(SED) 's/.*{\(.*\)}.*/\1 \\/' >> $@
 
 # =============
@@ -614,7 +616,7 @@ help-%:
 
 ## <<HELP
 #
-# v1.3.4
+# v1.3.5
 # https://github.com/alejandrogallo/latex-makefile
 # Copyright © 2017 Alejandro Gallo GPLv3
 #
