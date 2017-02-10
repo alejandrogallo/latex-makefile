@@ -9,9 +9,10 @@
 #
 ## HELP
 
-#local configuration
+# Local configuration
 -include config.mk
 
+# Recognise OS
 ifeq ($(shell uname),Linux)
 LINUX := 1
 OSX   :=
@@ -24,30 +25,44 @@ endif
 # PARAMETERS, OVERRIDE THESE
 ############################
 
-                                                        # Shell utilities
+# Shell utilities
 LATEX      ?= pdflatex
-LATEXDIFF  ?= latexdiff                                 # For creating differences
-TEX_LINTER ?= chktex                                    # For checking tex syntax
+# For creating differences
+LATEXDIFF  ?= latexdiff
+# For checking tex syntax
+TEX_LINTER ?= chktex
 PDFLATEX   ?= pdflatex
-ASYMPTOTE  ?= asy                                       # For asymptote figures
-GNUPLOT    ?= gnuplot                                   # Gnuplot interpreter
-PANDOC     ?= pandoc                                    # For converting document formats
+# For asymptote figures
+ASYMPTOTE  ?= asy
+# Gnuplot interpreter
+GNUPLOT    ?= gnuplot
+# For converting document formats
+PANDOC     ?= pandoc
 BIBTEX     ?= bibtex
-SH         ?= bash                                      # Shell used
-PY         ?= python                                    # Python interpreter
+# Shell used
+SH         ?= bash
+# Python interpreter
+PY         ?= python
 PYTHONTEX  ?= pythontex
-GREP       ?= grep                                      # Grep program version
-SED        ?= $(if $(OSX),gsed,sed)                     # sed program version
+# Grep program version
+GREP       ?= grep
+# sed program version
+SED        ?= $(if $(OSX),gsed,sed)
 AWK        ?= $(if $(OSX),gawk,awk)
-CTAGS      ?= ctags                                     # For creating tags
-READLINK   ?= $(if $(OSX),greadlink,readlink)           # To get complete paths
+# For creating tags
+CTAGS      ?= ctags
+# To get complete paths
+READLINK   ?= $(if $(OSX),greadlink,readlink)
 XARGS      ?= xargs
 TR         ?= tr
 GIT        ?= git
 WHICH      ?= which
-TPUT       ?= $(shell $(WHICH) tput 2> /dev/null)       # For coloring
-WITH_COLOR ?= 1                                         # If messages should have color
-QQUIET     ?=                                           # If the main messages should be also muted
+# For coloring
+TPUT       ?= $(shell $(WHICH) tput 2> /dev/null)
+# If messages should have color
+WITH_COLOR ?= 1
+# If the main messages should be also muted
+QQUIET     ?=
 
 ifndef QQUIET
 
@@ -72,28 +87,45 @@ discoverMain = $(shell \
 hasToc = $(shell\
              $(GREP) '\\tableofcontents' $(1))
 
-MAIN_SRC        ?= $(call discoverMain)    # Man texfile in the current directory
-FMT             ?= pdf                     # Format to build to
-BIBTEX_FILE     ?= $(wildcard *.bib)       # Bibtex files in the current directory
-DEPS_DIR        ?= deps                    # Folder to keep makefile dependencies
-BUILD_DIR       ?= .                       # Folder to build the project
-VIEW_PDF        ?= 1                       # If pdf should be previewed after building
-DEPENDENCIES    ?=                         # General dependencies for BUILD_DOCUMENT
-CLEAN_FILES     ?=                         # File to be cleaned
-FIGURES         ?=                         # Figures included in all texfiles
-INCLUDES        ?=                         # Texfiles included in the main tex file
-WITH_PYTHONTEX  ?=                         # If pythontex is being used
-QUIET           ?= 0                       # If secondary programs output is shown
-PREFIX          ?= $(PWD)                  # Source directory
-DIST_DIR        ?= $(PREFIX)/dist          # Distribution directory
-PACKAGES_DIR    ?= libtex                  # Tex libraries directory
+# Man texfile in the current directory
+MAIN_SRC        ?= $(call discoverMain)
+# Format to build to
+FMT             ?= pdf
+# Bibtex files in the current directory
+BIBTEX_FILE     ?= $(wildcard *.bib)
+# Folder to keep makefile dependencies
+DEPS_DIR        ?= deps
+# Folder to build the project
+BUILD_DIR       ?= .
+# If pdf should be previewed after building
+VIEW_PDF        ?= 1
+# General dependencies for BUILD_DOCUMENT
+DEPENDENCIES    ?=
+# File to be cleaned
+CLEAN_FILES     ?=
+# Figures included in all texfiles
+FIGURES         ?=
+# Texfiles included in the main tex file
+INCLUDES        ?=
+# If pythontex is being used
+WITH_PYTHONTEX  ?=
+# If secondary programs output is shown
+QUIET           ?= 0
+# Source directory
+PREFIX          ?= $(PWD)
+# Distribution directory
+DIST_DIR        ?= $(PREFIX)/dist
+# Tex libraries directory
+PACKAGES_DIR    ?= libtex
+# Which files are tex libraries
 PACKAGES_FILES  ?= $(wildcard \
 $(PACKAGES_DIR)/*.sty \
 $(PACKAGES_DIR)/*.rtx \
 $(PACKAGES_DIR)/*.cls \
 $(PACKAGES_DIR)/*.bst \
 $(PACKAGES_DIR)/*.tex \
-)                                          # Which files are tex libraries
+)
+# Recognise pdf viewer automagically
 PDF_VIEWER      ?= $(or \
 $(shell $(WHICH) zathura 2> /dev/null),\
 $(shell $(WHICH) mupdf 2> /dev/null),\
@@ -102,7 +134,7 @@ $(shell $(WHICH) evince 2> /dev/null),\
 $(shell $(WHICH) okular 2> /dev/null),\
 $(shell $(WHICH) xdg-open 2> /dev/null),\
 $(shell $(WHICH) open 2> /dev/null),\
-)                                          # Recognise pdf viewer automagically
+)
 
 .DEFAULT_GOAL   := all
 
@@ -129,9 +161,9 @@ PURGE_SUFFIXES       = %.aux %.bbl %.blg %.fdb_latexmk %.fls %.log %.out \
 # These files  are to keep  track of the  dependencies for latex  or pdf
 # includes, table of contents generation or figure recognition
 #
-TOC_DEP        = $(DEPS_DIR)/toc.d
-INCLUDES_DEP   = $(DEPS_DIR)/includes.d
-FIGS_DEP       = $(DEPS_DIR)/figs.d
+TOC_DEP        = $(strip $(DEPS_DIR))/toc.d
+INCLUDES_DEP   = $(strip $(DEPS_DIR))/includes.d
+FIGS_DEP       = $(strip $(DEPS_DIR))/figs.d
 
 -include $(INCLUDES_DEP)
 -include $(FIGS_DEP)
@@ -515,7 +547,8 @@ unwatch: ## Cancel Watching
 # You may override the `GH_REPO_FILE` to  any path where you save your own
 # personal makefile
 #
-GH_REPO_FILE ?= https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile
+GH_REPO_FILE ?=\
+ https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile
 update: ## Update the makefile from the repository
 	$(ECHO) "Getting makefile from $(GH_REPO_FILE)"
 	wget $(GH_REPO_FILE) -O Makefile
