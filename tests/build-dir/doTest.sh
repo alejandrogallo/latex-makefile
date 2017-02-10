@@ -18,30 +18,35 @@ make --no-print-directory QUIET=1 VIEW_PDF=
 main=$(basename ${MAIN_SRC} .tex)
 
 if [[ ! -f "${BUILD_DOCUMENT}" ]]; then
+  echo "File ${BUILD_DOCUMENT} not found !!"
   TEST_RESULT=1
-elif [[ -f "${BUILD_DIR}/${BUILD_DOCUMENT}" ]]; then
+elif [[ ! -f "${BUILD_DIR}/${BUILD_DOCUMENT}" ]]; then
+  echo "File ${BUILD_DIR}/${BUILD_DOCUMENT} not found !!"
   TEST_RESULT=1
 elif [[ -f "${main}.aux" ]]; then
+  echo "File ${main}.aux found !!"
   TEST_RESULT=1
 elif [[ -f "${main}.log" ]]; then
+  echo "File ${main}.log found !!"
   TEST_RESULT=1
 elif [[ ! -f "${TOC_DEP}" ]]; then
-  echo "${TOC_DEP} file not found!"
+  echo "File ${TOC_DEP} not found !!"
   TEST_RESULT=1
 elif [[ ! -f "${TOC_FILE}" ]]; then
-  echo "${TOC_FILE} file not found!"
+  echo "File ${TOC_FILE} not found !!"
   TEST_RESULT=1
 elif [[ ! -f "${BIBITEM_FILE}" ]]; then
-  echo "${BIBITEM_FILE} file not found!"
+  echo "File ${BIBITEM_FILE} not found !!"
   TEST_RESULT=1
 elif [[ ! -f "images/test.pdf" ]]; then
-  echo "images/test.pdf file not found!"
+  echo "File images/test.pdf not found !!"
   TEST_RESULT=1
 elif [[ ! -f "images/transitions.pdf" ]]; then
-  echo "images/transitions.pdf file not found!"
+  echo "File images/transitions.pdf not found !!"
   TEST_RESULT=1
 else
   TEST_RESULT=0
 fi
 
 
+echo TEST_RESULT = ${TEST_RESULT}
