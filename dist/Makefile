@@ -1,3 +1,7 @@
+
+MAKEFILE_VERSION = v1.4.1
+MAKEFILE_DATE = 10-02-2017 22:30
+
 ## <<HELP
 #
 #                           The ultimate
@@ -631,6 +635,11 @@ help: ## Prints help for targets with comments
 			printf "\033[36m%-30s\033[0m %s\n", $$1, $$2 ; \
 		};' \
 		$(MAKEFILE_LIST)
+	@echo ""
+	@echo "  $(MAKEFILE_VERSION)"
+	@echo "  https://github.com/alejandrogallo/latex-makefile"
+	@echo "  Copyright Alejandro Gallo GPLv3 $(MAKEFILE_DATE)"
+	@echo ""
 
 FORCE:
 help-%:
@@ -641,12 +650,5 @@ help-%:
 		| sed -n "p; 1s/./=/gp; 1a\ "
 
 
-## <<HELP
-#
-# v1.4.0
-# https://github.com/alejandrogallo/latex-makefile
-# Copyright © 2017 Alejandro Gallo GPLv3
-#
-## HELP
 
-# vim: nospell fdm=marker cc=80
+# vim: cc=80
