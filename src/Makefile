@@ -131,6 +131,7 @@ $(PACKAGES_DIR)/*.rtx \
 $(PACKAGES_DIR)/*.cls \
 $(PACKAGES_DIR)/*.bst \
 $(PACKAGES_DIR)/*.tex \
+$(PACKAGES_DIR)/*.clo \
 )
 # Recognise pdf viewer automagically
 PDF_VIEWER      ?= $(or \
@@ -187,8 +188,7 @@ $(MAIN_SRC) \
 $(INCLUDES) \
 $(PACKAGES_FILES_BUILD) \
 $(FIGURES) \
-$(if $(call hasToc,$(MAIN_SRC)),$(TOC_FILE),) \
-$(AUX_FILE) \
+$(if $(call hasToc,$(MAIN_SRC)),$(TOC_FILE),$(AUX_FILE)) \
 $(if $(wildcard $(BIBTEX_FILE)),$(BIBITEM_FILE)) \
 $(if $(WITH_PYTHONTEX),$(PYTHONTEX_FILE)) \
 
@@ -244,12 +244,16 @@ force: ## Force creation of BUILD_DOCUMENT
 # file, this  will also be  targeted, bit  the '-' before  the `$(BIBTEX)`
 # ensures that the whole building doesn't fail because of it
 #
-$(BIBITEM_FILE): $(AUX_FILE) $(BIBTEX_FILE)
+$(BIBITEM_FILE): $(BIBTEX_FILE)
 	$(ECHO) "Compiling the bibliography"
 	-$(DEBUG)test $(BUILD_DIR) = . || cp $^ $(BUILD_DIR)/
 	$(DEBUG)cd $(BUILD_DIR); $(BIBTEX) $(patsubst %.tex,%,$(MAIN_SRC)) $(FD_OUTPUT)
 	$(ECHO) Compiling again $(BUILD_DOCUMENT) to update refs
 	$(DEBUG)$(MAKE) force
+
+$(AUX_FILE):
+	$(ECHO) Creating $@
+	$(DEBUG)$(PDFLATEX) $(BUILD_DIR_FLAG) $(MAIN_SRC) $(FD_OUTPUT)
 
 #FIXME: find a way of not having to compile the main document again
 %.pytxcode: %.tex
@@ -621,7 +625,7 @@ help-%:
 
 ## <<HELP
 #
-# v1.3.6
+# v1.3.7
 # https://github.com/alejandrogallo/latex-makefile
 # Copyright © 2017 Alejandro Gallo GPLv3
 #
