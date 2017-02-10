@@ -34,6 +34,12 @@ elif [[ ! -f "${TOC_FILE}" ]]; then
 elif [[ ! -f "${BIBITEM_FILE}" ]]; then
   echo "${BIBITEM_FILE} file not found!"
   TEST_RESULT=1
+elif [[ ! -f "images/test.pdf" ]]; then
+  echo "images/test.pdf file not found!"
+  TEST_RESULT=1
+elif [[ ! -f "images/transitions.pdf" ]]; then
+  echo "images/transitions.pdf file not found!"
+  TEST_RESULT=1
 else
   TEST_RESULT=0
 fi
