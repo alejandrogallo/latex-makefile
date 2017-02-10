@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.4.1
-MAKEFILE_DATE = 10-02-2017 22:30
+MAKEFILE_VERSION = v1.4.1-3-gea02368
+MAKEFILE_DATE = 10-02-2017 23:04
 
 ## <<HELP
 #
@@ -161,11 +161,6 @@ else
 	FD_OUTPUT =
 endif
 
-# This helps to turn off some makefile behaviour when it is not building
-# any document
-clean: NOT_BUILDING=1
-help: NOT_BUILDING=1
-
 ifneq ($(strip $(MAIN_SRC)),) # Do this only if MAIN_SRC is defined
 
 BUILD_DOCUMENT       = $(patsubst %.tex,%.$(FMT),$(MAIN_SRC))
@@ -188,9 +183,11 @@ TOC_DEP        = $(strip $(DEPS_DIR))/toc.d
 INCLUDES_DEP   = $(strip $(DEPS_DIR))/includes.d
 FIGS_DEP       = $(strip $(DEPS_DIR))/figs.d
 
-ifdef NOT_BUILDING
-include $(INCLUDES_DEP)
-include $(FIGS_DEP)
+ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(MAKECMDGOALS),help)
+-include $(INCLUDES_DEP)
+-include $(FIGS_DEP)
+endif
 endif
 
 endif #MAIN_SRC exists
