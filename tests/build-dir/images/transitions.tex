@@ -1,0 +1,127 @@
+\documentclass{article}
+\usepackage{tikz}
+%%%<
+\usepackage{verbatim}
+\usepackage[active,tightpage]{preview}
+\PreviewEnvironment{center}
+\setlength\PreviewBorder{10pt}%
+%%%>
+
+
+\usetikzlibrary{calc,arrows,decorations.pathmorphing,intersections}
+\usepackage{sansmath}
+\begin{document}
+\begin{center}
+  %\sansmath
+  \begin{tikzpicture}[
+    level/.style={black,very thick},
+    %sublevel/.style={black,densely dashed},
+    transition/.style={black,->,>=stealth',shorten >=1pt},
+    radiative/.style={transition,decorate,decoration={snake,amplitude=1.5},red,thick},
+    indirectradiative/.style={radiative,densely dashed},
+    nonradiative/.style={transition,dashed},
+    strong/.style={dashed, very thick},
+    weak/.style={densely dashed},
+    ghost/.style={gray,dashed,thin},
+    annotation/.style={red,thick,<->,shorten >=4pt,shorten <=4pt,>=stealth}
+  ]
+
+  \pgfmathsetmacro{\levelwidth}{4}
+  \pgfmathsetmacro{\degensep}{.1}
+  \pgfmathsetmacro{\tripletsep}{1}
+
+  % Triplet levels
+  \coordinate (A2) at (0, -1);
+  \coordinate (A20) at ($(A2)+(0,-\tripletsep)$);
+  \coordinate (A21) at ($(A2)+(0,+\tripletsep)$);
+  \coordinate (A211) at ($(A2)+(0,+\tripletsep+\degensep)$);
+
+
+  \coordinate (E3) at (0, 6);
+  \coordinate (E30) at ($(E3)+(0,-\tripletsep)$);
+  \coordinate (E31) at ($(E3)+(0,+\tripletsep)$);
+  \coordinate (E311) at ($(E3)+(0,+\tripletsep+\degensep)$);
+
+  %left points
+  \pgfmathsetmacro{\leftrad}{0.5}
+  \pgfmathsetmacro{\lleftrad}{1}
+  \coordinate (A21L) at ($(A21)+(\leftrad,0)$);
+  \coordinate (A20L) at ($(A20)+(\leftrad,0)$);
+  \coordinate (E31L) at ($(E31)+(\leftrad,0)$);
+  \coordinate (E30L) at ($(E30)+(\leftrad,0)$);
+  \coordinate (A21LL) at ($(A21)+(\lleftrad,0)$);
+  \coordinate (A20LL) at ($(A20)+(\lleftrad,0)$);
+  \coordinate (E30LL) at ($(E30)+(\lleftrad,0)$);
+  \coordinate (E31LL) at ($(E31)+(\lleftrad,0)$);
+  % Draw main levels
+
+  \node[left=20pt] at (E3) {$^3E$};
+  \node[left=0pt] at (E30) { $ z (m_{s}=0) $ };
+  \node[left=0pt] at (E31) { $ x,y $ };
+
+  \node[left=20pt] at (A2) {$^3A_2$};
+  \node[left=0pt] at (A20) { $ z (m_{s}=0) $ };
+  \node[left=0pt] at (A21) { $ x,y $ };
+
+  \draw[level,ghost] (E3) -- +(\levelwidth, 0);
+  \draw[level] (E30) -- +(\levelwidth, 0);
+  \draw[level] (E31) -- +(\levelwidth, 0);
+  \draw[level] (E311) -- +(\levelwidth, 0);
+
+  \draw[level,ghost] (A2) -- +(\levelwidth, 0);
+  \draw[level] (A20) -- +(\levelwidth, 0) 
+    node[draw,circle,font=\Large,right=05pt](qu1) {
+      $ \left | 0 \right \rangle  $
+    };
+  \draw[level] (A21) -- +(\levelwidth, 0)
+    node[draw,circle,font=\Large,right=05pt](qu2) {
+      $ \left | 1 \right \rangle  $
+    };
+  \draw[level] (A211) -- +(\levelwidth, 0);
+
+  \draw[radiative,<->,orange!100] (qu1) -- (qu2)
+    node[fill,circle,font=\Large,right=10pt,pos=.5,text=black] { $ \omega  $ };
+
+  \draw[radiative,<->] (E30LL) -- (A20LL);
+  \draw[radiative,<->] (E31L) -- (A21L)
+    node[radiative,midway,left=2pt] {Radiative};
+
+
+
+  % Singlet levels
+  \coordinate (E1) at (5, 1);
+  \coordinate (E1L) at ($(E1)+(.4*\levelwidth,0)$);
+  \coordinate (E1R) at ($(E1)+(.8*\levelwidth,0)$);
+  \coordinate (A1) at (5, 4);
+  \coordinate (A1L) at ($(A1)+(.4*\levelwidth,0)$);
+  \coordinate (A1R) at ($(A1)+(.8*\levelwidth,0)$);
+
+  %% Draw main levels
+  \draw[level] (E1) -- +(\levelwidth, 0)
+    node[right=20pt] {$^1E_{1}$};
+  \draw[level] (A1) -- +(\levelwidth, 0)
+    node[right=20pt] {$^1A_{1}$};
+
+
+
+  %singlet transitions
+
+  \draw[radiative] (A1L) -- (E1L);
+  \draw[nonradiative,strong] ($(E31)+(.8*\levelwidth,0)$) -- (A1R)
+    node[midway,right=10pt] {Non radiative \textbf{strong}};
+  \draw[nonradiative,strong] (A1R) -- (E1R);
+
+  \draw[nonradiative,weak] ($(E30)+(.8*\levelwidth,0)$) -- (A1L)
+    node[midway,left=10pt] {Non radiative \textbf{weak}};
+
+  \draw[nonradiative,weak] (E1L) -- ($(A21)+(.8*\levelwidth,0)$);
+  \draw[nonradiative,strong] (E1R) -- ($(A20)+(.8*\levelwidth,0)$);
+
+
+
+
+  \end{tikzpicture}
+\end{center}
+\end{document}
+
+% vim:spell ft=tex spell!
