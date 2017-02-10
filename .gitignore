@@ -1,7 +1,9 @@
 DOCUMENTATION.md
 test.out
 tests/**/Makefile
+.deps
 deps
+build
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
