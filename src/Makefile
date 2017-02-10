@@ -281,7 +281,7 @@ mupdf /usr/bin/mupdf: ## Refresh mupdf
 	| $(GREP) "$(PDF_VIEWER)" \
 	| $(GREP) "$(BUILD_DOCUMENT)" \
 	| $(AWK) '{print $$2}'\
-	| { read pid; [[ -z "$$pid" ]] || kill -s HUP $$pid; }
+	| { read pid; test -z "$$pid" || kill -s HUP $$pid; }
 
 $(FIGS_SUFFIXES): %.asy
 	$(ECHO) Compiling $<
@@ -307,7 +307,7 @@ $(FIGS_SUFFIXES) $(BUILD_DIR)/%.aux: %.tex
 	$(PDFLATEX) \
 		-output-directory $(BUILD_DIR) $(notdir $*.tex ) $(FD_OUTPUT)
 ifneq ($(strip $(BUILD_DIR)),.)
-	-[[  $@ = *.aux ]] || cp $(PWD)/$(BUILD_DIR)/$(notdir $@) $(PWD)/$(notdir $@)
+	-test ! "$@ = *.aux" || cp $(PWD)/$(BUILD_DIR)/$(notdir $@) $(PWD)/$(notdir $@)
 endif
 
 $(TOC_FILE): $(TOC_DEP)
