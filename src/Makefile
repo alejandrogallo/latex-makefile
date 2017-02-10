@@ -63,6 +63,7 @@ TPUT       ?= $(shell $(WHICH) tput 2> /dev/null)
 WITH_COLOR ?= 1
 # If the main messages should be also muted
 QQUIET     ?=
+DEBUG      ?= @
 
 ifndef QQUIET
 
@@ -192,6 +193,8 @@ $(wildcard $(subst %,*,$(PURGE_SUFFIXES))) \
 $(wildcard $(DEPS_DIR)) \
 $(wildcard $(PDFPC_FILE)) \
 $(wildcard $(DIST_DIR)) \
+$(wildcard $(DIFF_BUILD_DIR_MAIN)) \
+$(wildcard $(DIFF_SRC_NAME)) \
 
 
 
@@ -212,7 +215,7 @@ $(BUILD_DOCUMENT): $(DEPENDENCIES)
 
 
 $(BUILD_DIR)/%: $(PACKAGES_DIR)/%
-	@mkdir -p $(BUILD_DIR)
+	$(DEBUG)mkdir -p $(BUILD_DIR)
 	-cp $^ $@
 
 # =================
@@ -263,7 +266,7 @@ view-pdf: $(PDF_VIEWER) open-pdf ## Refresh and open pdf
 # Open a viewer if there is none open viewing `$(BUILD_DOCUMENT)`
 #
 open-pdf: ## Open pdf build document
-	-@ps aux | $(GREP) -v $(GREP) \
+	-$(DEBUG)ps aux | $(GREP) -v $(GREP) \
 	| $(GREP) "$(PDF_VIEWER)" \
 	| $(GREP) -q "$(BUILD_DOCUMENT)" \
 	||  $(PDF_VIEWER) "$(BUILD_DOCUMENT)" 2>&1 > /dev/null &
@@ -276,7 +279,7 @@ open-pdf: ## Open pdf build document
 # mupdf signal API to refresh the document.
 #
 mupdf /usr/bin/mupdf: ## Refresh mupdf
-	-@ps aux \
+	-$(DEBUG)ps aux \
 	| $(GREP) -v $(GREP) \
 	| $(GREP) "$(PDF_VIEWER)" \
 	| $(GREP) "$(BUILD_DOCUMENT)" \
@@ -303,7 +306,7 @@ $(FIGS_SUFFIXES): %.py
 $(AUX_FILE): $(PACKAGES_FILES_BUILD)
 $(FIGS_SUFFIXES) $(BUILD_DIR)/%.aux: %.tex
 	$(ECHO) Compiling $*
-	@mkdir -p $(dir $<)/$(BUILD_DIR)
+	$(DEBUG)mkdir -p $(dir $<)/$(BUILD_DIR)
 	cd $(dir $<) && $(PDFLATEX) \
 		-output-directory $(BUILD_DIR) $(notdir $*.tex ) $(FD_OUTPUT)
 ifneq ($(strip $(BUILD_DIR)),.)
@@ -313,32 +316,32 @@ endif
 
 $(TOC_FILE): $(TOC_DEP)
 	$(ECHO) Creating $(TOC_FILE)
-	@mkdir -p $(BUILD_DIR)
+	$(DEBUG)mkdir -p $(BUILD_DIR)
 	cd $(dir $(MAIN_SRC) ) && $(PDFLATEX) \
 		-output-directory $(BUILD_DIR) $(notdir $(MAIN_SRC) ) $(FD_OUTPUT)
 
 $(TOC_DEP): $(MAIN_SRC) $(INCLUDES_DEP)
 	$(ECHO) Parsing the toc entries
-	@mkdir -p $(dir $@)
-	@$(GREP) -E '\\(section|subsection|subsubsection|chapter|part|subsubsubsection).' \
+	$(DEBUG)mkdir -p $(dir $@)
+	$(DEBUG)$(GREP) -E '\\(section|subsection|subsubsection|chapter|part|subsubsubsection).' \
 	$(MAIN_SRC) $(INCLUDES)  \
 	| $(SED) 's/.*{\(.*\)}.*/\1/' > $@.control
-	@if ! diff $@ $@.control 2>&1 > /dev/null ; then mv $@.control $@; fi
+	$(DEBUG)if ! diff $@ $@.control 2>&1 > /dev/null ; then mv $@.control $@; fi
 
 $(INCLUDES_DEP): $(MAIN_SRC)
 	$(ECHO) Parsing the includes dependencies
-	@mkdir -p $(dir $@)
-	@echo INCLUDES = \\ > $@
+	$(DEBUG)mkdir -p $(dir $@)
+	$(DEBUG)echo INCLUDES = \\ > $@
 #@ Include statements should not have a .tex extension
 #@ so we are forced to add it
-	@$(GREP) -E '\\(include|input)[^gp]' $<  \
+	$(DEBUG)$(GREP) -E '\\(include|input)[^gp]' $<  \
 	| $(SED) 's/.*{\(.*\)}.*/\1.tex \\/' >> $@
 
 $(FIGS_DEP): $(MAIN_SRC) $(INCLUDES_DEP)
 	$(ECHO) Parsing the graphics dependencies
-	@mkdir -p $(dir $@)
-	@echo FIGURES = \\ > $@
-	@$(GREP) -E '\\include(graphic|pdf).' $(MAIN_SRC) $(INCLUDES)  \
+	$(DEBUG)mkdir -p $(dir $@)
+	$(DEBUG)echo FIGURES = \\ > $@
+	$(DEBUG)$(GREP) -E '\\include(graphic|pdf).' $(MAIN_SRC) $(INCLUDES)  \
 	| $(SED) 's/.*{\(.*\)}.*/\1 \\/' >> $@
 
 # =============
@@ -352,7 +355,7 @@ clean: ## Remove build and temporary files
 	$(ECHO) Cleaning up...
 	-rm -rf $(CLEAN_FILES)
 ifneq ($(strip $(BUILD_DIR)),.)
-	-@rm -r $(BUILD_DIR)
+	-$(DEBUG)rm -r $(BUILD_DIR)
 endif
 
 #PANDOC CONVERSIONS
@@ -396,7 +399,7 @@ html: $(MAIN_SRC)
 
 todo: $(INCLUDES_DEP) ## Print the todos from the main document
 	$(ECHO) Parsing \\TODO{} in $(MAIN_SRC)
-	@$(SED) -n "/\\TODO{/,/}/\
+	$(DEBUG)$(SED) -n "/\\TODO{/,/}/\
 	{\
 		s/.TODO/===/; \
 		s/[{]//g; \
@@ -442,8 +445,8 @@ RELEASES_DIR=releases
 RELEASES_FMT=tar
 releases: $(BUILD_DOCUMENT) ## Create all releases (according to tags)
 	$(ECHO) Copying releases to $(RELEASES_DIR) folder in $(RELEASES_FMT) format
-	@mkdir -p $(RELEASES_DIR)
-	@for tag in $$($(GIT) tag); do\
+	$(DEBUG)mkdir -p $(RELEASES_DIR)
+	$(DEBUG)for tag in $$($(GIT) tag); do\
 		echo "Processing $$tag"; \
 		$(GIT) archive --format=$(RELEASES_FMT) \
 		--prefix=$$tag/ $$tag > $(RELEASES_DIR)/$$tag.$(RELEASES_FMT); \
@@ -460,34 +463,37 @@ releases: $(BUILD_DOCUMENT) ## Create all releases (according to tags)
 #
 dist: $(BUILD_DOCUMENT) ## Create a dist folder with the bare minimum to compile
 	$(ECHO) "Creating dist folder"
-	@mkdir -p $(DIST_DIR)
+	$(DEBUG)mkdir -p $(DIST_DIR)
 	$(ECHO) "Copying the Makefile"
-	@cp Makefile $(DIST_DIR)/
+	$(DEBUG)cp Makefile $(DIST_DIR)/
 	$(ECHO) "Copying the target document"
-	@cp $(BUILD_DOCUMENT) $(DIST_DIR)/
-	$(ECHO) "Copying .bib files"
-	@cp $(BIBTEX_FILE) $(DIST_DIR)/
+	$(DEBUG)cp $(BUILD_DOCUMENT) $(DIST_DIR)/
+	$(DEBUG)test -n "$(BIBTEX_FILE)" && {\
+		$(ECHO) "Copying .bib files"; \
+		cp $(BIBTEX_FILE) $(DIST_DIR)/; \
+		} || echo "No bibfiles"
 	$(ECHO) "Creating folder for dependencies"
-	@echo $(DEPENDENCIES)\
+	$(DEBUG)echo $(DEPENDENCIES)\
 	 | $(XARGS) -n1 dirname\
 	 | $(XARGS) -n1 -I FF mkdir -p $(DIST_DIR)/FF
 	$(ECHO) "Copying dependencies"
-	@echo $(DEPENDENCIES)\
+	$(DEBUG)echo $(DEPENDENCIES)\
 	 | $(TR) " " "\n" \
 	 | $(XARGS) -n1 -I FF cp FF $(DIST_DIR)/FF
 	$(ECHO) "Creating folder for latex libraries"
-	@echo $(PACKAGES_FILES)\
+	$(DEBUG)echo $(PACKAGES_FILES)\
 	 | $(XARGS) -n1 dirname\
 	 | $(XARGS) -n1 -I FF mkdir -p $(DIST_DIR)/FF
 	$(ECHO) "Copying latex libraries"
-	@echo $(PACKAGES_FILES)\
+	$(DEBUG)echo $(PACKAGES_FILES)\
 	 | $(TR) " " "\n" \
 	 | $(XARGS) -n1 -I FF cp FF $(DIST_DIR)/FF
 
 DIFF ?=HEAD HEAD~1
 NEW_COMMIT = $(word 1,$(DIFF))
 OLD_COMMIT = $(word 2,$(DIFF))
-DIFF_BUILD_DIR ?= diffs/$(NEW_COMMIT)_$(OLD_COMMIT)
+DIFF_BUILD_DIR_MAIN ?= diffs
+DIFF_BUILD_DIR ?= $(DIFF_BUILD_DIR_MAIN)/$(NEW_COMMIT)_$(OLD_COMMIT)
 DIFF_SRC_NAME  ?= diff.tex
 # ====
 # Diff
@@ -516,11 +522,10 @@ diff: ## Create a latexdiff using git versions
 		$(DIFF_BUILD_DIR)/$(strip $(MAIN_SRC)).$(OLD_COMMIT) \
 		$(DIFF_BUILD_DIR)/$(strip $(MAIN_SRC)).$(NEW_COMMIT) \
 		> $(DIFF_SRC_NAME)
-	$(MAKE) \
+	$(MAKE) dist \
 		BUILD_DIR=$(DIFF_BUILD_DIR) \
 		MAIN_SRC=$(DIFF_SRC_NAME) \
-		DIST_DIR=$(DIFF_BUILD_DIR) \
-		dist
+		DIST_DIR=$(DIFF_BUILD_DIR)
 	rm $(DIFF_SRC_NAME) $(patsubst %.tex,%.pdf,$(DIFF_SRC_NAME))
 	git checkout HEAD $(MAIN_SRC)
 
@@ -566,7 +571,7 @@ tags: $(MAIN_SRC) $(INCLUDES_DEP) ## Create TeX exhuberant ctags
 
 purge: clean ## Remove recursively with suffixes in PURGE_SUFFIXES
 	$(ECHO) Purging files across directories... be careful
-	@echo "$(PURGE_SUFFIXES)" \
+	$(DEBUG)echo "$(PURGE_SUFFIXES)" \
 	| $(TR) "%" "*" \
 	| $(XARGS) -n1  $(FIND) . -name \
 	| while read i; do echo $$i ; rm $$i; done
@@ -578,7 +583,7 @@ purge: clean ## Remove recursively with suffixes in PURGE_SUFFIXES
 # and this would output PDF_VIEWER=mupdf for instance.
 FORCE:
 print-%:
-	@echo '$*=$($*)'
+	$(DEBUG)echo '$*=$($*)'
 
 # ================
 # Print quick help
@@ -586,7 +591,7 @@ print-%:
 #
 # It prints a quick help in the terminal
 help: ## Prints help for targets with comments
-	@$(or $(AWK),awk) ' \
+	$(DEBUG)$(or $(AWK),awk) ' \
 		BEGIN {FS = ":.*?## "}; \
 		/^## *<<HELP/,/^## *HELP/ { \
 			help=$$1; \
@@ -601,7 +606,7 @@ help: ## Prints help for targets with comments
 
 FORCE:
 help-%:
-	@sed -n "/[#] [=]\+/,/^$*: / { /"$*":/{q}; p; } " $(MAKEFILE_LIST) \
+	$(DEBUG)sed -n "/[#] [=]\+/,/^$*: / { /"$*":/{q}; p; } " $(MAKEFILE_LIST) \
 		| tac \
 		| sed -n "1,/===/ {/===/n; s/^# //p}" \
 		| tac \
@@ -610,9 +615,9 @@ help-%:
 
 ## <<HELP
 #
-# v1.3.3
+# v1.3.4
 # https://github.com/alejandrogallo/latex-makefile
-# By Alejandro Gallo
+# Copyright © 2017 Alejandro Gallo GPLv3
 #
 ## HELP
 
