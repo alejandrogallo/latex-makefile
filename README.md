@@ -159,7 +159,7 @@ You may override the `GH_REPO_FILE` to  any path where you save your own
 personal makefile
 
 ```bash 
-make https
+make update
 ```
 Ctags generation for latex documents
 ====================================

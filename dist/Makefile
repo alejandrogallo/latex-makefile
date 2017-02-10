@@ -265,7 +265,7 @@ view-pdf: $(PDF_VIEWER) open-pdf ## Refresh and open pdf
 #
 # Open a viewer if there is none open viewing `$(BUILD_DOCUMENT)`
 #
-open-pdf: ## Open pdf build document
+open-pdf: $(DEPENDENCIES) $(BUILD_DOCUMENT) ## Open pdf build document
 	-$(DEBUG)ps aux | $(GREP) -v $(GREP) \
 	| $(GREP) "$(PDF_VIEWER)" \
 	| $(GREP) -q "$(BUILD_DOCUMENT)" \
@@ -288,26 +288,26 @@ mupdf /usr/bin/mupdf: ## Refresh mupdf
 
 $(FIGS_SUFFIXES): %.asy
 	$(ECHO) Compiling $<
-	cd $(dir $<) && $(ASYMPTOTE) -f \
+	$(DEBUG)cd $(dir $<) && $(ASYMPTOTE) -f \
 		$(shell echo $(suffix $@) | $(TR) -d "\.") $(notdir $< ) $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.gnuplot
 	$(ECHO) Compiling $<
-	cd $(dir $< ) && $(GNUPLOT) $(notdir $< ) $(FD_OUTPUT)
+	$(DEBUG)cd $(dir $< ) && $(GNUPLOT) $(notdir $< ) $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.sh
 	$(ECHO) Compiling $<
-	cd $(dir $< ) && $(SH) $(notdir $< ) $(FD_OUTPUT)
+	$(DEBUG)cd $(dir $< ) && $(SH) $(notdir $< ) $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.py
 	$(ECHO) Compiling $<
-	cd $(dir $< ) && $(PY) $(notdir $< ) $(FD_OUTPUT)
+	$(DEBUG)cd $(dir $< ) && $(PY) $(notdir $< ) $(FD_OUTPUT)
 
 $(AUX_FILE): $(PACKAGES_FILES_BUILD)
 $(FIGS_SUFFIXES) $(BUILD_DIR)/%.aux: %.tex
 	$(ECHO) Compiling $*
 	$(DEBUG)mkdir -p $(dir $<)/$(BUILD_DIR)
-	cd $(dir $<) && $(PDFLATEX) \
+	$(DEBUG)cd $(dir $<) && $(PDFLATEX) \
 		-output-directory $(BUILD_DIR) $(notdir $*.tex ) $(FD_OUTPUT)
 ifneq ($(strip $(BUILD_DIR)),.)
 	-test ! "$@ = *.aux" || cp \
@@ -317,7 +317,7 @@ endif
 $(TOC_FILE): $(TOC_DEP)
 	$(ECHO) Creating $(TOC_FILE)
 	$(DEBUG)mkdir -p $(BUILD_DIR)
-	cd $(dir $(MAIN_SRC) ) && $(PDFLATEX) \
+	$(DEBUG)cd $(dir $(MAIN_SRC) ) && $(PDFLATEX) \
 		-output-directory $(BUILD_DIR) $(notdir $(MAIN_SRC) ) $(FD_OUTPUT)
 
 $(TOC_DEP): $(MAIN_SRC) $(INCLUDES_DEP)
@@ -353,7 +353,7 @@ $(FIGS_DEP): $(MAIN_SRC) $(INCLUDES_DEP)
 #
 clean: ## Remove build and temporary files
 	$(ECHO) Cleaning up...
-	-rm -rf $(CLEAN_FILES)
+	-$(DEBUG)rm -rf $(CLEAN_FILES)
 ifneq ($(strip $(BUILD_DIR)),.)
 	-$(DEBUG)rm -r $(BUILD_DIR)
 endif
@@ -513,7 +513,7 @@ DIFF_SRC_NAME  ?= diff.tex
 # DIFF_BUILD_DIR. *Warning*: It only works for single document tex projects.
 diff: ## Create a latexdiff using git versions
 	$(ECHO) Creating diff between $(NEW_COMMIT) and $(OLD_COMMIT)
-	mkdir -p $(DIFF_BUILD_DIR)
+	$(DEBUG)mkdir -p $(DIFF_BUILD_DIR)
 	git checkout $(NEW_COMMIT) $(MAIN_SRC)
 	cp $(MAIN_SRC) $(DIFF_BUILD_DIR)/$(strip $(MAIN_SRC)).$(NEW_COMMIT)
 	git checkout $(OLD_COMMIT) $(MAIN_SRC)
@@ -553,11 +553,10 @@ unwatch: ## Cancel Watching
 # You may override the `GH_REPO_FILE` to  any path where you save your own
 # personal makefile
 #
-GH_REPO_FILE ?=\
- https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile
+GH_REPO_FILE ?= https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile
 update: ## Update the makefile from the repository
 	$(ECHO) "Getting makefile from $(GH_REPO_FILE)"
-	wget $(GH_REPO_FILE) -O Makefile
+	$(DEBUG)wget $(GH_REPO_FILE) -O Makefile
 
 # ====================================
 # Ctags generation for latex documents
