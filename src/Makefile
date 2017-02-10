@@ -621,7 +621,7 @@ help-%:
 
 ## <<HELP
 #
-# v1.3.5
+# v1.3.6
 # https://github.com/alejandrogallo/latex-makefile
 # Copyright © 2017 Alejandro Gallo GPLv3
 #

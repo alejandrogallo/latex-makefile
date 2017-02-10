@@ -97,8 +97,6 @@ FMT             ?= pdf
 BIBTEX_FILE     ?= $(wildcard *.bib)
 # Folder to keep makefile dependencies
 DEPS_DIR        ?= .deps
-# Folder to build the project
-BUILD_DIR       ?= .
 # If pdf should be previewed after building
 VIEW_PDF        ?= 1
 # General dependencies for BUILD_DOCUMENT
@@ -115,6 +113,13 @@ WITH_PYTHONTEX  ?=
 QUIET           ?= 0
 # Source directory
 PREFIX          ?= $(PWD)
+# Folder to build the project
+BUILD_DIR       ?= .
+# Build dir flag for latex
+# If BUILD_DIR = . then BUILD_DIR_FLAG = is not defined
+# else BUILD_DIR = -output-directory $(BUILD_DIR)
+BUILD_DIR_FLAG  ?= $(if \
+                 $(filter-out .,$(strip $(BUILD_DIR))),-output-directory $(BUILD_DIR))
 # Distribution directory
 DIST_DIR        ?= $(PREFIX)/dist
 # Tex libraries directory
@@ -183,6 +188,7 @@ $(INCLUDES) \
 $(PACKAGES_FILES_BUILD) \
 $(FIGURES) \
 $(if $(call hasToc,$(MAIN_SRC)),$(TOC_FILE),) \
+$(AUX_FILE) \
 $(if $(wildcard $(BIBTEX_FILE)),$(BIBITEM_FILE)) \
 $(if $(WITH_PYTHONTEX),$(PYTHONTEX_FILE)) \
 
@@ -216,8 +222,9 @@ $(BUILD_DOCUMENT): $(DEPENDENCIES)
 
 
 $(BUILD_DIR)/%: $(PACKAGES_DIR)/%
+	$(ECHO) Copying TeX libraries
 	$(DEBUG)mkdir -p $(BUILD_DIR)
-	-cp $^ $@
+	$(DEBUG)cp $^ $@
 
 # =================
 # Force compilation
@@ -227,8 +234,7 @@ $(BUILD_DIR)/%: $(PACKAGES_DIR)/%
 # sometimes to force compilation this target comes in handy.
 #
 force: ## Force creation of BUILD_DOCUMENT
-	-rm $(BUILD_DOCUMENT)
-	$(MAKE) $(BUILD_DOCUMENT)
+	$(DEBUG)$(MAKE) -W $(MAIN_SRC) $(BUILD_DOCUMENT)
 
 # =======================
 # Bibliography generation
@@ -240,10 +246,10 @@ force: ## Force creation of BUILD_DOCUMENT
 #
 $(BIBITEM_FILE): $(AUX_FILE) $(BIBTEX_FILE)
 	$(ECHO) "Compiling the bibliography"
-	-cp $^ $(BUILD_DIR)/
-	cd $(BUILD_DIR); $(BIBTEX) $(patsubst %.tex,%,$(MAIN_SRC)) $(FD_OUTPUT)
+	-$(DEBUG)test $(BUILD_DIR) = . || cp $^ $(BUILD_DIR)/
+	$(DEBUG)cd $(BUILD_DIR); $(BIBTEX) $(patsubst %.tex,%,$(MAIN_SRC)) $(FD_OUTPUT)
 	$(ECHO) Compiling again $(BUILD_DOCUMENT) to update refs
-	$(MAKE) force
+	$(DEBUG)$(MAKE) force
 
 #FIXME: find a way of not having to compile the main document again
 %.pytxcode: %.tex
@@ -304,14 +310,13 @@ $(FIGS_SUFFIXES): %.py
 	$(ECHO) Compiling $<
 	$(DEBUG)cd $(dir $< ) && $(PY) $(notdir $< ) $(FD_OUTPUT)
 
-$(AUX_FILE): $(PACKAGES_FILES_BUILD)
-$(FIGS_SUFFIXES) $(BUILD_DIR)/%.aux: %.tex
-	$(ECHO) Compiling $*
+$(FIGS_SUFFIXES): %.tex
+	$(ECHO) Compiling $< into $@
 	$(DEBUG)mkdir -p $(dir $<)/$(BUILD_DIR)
 	$(DEBUG)cd $(dir $<) && $(PDFLATEX) \
-		-output-directory $(BUILD_DIR) $(notdir $*.tex ) $(FD_OUTPUT)
+		$(BUILD_DIR_FLAG) $(notdir $*.tex ) $(FD_OUTPUT)
 ifneq ($(strip $(BUILD_DIR)),.)
-	-test ! "$@ = *.aux" || cp \
+	-$(DEBUG)test ! "$@ = *.aux" || cp \
 		$(PWD)/$(dir $<)/$(BUILD_DIR)/$(notdir $@) $(PWD)/$(dir $<)/$(notdir $@)
 endif
 
@@ -319,7 +324,7 @@ $(TOC_FILE): $(TOC_DEP)
 	$(ECHO) Creating $(TOC_FILE)
 	$(DEBUG)mkdir -p $(BUILD_DIR)
 	$(DEBUG)cd $(dir $(MAIN_SRC) ) && $(PDFLATEX) \
-		-output-directory $(BUILD_DIR) $(notdir $(MAIN_SRC) ) $(FD_OUTPUT)
+		$(BUILD_DIR_FLAG) $(notdir $(MAIN_SRC) ) $(FD_OUTPUT)
 
 $(TOC_DEP): $(MAIN_SRC) $(INCLUDES_DEP)
 	$(ECHO) Parsing the toc entries
@@ -616,7 +621,7 @@ help-%:
 
 ## <<HELP
 #
-# v1.3.5
+# v1.3.6
 # https://github.com/alejandrogallo/latex-makefile
 # Copyright © 2017 Alejandro Gallo GPLv3
 #
