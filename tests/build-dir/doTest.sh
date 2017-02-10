@@ -13,7 +13,7 @@ echo "${TOC_FILE}"
 echo "${TOC_DEP}"
 
 
-make --no-print-directory QUIET=1 VIEW_PDF=
+make --no-print-directory QUIET=1 VIEW=
 
 main=$(basename ${MAIN_SRC} .tex)
 

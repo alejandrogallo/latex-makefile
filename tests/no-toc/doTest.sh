@@ -11,7 +11,7 @@ eval $(make --no-print-directory print-TOC_DEP)
 echo "${TOC_FILE}"
 echo "${TOC_DEP}"
 
-make --no-print-directory QUIET=1 VIEW_PDF=
+make --no-print-directory QUIET=1 VIEW=
 
 if [[ -f "${TOC_DEP}" ]]; then
   TEST_RESULT=1
