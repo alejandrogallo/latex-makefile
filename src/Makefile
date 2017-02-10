@@ -503,20 +503,20 @@ dist: $(BUILD_DOCUMENT) ## Create a dist folder with the bare minimum to compile
 		} || echo "No bibfiles"
 	$(ARROW) "Creating folder for dependencies"
 	$(DEBUG)echo $(DEPENDENCIES)\
-	 | $(XARGS) -n1 dirname\
-	 | $(XARGS) -n1 -I FF mkdir -p $(DIST_DIR)/FF
+		| $(XARGS) -n1 dirname\
+		| $(XARGS) -n1 -I FF mkdir -p $(DIST_DIR)/FF
 	$(ARROW) "Copying dependencies"
 	$(DEBUG)echo $(DEPENDENCIES)\
-	 | $(TR) " " "\n" \
-	 | $(XARGS) -n1 -I FF cp FF $(DIST_DIR)/FF
+		| $(TR) " " "\n" \
+		| $(XARGS) -n1 -I FF cp FF $(DIST_DIR)/FF
 	$(ARROW) "Creating folder for latex libraries"
-	$(DEBUG)echo $(PACKAGES_FILES)\
-	 | $(XARGS) -n1 dirname\
-	 | $(XARGS) -n1 -I FF mkdir -p $(DIST_DIR)/FF
+	$(DEBUG)test -n "$(PACKAGES_FILES)" && echo $(PACKAGES_FILES)\
+		| $(XARGS) -n1 dirname\
+		| $(XARGS) -n1 -I FF mkdir -p $(DIST_DIR)/FF
 	$(ARROW) "Copying latex libraries"
-	$(DEBUG)echo $(PACKAGES_FILES)\
-	 | $(TR) " " "\n" \
-	 | $(XARGS) -n1 -I FF cp FF $(DIST_DIR)/FF
+	$(DEBUG)test -n "$(PACKAGES_FILES)" && echo $(PACKAGES_FILES)\
+		| $(TR) " " "\n" \
+		| $(XARGS) -n1 -I FF cp FF $(DIST_DIR)/FF
 
 DIFF ?=HEAD HEAD~1
 NEW_COMMIT = $(word 1,$(DIFF))
