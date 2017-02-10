@@ -24,28 +24,38 @@ endif
 # PARAMETERS, OVERRIDE THESE
 ############################
 
-#Shell utilities
-SH              ?= bash
-PY              ?= python
-GREP            ?= grep
-SED             ?= $(if $(OSX),gsed,sed)
-AWK             ?= $(if $(OSX),gawk,awk)
-CTAGS           ?= ctags
-READLINK        ?= $(if $(OSX),greadlink,readlink)
-XARGS           ?= xargs
-TR              ?= tr
-GIT             ?= git
-WHICH           ?= which
-WITH_COLOR      ?= 1
-# If the ECHO messages should be also muted
-QQUIET          ?=
+                                                        # Shell utilities
+LATEX      ?= pdflatex
+LATEXDIFF  ?= latexdiff                                 # For creating differences
+TEX_LINTER ?= chktex                                    # For checking tex syntax
+PDFLATEX   ?= pdflatex
+ASYMPTOTE  ?= asy                                       # For asymptote figures
+GNUPLOT    ?= gnuplot                                   # Gnuplot interpreter
+PANDOC     ?= pandoc                                    # For converting document formats
+BIBTEX     ?= bibtex
+SH         ?= bash                                      # Shell used
+PY         ?= python                                    # Python interpreter
+PYTHONTEX  ?= pythontex
+GREP       ?= grep                                      # Grep program version
+SED        ?= $(if $(OSX),gsed,sed)                     # sed program version
+AWK        ?= $(if $(OSX),gawk,awk)
+CTAGS      ?= ctags                                     # For creating tags
+READLINK   ?= $(if $(OSX),greadlink,readlink)           # To get complete paths
+XARGS      ?= xargs
+TR         ?= tr
+GIT        ?= git
+WHICH      ?= which
+TPUT       ?= $(shell $(WHICH) tput 2> /dev/null)       # For coloring
+WITH_COLOR ?= 1                                         # If messages should have color
+QQUIET     ?=                                           # If the main messages should be also muted
 
 ifndef QQUIET
 
-ifeq ($(WITH_COLOR),1)
-ECHO            ?= @echo -e "\033[0;35m===>\033[0m"
+ifeq ($(strip $(WITH_COLOR)),1)
+COLOR_B         ?= $(if $(TPUT),$(shell $(TPUT) setaf 5),"\033[0;35m")
+ECHO            ?= @echo "$(COLOR_B)===>\033[0m"
 else
-ECHO            ?= @echo -e "===>"
+ECHO            ?= @echo "===>"
 endif #WITH_COLOR
 
 else
@@ -62,11 +72,28 @@ discoverMain = $(shell \
 hasToc = $(shell\
              $(GREP) '\\tableofcontents' $(1))
 
-MAIN_SRC        ?= $(call discoverMain) # Discover automatically
-BIBTEX_FILE     ?= $(wildcard *.bib)
-DEPS_DIR        ?= deps
-BUILD_DIR       ?= .
-VIEW_PDF        ?= 1
+MAIN_SRC        ?= $(call discoverMain)    # Man texfile in the current directory
+FMT             ?= pdf                     # Format to build to
+BIBTEX_FILE     ?= $(wildcard *.bib)       # Bibtex files in the current directory
+DEPS_DIR        ?= deps                    # Folder to keep makefile dependencies
+BUILD_DIR       ?= .                       # Folder to build the project
+VIEW_PDF        ?= 1                       # If pdf should be previewed after building
+DEPENDENCIES    ?=                         # General dependencies for BUILD_DOCUMENT
+CLEAN_FILES     ?=                         # File to be cleaned
+FIGURES         ?=                         # Figures included in all texfiles
+INCLUDES        ?=                         # Texfiles included in the main tex file
+WITH_PYTHONTEX  ?=                         # If pythontex is being used
+QUIET           ?= 0                       # If secondary programs output is shown
+PREFIX          ?= $(PWD)                  # Source directory
+DIST_DIR        ?= $(PREFIX)/dist          # Distribution directory
+PACKAGES_DIR    ?= libtex                  # Tex libraries directory
+PACKAGES_FILES  ?= $(wildcard \
+$(PACKAGES_DIR)/*.sty \
+$(PACKAGES_DIR)/*.rtx \
+$(PACKAGES_DIR)/*.cls \
+$(PACKAGES_DIR)/*.bst \
+$(PACKAGES_DIR)/*.tex \
+)                                          # Which files are tex libraries
 PDF_VIEWER      ?= $(or \
 $(shell $(WHICH) zathura 2> /dev/null),\
 $(shell $(WHICH) mupdf 2> /dev/null),\
@@ -75,38 +102,12 @@ $(shell $(WHICH) evince 2> /dev/null),\
 $(shell $(WHICH) okular 2> /dev/null),\
 $(shell $(WHICH) xdg-open 2> /dev/null),\
 $(shell $(WHICH) open 2> /dev/null),\
-)
-LATEX           ?= pdflatex
-LATEXDIFF       ?= latexdiff
-TEX_LINTER      ?= chktex
-PDFLATEX        ?= pdflatex
-ASYMPTOTE       ?= asy
-GNUPLOT         ?= gnuplot
-PANDOC          ?= pandoc
-BIBTEX          ?= bibtex
-DEPENDENCIES    ?=
-FIGURES         ?=
-# sources included through \include
-INCLUDES        ?=
-WITH_PYTHONTEX  ?= # Do you use pythontex?
-PYTHONTEX       ?= pythontex # if 1 run commands quietly
-QUIET           ?= 0
-PREFIX          ?= $(PWD)
-DIST_DIR        ?= $(PREFIX)/dist
-PACKAGES_DIR    ?= libtex
-PACKAGES_FILES  ?= $(wildcard \
-$(PACKAGES_DIR)/*.sty \
-$(PACKAGES_DIR)/*.rtx \
-$(PACKAGES_DIR)/*.cls \
-$(PACKAGES_DIR)/*.bst \
-$(PACKAGES_DIR)/*.tex \
-)
-CLEAN_FILES     ?=
+)                                          # Recognise pdf viewer automagically
 
 .DEFAULT_GOAL   := all
 
 
-ifneq ($(QUIET),0)
+ifneq ($(strip $(QUIET)),0)
 	FD_OUTPUT = 2>&1 > /dev/null
 else
 	FD_OUTPUT =
@@ -114,20 +115,16 @@ endif
 
 ifneq ($(strip $(MAIN_SRC)),) # Do this only if MAIN_SRC is defined
 
-PDF_DOCUMENT         = $(shell $(READLINK) -f $(patsubst %.tex,%.pdf,$(MAIN_SRC)))
-DVI_DOCUMENT         = $(shell $(READLINK) -f $(patsubst %.tex,%.dvi,$(MAIN_SRC)))
-MAN_DOCUMENT         = $(patsubst %.tex,%.1,$(MAIN_SRC))
-HTML_DOCUMENT        = $(patsubst %.tex,%.html,$(MAIN_SRC))
-TOC_FILE             = $(BUILD_DIR)/$(patsubst %.tex,%.toc,$(MAIN_SRC))
+BUILD_DOCUMENT       = $(patsubst %.tex,%.$(FMT),$(MAIN_SRC))
+TOC_FILE             = $(patsubst %.tex,$(BUILD_DIR)/%.toc,$(MAIN_SRC))
 BIBITEM_FILE         = $(patsubst %.tex,$(BUILD_DIR)/%.bbl,$(MAIN_SRC))
 AUX_FILE             = $(patsubst %.tex,$(BUILD_DIR)/%.aux,$(MAIN_SRC))
-PYTHONTEX_FILE       = $(patsubst %.tex,%.pytxcode,$(MAIN_SRC))
+PYTHONTEX_FILE       = $(patsubst %.tex,$(BUILD_DIR)/%.pytxcode,$(MAIN_SRC))
 PDFPC_FILE           = $(shell $(READLINK) -f $(patsubst %.tex,%.pdfpc,$(MAIN_SRC)))
 PACKAGES_FILES_BUILD = $(patsubst $(PACKAGES_DIR)/%,$(BUILD_DIR)/%,$(PACKAGES_FILES))
 FIGS_SUFFIXES        = %.pdf %.eps %.png %.jpg %.jpeg %.gif %.dvi %.bmp %.svg %.ps
 PURGE_SUFFIXES       = %.aux %.bbl %.blg %.fdb_latexmk %.fls %.log %.out \
                        %.ilg %.toc %.nav %.snm
-BUILD_DOCUMENT       = $(PDF_DOCUMENT)
 
 # These files  are to keep  track of the  dependencies for latex  or pdf
 # includes, table of contents generation or figure recognition
@@ -170,6 +167,12 @@ $(wildcard $(DIST_DIR)) \
 
 .PHONY: view-pdf open-pdf $(PDF_VIEWER) todo help test force purge dist releases
 
+pdf: FMT=pdf ## Create pdf file
+pdf: all
+html: FMT=html ## Create html file
+revealjs: FMT=html  ## Create a revealjs presentation
+man: FMT=1 ## Create man file
+
 all: $(BUILD_DOCUMENT) $(if $(VIEW_PDF),view-pdf) ## (Default) Create BUILD_DOCUMENT
 
 
@@ -178,7 +181,7 @@ $(BUILD_DOCUMENT): $(DEPENDENCIES)
 
 $(BUILD_DIR)/%: $(PACKAGES_DIR)/%
 	@mkdir -p $(BUILD_DIR)
-	cp $^ $@
+	-cp $^ $@
 
 # =================
 # Force compilation
@@ -271,7 +274,7 @@ $(FIGS_SUFFIXES) $(BUILD_DIR)/%.aux: %.tex
 	@mkdir -p $(BUILD_DIR)
 	$(PDFLATEX) \
 		-output-directory $(BUILD_DIR) $(notdir $*.tex ) $(FD_OUTPUT)
-ifneq ($(BUILD_DIR),.)
+ifneq ($(strip $(BUILD_DIR)),.)
 	-[[  $@ = *.aux ]] || cp $(PWD)/$(BUILD_DIR)/$(notdir $@) $(PWD)/$(notdir $@)
 endif
 
@@ -287,7 +290,7 @@ $(TOC_DEP): $(MAIN_SRC) $(INCLUDES_DEP)
 	@$(GREP) -E '\\(section|subsection|subsubsection|chapter|part|subsubsubsection).' \
 	$(MAIN_SRC) $(INCLUDES)  \
 	| $(SED) 's/.*{\(.*\)}.*/\1/' > $@.control
-	@if ! diff $@ $@.control > /dev/null ; then mv $@.control $@; fi
+	@if ! diff $@ $@.control 2>&1 > /dev/null ; then mv $@.control $@; fi
 
 $(INCLUDES_DEP): $(MAIN_SRC)
 	$(ECHO) Parsing the includes dependencies
@@ -315,7 +318,7 @@ $(FIGS_DEP): $(MAIN_SRC) $(INCLUDES_DEP)
 clean: ## Remove build and temporary files
 	$(ECHO) Cleaning up...
 	-rm -rf $(CLEAN_FILES)
-ifneq ($(BUILD_DIR),.)
+ifneq ($(strip $(BUILD_DIR)),.)
 	-@rm -r $(BUILD_DIR)
 endif
 
@@ -332,11 +335,11 @@ endif
 # the make variable PANDOC.
 #
 REVEALJS_SRC ?= https://github.com/hakimel/reveal.js/
-revealjs: $(MAIN_SRC) ## Create a revealjs presentation
+revealjs: $(MAIN_SRC)
 	$(ECHO) Creating revealjs presentation...
 	$(ECHO) Gettin revealjs from $(REVEALJS_SRC)
 	$(GIT) clone --depth=1 $(REVEALJS_SRC) && rm -rf reveal.js/.git
-	$(PANDOC) --mathjax -s -f latex -t revealjs $(MAIN_SRC) -o $(HTML_DOCUMENT)
+	$(PANDOC) --mathjax -s -f latex -t revealjs $(MAIN_SRC) -o $(BUILD_DOCUMENT)
 
 # =================
 # Unix man document
@@ -344,9 +347,9 @@ revealjs: $(MAIN_SRC) ## Create a revealjs presentation
 #
 # This creates a man page using `pandoc`.
 #
-man: $(MAIN_SRC) ## Create a man document
+man: $(MAIN_SRC)
 	$(ECHO) Creating man pages...
-	$(PANDOC) -s -f latex -t man $(MAIN_SRC) -o $(MAN_DOCUMENT)
+	$(PANDOC) -s -f latex -t man $(MAIN_SRC) -o $(BUILD_DOCUMENT)
 
 # =============
 # HTML document
@@ -354,9 +357,9 @@ man: $(MAIN_SRC) ## Create a man document
 #
 # This creates an html page using `pandoc`.
 #
-html: $(MAIN_SRC) ## Create an html5 document
+html: $(MAIN_SRC)
 	$(ECHO) Compiling html document...
-	$(PANDOC) --mathjax -s -f latex -t html5 $(MAIN_SRC) -o $(HTML_DOCUMENT)
+	$(PANDOC) --mathjax -s -f latex -t html5 $(MAIN_SRC) -o $(BUILD_DOCUMENT)
 
 todo: $(INCLUDES_DEP) ## Print the todos from the main document
 	$(ECHO) Parsing \\TODO{} in $(MAIN_SRC)
@@ -429,6 +432,8 @@ dist: $(BUILD_DOCUMENT) ## Create a dist folder with the bare minimum to compile
 	@cp Makefile $(DIST_DIR)/
 	$(ECHO) "Copying the target document"
 	@cp $(BUILD_DOCUMENT) $(DIST_DIR)/
+	$(ECHO) "Copying .bib files"
+	@cp $(BIBTEX_FILE) $(DIST_DIR)/
 	$(ECHO) "Creating folder for dependencies"
 	@echo $(DEPENDENCIES)\
 	 | $(XARGS) -n1 dirname\
@@ -577,4 +582,4 @@ help-%:
 #
 ## HELP
 
-# vim: nospell fdm=marker
+# vim: nospell fdm=marker cc=90
