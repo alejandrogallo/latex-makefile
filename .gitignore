@@ -4,6 +4,8 @@ tests/**/Makefile
 .deps
 deps
 build
+diff.tex
+.vim-run
 
 ## Core latex/pdflatex auxiliary files:
 *.aux

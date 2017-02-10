@@ -18,7 +18,7 @@ all: $(MAIN_BIN) doc
 
 $(MAIN_BIN): $(SOURCES)
 	@mkdir -p $(shell dirname $@)
-	cp $< $@
+	bash tools/compile_makefile.sh src/Makefile > dist/Makefile
 
 doc: $(README) $(MAIN_BIN)
 $(README): $(SOURCES) README.md.in
@@ -35,3 +35,5 @@ clean:
 
 test: $(MAIN_BIN)
 	make -C tests/
+
+# vim: cc=80
