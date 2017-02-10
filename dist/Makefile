@@ -69,7 +69,7 @@ ifndef QQUIET
 
 ifeq ($(strip $(WITH_COLOR)),1)
 COLOR_B         ?= $(if $(TPUT),$(shell $(TPUT) setaf 5),"\033[0;35m")
-COLOR_E         ?= $(if $(TPUT),$(shell $(TPUT) setaf 0),"\033[0m")
+COLOR_E         ?= $(if $(TPUT),$(shell $(TPUT) sgr0),"\033[0m")
 ECHO            ?= @echo "$(COLOR_B)===>$(COLOR_E)"
 else
 ECHO            ?= @echo "===>"
