@@ -1,5 +1,5 @@
 cp ../../dist/Makefile .
-set -x
+#set -x
 
 TEST_DESCRIPTION="Check that latexdiff works with git commits"
 
