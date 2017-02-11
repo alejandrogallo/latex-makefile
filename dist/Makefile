@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.4.1-3-gea02368
-MAKEFILE_DATE = 10-02-2017 23:04
+MAKEFILE_VERSION = v1.5.0
+MAKEFILE_DATE = 11-02-2017 02:02
 
 ## <<HELP
 #
@@ -53,6 +53,7 @@ GREP       ?= grep
 # sed program version
 SED        ?= $(if $(OSX),gsed,sed)
 AWK        ?= $(if $(OSX),gawk,awk)
+SPELLER    ?= aspell
 # For creating tags
 CTAGS      ?= ctags
 # To get complete paths
@@ -68,6 +69,9 @@ WITH_COLOR ?= 1
 # If the main messages should be also muted
 QQUIET     ?=
 DEBUG      ?= @
+CHECK_SPELL?=
+SPELL_LANG  ?= en
+SPELL_DIR  ?= .spell
 
 ifndef QQUIET
 
@@ -205,6 +209,7 @@ $(FIGURES) \
 $(if $(call hasToc,$(MAIN_SRC)),$(TOC_FILE),$(AUX_FILE)) \
 $(if $(wildcard $(BIBTEX_FILE)),$(BIBITEM_FILE)) \
 $(if $(WITH_PYTHONTEX),$(PYTHONTEX_FILE)) \
+$(if $(CHECK_SPELL),spelling) \
 
 CLEAN_FILES += \
 $(wildcard $(PACKAGES_FILES_BUILD)) \
@@ -559,6 +564,25 @@ diff: ## Create a latexdiff using git versions
 	rm $(DIFF_SRC_NAME) $(patsubst %.tex,%.pdf,$(DIFF_SRC_NAME))
 	git checkout HEAD $(MAIN_SRC)
 
+# ==============
+# Check spelling
+# ==============
+#
+# It checks the spelling of all the tex sources using the program in the
+# SPELLER variable. The default value of the language is english, you can
+# change it by setting in your `config.mk` file
+# ```make
+# SPELL_LANG = fr
+# ```
+# if you happen to write in french.
+#
+spelling: $(MAIN_SRC) $(INCLUDES) ## Check spelling of latex sources
+	$(ARROW) Checking the spelling in $(SPELL_LANG)
+	$(DEBUG)mkdir -p $(SPELL_DIR)
+	$(DEBUG)for file in $?; do \
+		$(SPELLER) --home-dir=$(SPELL_DIR) \
+		-l $(SPELL_LANG) -t -c $$file; \
+	done
 
 # ============
 # Check syntax
