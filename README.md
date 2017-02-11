@@ -9,6 +9,10 @@ Just drop the Makefile in your project directory and hit make.  The makefile
 should recognise the main document automatically by looking for a
 `\begin{document}` in the `tex` file of the current directory.
 
+The main idea of the makefile is not to modify it directly, but rather through
+a `make` configuration file `config.mk`. There you can set many important
+variables for the project, like the verbosity `QUIET=1` and many more.
+
 
 ## Features overview ##
 
@@ -141,6 +145,20 @@ The target creates a distribution folder located in the variable
 DIFF_BUILD_DIR. *Warning*: It only works for single document tex projects.
 ```bash 
 make diff
+```
+Check spelling
+==============
+
+It checks the spelling of all the tex sources using the program in the
+SPELLER variable. The default value of the language is english, you can
+change it by setting in your `config.mk` file
+```make
+SPELL_LANG = fr
+```
+if you happen to write in french.
+
+```bash 
+make spelling
 ```
 Check syntax
 ============
