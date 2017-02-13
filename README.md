@@ -90,6 +90,9 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `DIFF_BUILD_DIR`(`see`): 
   * `DIFF_SRC_NAME`(`diff.tex`): 
   * `GH_REPO_FILE`(`https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile`): 
+
+
+
 ## Targets ##
 ### Force compilation ###
 
