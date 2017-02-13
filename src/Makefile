@@ -126,9 +126,9 @@ QUIET           ?= 0
 PREFIX          ?= $(PWD)
 # Folder to build the project
 BUILD_DIR       ?= .
-# Build dir flag for latex
-# If BUILD_DIR = . then BUILD_DIR_FLAG = is not defined
-# else BUILD_DIR = -output-directory $(BUILD_DIR)
+# Build dir flag for latex.
+# If `BUILD_DIR = .` then BUILD_DIR_FLAG = is not defined,
+# else `BUILD_DIR = -output-directory $(BUILD_DIR)`
 BUILD_DIR_FLAG  ?= $(if \
                    $(filter-out \
                    .,$(strip $(BUILD_DIR))),-output-directory $(BUILD_DIR))
@@ -410,12 +410,12 @@ clean: ## Remove build and temporary files
 # This creates a revealjs presentation using the the pandoc program stored in
 # the make variable PANDOC.
 #
-REVEALJS_SRC ?= https://github.com/hakimel/reveal.js/
 revealjs: $(MAIN_SRC)
 	$(ARROW) Creating revealjs presentation...
 	$(ARROW) Gettin revealjs from $(REVEALJS_SRC)
 	$(GIT) clone --depth=1 $(REVEALJS_SRC) && rm -rf reveal.js/.git
 	$(PANDOC) --mathjax -s -f latex -t revealjs $(MAIN_SRC) -o $(BUILD_DOCUMENT)
+REVEALJS_SRC ?= https://github.com/hakimel/reveal.js/
 
 # =================
 # Unix man document
@@ -612,10 +612,10 @@ unwatch: ## Cancel Watching
 # You may override the `GH_REPO_FILE` to  any path where you save your own
 # personal makefile
 #
-GH_REPO_FILE ?= https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile
 update: ## Update the makefile from the repository
 	$(ARROW) "Getting makefile from $(GH_REPO_FILE)"
 	$(DEBUG)wget $(GH_REPO_FILE) -O Makefile
+GH_REPO_FILE ?= https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile
 
 # ====================================
 # Ctags generation for latex documents
