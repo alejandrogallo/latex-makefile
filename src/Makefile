@@ -202,6 +202,7 @@ endif #MAIN_SRC exists
 ######################################
 
 DEPENDENCIES += \
+$(BUILD_DIR) \
 $(MAIN_SRC) \
 $(INCLUDES) \
 $(PACKAGES_FILES_BUILD) \
@@ -244,6 +245,10 @@ $(BUILD_DOCUMENT): $(DEPENDENCIES)
 
 view-html: $(BUILD_DOCUMENT)
 	(firefox $(BUILD_DOCUMENT) &)&
+
+$(BUILD_DIR):
+	$(ARROW) Creating the $@ directory
+	$(DEBUG)mkdir -p $@ $(FD_OUTPUT)
 
 $(BUILD_DIR)/%: $(PACKAGES_DIR)/%
 	$(ARROW) Copying TeX libraries
