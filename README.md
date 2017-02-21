@@ -66,20 +66,20 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `ARROW`(`@echo "see`): 
   * `ARROW`(`@echo "===>"`): 
   * `ECHO`(`@echo`): 
-  * `MAIN_SRC`(`see`): Man texfile in the current directory
+  * `MAIN_SRC`(`see`): Main texfile in the current directory
   * `FMT`(`pdf`): Format to build to
   * `BIBTEX_FILE`(`see`): Bibtex files in the current directory
   * `DEPS_DIR`(`.deps`): Folder to keep makefile dependencies
-  * `VIEW`(`1`): If pdf should be previewed after building
+  * `VIEW`(`1`): If `pdf` should be previewed after building
   * `DEPENDENCIES`(`empty`): General dependencies for BUILD_DOCUMENT
   * `CLEAN_FILES`(`empty`): File to be cleaned
   * `FIGURES`(`empty`): Figures included in all texfiles
-  * `INCLUDES`(`empty`): Texfiles included in the main tex file
+  * `INCLUDES`(`see`): Texfiles included in the main tex file
   * `WITH_PYTHONTEX`(`empty`): If pythontex is being used
   * `QUIET`(`0`): If secondary programs output is shown
   * `PREFIX`(`see`): Source directory
   * `BUILD_DIR`(`.`): Folder to build the project
-  * `BUILD_DIR_FLAG`(`see`): Build dir flag for latex. If `BUILD_DIR = .` then BUILD_DIR_FLAG = is not defined, else `BUILD_DIR = -output-directory $(BUILD_DIR)`
+  * `BUILD_DIR_FLAG`(`see`): Build dir flag for latex. If `BUILD_DIR = .` then `BUILD_DIR_FLAG` is not defined, else `BUILD_DIR = -output-directory $(BUILD_DIR)`
   * `DIST_DIR`(`see`): Distribution directory
   * `PACKAGES_DIR`(`libtex`): Tex libraries directory
   * `PACKAGES_FILES`(`see`): Which files are tex libraries

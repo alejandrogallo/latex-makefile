@@ -97,10 +97,16 @@ discoverMain = $(shell \
                    | head -1 \
                    | $(AWK) -F ":" '{print $$1}')
 
+discoverIncludes = $(shell \
+                   $(GREP) -E '\\(include|input)[^gp]' $(1)  \
+                       | $(SED) 's/\.tex//' \
+                       | $(SED) 's/.*{\(.*\)}.*/\1.tex /' )
+
+
 hasToc = $(shell\
              $(GREP) '\\tableofcontents' $(1))
 
-# Man texfile in the current directory
+# Main texfile in the current directory
 MAIN_SRC        ?= $(call discoverMain)
 # Format to build to
 FMT             ?= pdf
@@ -108,7 +114,7 @@ FMT             ?= pdf
 BIBTEX_FILE     ?= $(wildcard *.bib)
 # Folder to keep makefile dependencies
 DEPS_DIR        ?= .deps
-# If pdf should be previewed after building
+# If `pdf` should be previewed after building
 VIEW            ?= 1
 # General dependencies for BUILD_DOCUMENT
 DEPENDENCIES    ?=
@@ -117,7 +123,7 @@ CLEAN_FILES     ?=
 # Figures included in all texfiles
 FIGURES         ?=
 # Texfiles included in the main tex file
-INCLUDES        ?=
+INCLUDES        ?= $(call discoverIncludes,$(MAIN_SRC))
 # If pythontex is being used
 WITH_PYTHONTEX  ?=
 # If secondary programs output is shown
@@ -127,7 +133,7 @@ PREFIX          ?= $(PWD)
 # Folder to build the project
 BUILD_DIR       ?= .
 # Build dir flag for latex.
-# If `BUILD_DIR = .` then BUILD_DIR_FLAG = is not defined,
+# If `BUILD_DIR = .` then `BUILD_DIR_FLAG` is not defined,
 # else `BUILD_DIR = -output-directory $(BUILD_DIR)`
 BUILD_DIR_FLAG  ?= $(if \
                    $(filter-out \
@@ -184,12 +190,10 @@ SUPPORTED_SUFFIXES   = %.pdf %.div %.ps %.eps %.1 %.html
 # includes, table of contents generation or figure recognition
 #
 TOC_DEP        = $(strip $(DEPS_DIR))/toc.d
-INCLUDES_DEP   = $(strip $(DEPS_DIR))/includes.d
 FIGS_DEP       = $(strip $(DEPS_DIR))/figs.d
 
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),help)
--include $(INCLUDES_DEP)
 -include $(FIGS_DEP)
 endif
 endif
@@ -237,7 +241,7 @@ revealjs: FMT=html  ## Create a revealjs presentation
 man: FMT=1 ## Create man file
 $(FMT): $(BUILD_DOCUMENT)
 
-deps: $(INCLUDES_DEP) $(FIGS_DEP) ## Parse dependencies for the main texfile
+deps: $(FIGS_DEP) ## Parse dependencies for the main texfile
 
 all: $(FMT) $(if $(VIEW),view-$(FMT)) ## (Default) Create BUILD_DOCUMENT
 
@@ -367,16 +371,6 @@ $(TOC_DEP): $(MAIN_SRC) $(INCLUDES_DEP)
 		$(MAIN_SRC) $(INCLUDES)  \
 		| $(SED) 's/.*{\(.*\)}.*/\1/' > $@.control
 	$(DEBUG)if ! diff $@ $@.control 2>&1 > /dev/null ; then mv $@.control $@; fi
-
-$(INCLUDES_DEP): $(MAIN_SRC)
-	$(ARROW) Parsing the includes dependencies
-	$(DEBUG)mkdir -p $(dir $@)
-	$(DEBUG)echo INCLUDES = \\ > $@
-#@ Include statements should not have a .tex extension
-#@ so we are forced to add it
-	$(DEBUG)$(GREP) -E '\\(include|input)[^gp]' $<  \
-	| $(SED) 's/\.tex//' \
-	| $(SED) 's/.*{\(.*\)}.*/\1.tex \\/' >> $@
 
 $(FIGS_DEP): $(MAIN_SRC) $(INCLUDES_DEP)
 	$(ARROW) Parsing the graphics dependencies
