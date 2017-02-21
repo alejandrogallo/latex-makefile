@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.5.1-2-g8cc8ae5
-MAKEFILE_DATE = 13-02-2017 15:36
+MAKEFILE_VERSION = v1.5.2
+MAKEFILE_DATE = 21-02-2017 02:00
 
 ## <<HELP
 #
@@ -375,6 +375,7 @@ $(INCLUDES_DEP): $(MAIN_SRC)
 #@ Include statements should not have a .tex extension
 #@ so we are forced to add it
 	$(DEBUG)$(GREP) -E '\\(include|input)[^gp]' $<  \
+	| $(SED) 's/\.tex//' \
 	| $(SED) 's/.*{\(.*\)}.*/\1.tex \\/' >> $@
 
 $(FIGS_DEP): $(MAIN_SRC) $(INCLUDES_DEP)
