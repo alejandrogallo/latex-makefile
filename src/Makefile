@@ -525,7 +525,10 @@ dist: $(BUILD_DOCUMENT) ## Create a dist folder with the bare minimum to compile
 	$(DEBUG)cp $(BUILD_DOCUMENT) $(DIST_DIR)/
 	$(ARROW) "Copying .bib files"
 	$(DEBUG)test -n "$(BIBTEX_FILES)" && {\
-		cp $(BIBTEX_FILES) $(DIST_DIR)/; \
+		for bibfile in $(BIBTEX_FILES); do \
+			mkdir -p $(DIST_DIR)/$$(dirname $$bibfile); \
+			cp -u $$bibfile $(DIST_DIR)/$$(dirname $$bibfile); \
+		done \
 		} || echo "No bibfiles"
 	$(ARROW) "Creating folder for dependencies"
 	$(DEBUG)echo $(DEPENDENCIES)\
@@ -534,7 +537,7 @@ dist: $(BUILD_DOCUMENT) ## Create a dist folder with the bare minimum to compile
 	$(ARROW) "Copying dependencies"
 	$(DEBUG)echo $(DEPENDENCIES)\
 		| $(TR) " " "\n" \
-		| $(XARGS) -n1 -I FF cp FF $(DIST_DIR)/FF
+		| $(XARGS) -n1 -I FF cp -r FF $(DIST_DIR)/FF
 	$(ARROW) "Creating folder for latex libraries"
 	$(DEBUG)test -n "$(PACKAGES_FILES)" && echo $(PACKAGES_FILES)\
 		| $(XARGS) -n1 dirname\
