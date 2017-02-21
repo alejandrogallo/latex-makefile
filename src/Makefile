@@ -50,6 +50,8 @@ PY         ?= python
 PYTHONTEX  ?= pythontex
 # Grep program version
 GREP       ?= grep
+# Find utility
+FIND       ?= find
 # sed program version
 SED        ?= $(if $(OSX),gsed,sed)
 AWK        ?= $(if $(OSX),gawk,awk)
@@ -102,6 +104,17 @@ discoverIncludes = $(shell \
                        | $(SED) 's/\.tex//' \
                        | $(SED) 's/.*{\(.*\)}.*/\1.tex /' )
 
+discoverBibtexFiles = $(shell \
+                   $(GREP) -E '\\bibliography\s*{' $(1)  \
+                       | $(SED) 's/.*\\bibliography//' \
+                       | $(SED) 's/\.bib//g' \
+                       | $(TR) "," "\n" \
+                       | $(TR) -d "{}" \
+                       | $(SED) 's/\s*$$/.bib /' \
+                       | sort | uniq )
+
+
+
 
 hasToc = $(shell\
              $(GREP) '\\tableofcontents' $(1))
@@ -110,8 +123,6 @@ hasToc = $(shell\
 MAIN_SRC        ?= $(call discoverMain)
 # Format to build to
 FMT             ?= pdf
-# Bibtex files in the current directory
-BIBTEX_FILE     ?= $(wildcard *.bib)
 # Folder to keep makefile dependencies
 DEPS_DIR        ?= .deps
 # If `pdf` should be previewed after building
@@ -124,6 +135,10 @@ CLEAN_FILES     ?=
 FIGURES         ?=
 # Texfiles included in the main tex file
 INCLUDES        ?= $(call discoverIncludes,$(MAIN_SRC))
+# All `texfiles` in the project
+TEXFILES        ?= $(MAIN_SRC) $(INCLUDES)
+# Bibtex files in the current directory
+BIBTEX_FILES     ?= $(call discoverBibtexFiles,$(TEXFILES))
 # If pythontex is being used
 WITH_PYTHONTEX  ?=
 # If secondary programs output is shown
@@ -175,7 +190,7 @@ ifneq ($(strip $(MAIN_SRC)),) # Do this only if MAIN_SRC is defined
 
 BUILD_DOCUMENT       = $(patsubst %.tex,%.$(FMT),$(MAIN_SRC))
 TOC_FILE             = $(patsubst %.tex,$(BUILD_DIR)/%.toc,$(MAIN_SRC))
-BIBITEM_FILE         = $(patsubst %.tex,$(BUILD_DIR)/%.bbl,$(MAIN_SRC))
+BIBITEM_FILES         = $(patsubst %.tex,$(BUILD_DIR)/%.bbl,$(MAIN_SRC))
 AUX_FILE             = $(patsubst %.tex,$(BUILD_DIR)/%.aux,$(MAIN_SRC))
 PYTHONTEX_FILE       = $(patsubst %.tex,$(BUILD_DIR)/%.pytxcode,$(MAIN_SRC))
 PDFPC_FILE           = $(patsubst %.tex,%.pdfpc,$(MAIN_SRC))
@@ -212,7 +227,7 @@ $(INCLUDES) \
 $(PACKAGES_FILES_BUILD) \
 $(FIGURES) \
 $(if $(call hasToc,$(MAIN_SRC)),$(TOC_FILE),$(AUX_FILE)) \
-$(if $(wildcard $(BIBTEX_FILE)),$(BIBITEM_FILE)) \
+$(if $(wildcard $(BIBTEX_FILES)),$(BIBITEM_FILES)) \
 $(if $(WITH_PYTHONTEX),$(PYTHONTEX_FILE)) \
 $(if $(CHECK_SPELL),spelling) \
 
@@ -233,7 +248,7 @@ $(if $(filter-out .,$(strip $(BUILD_DIR))),$(wildcard $(BUILD_DIR))) \
 
 
 
-.PHONY: view-pdf open-pdf $(PDF_VIEWER) todo help test force purge dist releases
+.PHONY: view-pdf open-pdf $(PDF_VIEWER) todo help test force dist releases
 
 pdf: FMT=pdf ## Create pdf file
 html: FMT=html ## Create html file
@@ -277,9 +292,14 @@ force: ## Force creation of BUILD_DOCUMENT
 # file, this  will also be  targeted, bit  the '-' before  the `$(BIBTEX)`
 # ensures that the whole building doesn't fail because of it
 #
-$(BIBITEM_FILE): $(BIBTEX_FILE)
+$(BIBITEM_FILES): $(BIBTEX_FILES)
 	$(ARROW) "Compiling the bibliography"
-	-$(DEBUG)test $(BUILD_DIR) = . || cp $^ $(BUILD_DIR)/
+	-$(DEBUG)test $(BUILD_DIR) = . || { \
+		for bibfile in $(BIBTEX_FILES); do \
+			mkdir -p $(BUILD_DIR)/$$(dirname $$bibfile); \
+			cp -u $$bibfile $(BUILD_DIR)/$$(dirname $$bibfile); \
+		done \
+		}
 	$(DEBUG)cd $(BUILD_DIR); $(BIBTEX) $(patsubst %.tex,%,$(MAIN_SRC)) $(FD_OUTPUT)
 	$(ARROW) Compiling again $(BUILD_DOCUMENT) to update refs
 	$(DEBUG)$(MAKE) --no-print-directory force
@@ -504,8 +524,8 @@ dist: $(BUILD_DOCUMENT) ## Create a dist folder with the bare minimum to compile
 	$(ARROW) "Copying the target document"
 	$(DEBUG)cp $(BUILD_DOCUMENT) $(DIST_DIR)/
 	$(ARROW) "Copying .bib files"
-	$(DEBUG)test -n "$(BIBTEX_FILE)" && {\
-		cp $(BIBTEX_FILE) $(DIST_DIR)/; \
+	$(DEBUG)test -n "$(BIBTEX_FILES)" && {\
+		cp $(BIBTEX_FILES) $(DIST_DIR)/; \
 		} || echo "No bibfiles"
 	$(ARROW) "Creating folder for dependencies"
 	$(DEBUG)echo $(DEPENDENCIES)\
@@ -595,7 +615,7 @@ lint: $(INCLUDES_DEP) ## Check syntax of latex sources (TEX_LINTER)
 	$(TEX_LINTER) $(MAIN_SRC) $(INCLUDES)
 
 watch: ## Build if changes
-	(echo $(MAIN_SRC) | entr make )&
+	(echo $(TEXFILES) $(BIBTEX_FILES) | $(TR) " " "\n" | entr make &)&
 unwatch: ## Cancel Watching
 	killall entr
 
@@ -621,13 +641,6 @@ GH_REPO_FILE ?= https://raw.githubusercontent.com/alejandrogallo/latex-makefile/
 #
 tags: $(MAIN_SRC) $(INCLUDES_DEP) ## Create TeX exhuberant ctags
 	$(CTAGS) --language-force=tex -R *
-
-purge: clean ## Remove recursively with suffixes in PURGE_SUFFIXES
-	$(ARROW) Purging files across directories... be careful
-	$(DEBUG)echo "$(PURGE_SUFFIXES)" \
-	| $(TR) "%" "*" \
-	| $(XARGS) -n1  $(FIND) . -name \
-	| while read i; do echo $$i ; rm $$i; done
 
 # This is used for printing defined variables from Some other scripts. For
 # instance if you want to know the value of the PDF_VIEWER defined in the

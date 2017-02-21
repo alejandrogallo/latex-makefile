@@ -45,6 +45,7 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `PY`(`python`): Python interpreter
   * `PYTHONTEX`(`pythontex`): 
   * `GREP`(`grep`): Grep program version
+  * `FIND`(`find`): Find utility
   * `SED`(`see`): sed program version
   * `AWK`(`see`): 
   * `SPELLER`(`aspell`): 
@@ -68,13 +69,14 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `ECHO`(`@echo`): 
   * `MAIN_SRC`(`see`): Main texfile in the current directory
   * `FMT`(`pdf`): Format to build to
-  * `BIBTEX_FILE`(`see`): Bibtex files in the current directory
   * `DEPS_DIR`(`.deps`): Folder to keep makefile dependencies
   * `VIEW`(`1`): If `pdf` should be previewed after building
   * `DEPENDENCIES`(`empty`): General dependencies for BUILD_DOCUMENT
   * `CLEAN_FILES`(`empty`): File to be cleaned
   * `FIGURES`(`empty`): Figures included in all texfiles
   * `INCLUDES`(`see`): Texfiles included in the main tex file
+  * `TEXFILES`(`see`): All `texfiles` in the project
+  * `BIBTEX_FILES`(`see`): Bibtex files in the current directory
   * `WITH_PYTHONTEX`(`empty`): If pythontex is being used
   * `QUIET`(`0`): If secondary programs output is shown
   * `PREFIX`(`see`): Source directory
@@ -111,7 +113,7 @@ file, this  will also be  targeted, bit  the '-' before  the `$(BIBTEX)`
 ensures that the whole building doesn't fail because of it
 
 ```bash 
-make $(BIBITEM_FILE)
+make $(BIBITEM_FILES)
 ```
 ### View document ###
 
