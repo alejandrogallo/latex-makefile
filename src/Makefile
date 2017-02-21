@@ -375,6 +375,7 @@ $(INCLUDES_DEP): $(MAIN_SRC)
 #@ Include statements should not have a .tex extension
 #@ so we are forced to add it
 	$(DEBUG)$(GREP) -E '\\(include|input)[^gp]' $<  \
+	| $(SED) 's/\.tex//' \
 	| $(SED) 's/.*{\(.*\)}.*/\1.tex \\/' >> $@
 
 $(FIGS_DEP): $(MAIN_SRC) $(INCLUDES_DEP)
