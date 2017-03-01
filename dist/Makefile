@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.5.4-4-g64da91f
-MAKEFILE_DATE = 01-03-2017 11:31
+MAKEFILE_VERSION = v1.5.3-10-gbf9e436
+MAKEFILE_DATE = 01-03-2017 20:50
 
 ## <<HELP
 #
@@ -396,20 +396,20 @@ $(TOC_FILE): $(TOC_DEP)
 	$(DEBUG)cd $(dir $(MAIN_SRC) ) && $(PDFLATEX) \
 		$(BUILD_DIR_FLAG) $(notdir $(MAIN_SRC) ) $(FD_OUTPUT)
 
-$(TOC_DEP): $(MAIN_SRC) $(INCLUDES_DEP)
+$(TOC_DEP): $(TEXFILES)
 	$(ARROW) Parsing the toc entries
 	$(DEBUG)mkdir -p $(dir $@)
 	$(DEBUG)$(GREP) -E \
 		'\\(section|subsection|subsubsection|chapter|part|subsubsubsection).' \
-		$(MAIN_SRC) $(INCLUDES)  \
+		$(TEXFILES)  \
 		| $(SED) 's/.*{\(.*\)}.*/\1/' > $@.control
 	$(DEBUG)if ! diff $@ $@.control 2>&1 > /dev/null ; then mv $@.control $@; fi
 
-$(FIGS_DEP): $(MAIN_SRC) $(INCLUDES_DEP)
+$(FIGS_DEP): $(TEXFILES)
 	$(ARROW) Parsing the graphics dependencies
 	$(DEBUG)mkdir -p $(dir $@)
 	$(DEBUG)echo FIGURES = \\ > $@
-	$(DEBUG)$(GREP) -E '\\include(graphic|pdf).' $(MAIN_SRC) $(INCLUDES)  \
+	$(DEBUG)$(GREP) -E '\\include(graphic|pdf).' $(TEXFILES)  \
 	| $(GREP) -v "%" \
 	| $(SED) 's/.*{\(.*\)}.*/\1 \\/' >> $@
 
@@ -465,7 +465,7 @@ html: $(MAIN_SRC)
 	$(ARROW) Compiling html document...
 	$(PANDOC) --mathjax -s -f latex -t html5 $(MAIN_SRC) -o $(BUILD_DOCUMENT)
 
-todo: $(INCLUDES_DEP) ## Print the todos from the main document
+todo: $(TEXFILES) ## Print the todos from the main document
 	$(ARROW) Parsing \\TODO{} in $(MAIN_SRC)
 	$(DEBUG)$(SED) -n "/\\TODO{/,/}/\
 	{\
@@ -473,7 +473,7 @@ todo: $(INCLUDES_DEP) ## Print the todos from the main document
 		s/[{]//g; \
 		s/[}]/===/g; \
 		p\
-	}" $(MAIN_SRC) $(INCLUDES)
+	}" $(TEXFILES)
 
 # ===========================
 # Presenter console generator
@@ -485,7 +485,7 @@ todo: $(INCLUDES_DEP) ## Print the todos from the main document
 # that you can also see your beamer notes inside the `pdfpc` program.
 #
 pdf-presenter-console: $(PDFPC_FILE) ## Create annotations file for the pdfpc program
-$(PDFPC_FILE): $(MAIN_SRC)
+$(PDFPC_FILE): $(TEXFILES)
 	echo "[file]" > $@
 	echo "$(PDF_DOCUMENT)" >> $@
 	echo "[notes]" >> $@
@@ -612,7 +612,7 @@ diff: ## Create a latexdiff using git versions
 # ```
 # if you happen to write in french.
 #
-spelling: $(MAIN_SRC) $(INCLUDES) ## Check spelling of latex sources
+spelling: $(TEXFILES) ## Check spelling of latex sources
 	$(ARROW) Checking the spelling in $(SPELL_LANG)
 	$(DEBUG)mkdir -p $(SPELL_DIR)
 	$(DEBUG)for file in $?; do \
@@ -627,8 +627,8 @@ spelling: $(MAIN_SRC) $(INCLUDES) ## Check spelling of latex sources
 # It checks the syntax (lints) of all the tex sources using the program in the
 # TEX_LINTER variable.
 #
-lint: $(INCLUDES_DEP) ## Check syntax of latex sources (TEX_LINTER)
-	$(TEX_LINTER) $(MAIN_SRC) $(INCLUDES)
+lint: $(TEXFILES) ## Check syntax of latex sources (TEX_LINTER)
+	$(TEX_LINTER) $(TEXFILES)
 
 watch: ## Build if changes
 	(echo $(TEXFILES) $(BIBTEX_FILES) | $(TR) " " "\n" | entr make &)&
@@ -655,7 +655,7 @@ GH_REPO_FILE ?= https://raw.githubusercontent.com/alejandrogallo/latex-makefile/
 # Generate a tags  file so that you can navigate  through the tags using
 # compatible editors such as emacs or (n)vi(m).
 #
-tags: $(MAIN_SRC) $(INCLUDES_DEP) ## Create TeX exhuberant ctags
+tags: $(TEXFILES) ## Create TeX exhuberant ctags
 	$(CTAGS) --language-force=tex -R *
 
 # This is used for printing defined variables from Some other scripts. For
