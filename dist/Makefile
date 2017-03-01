@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.5.3-2-g4e59fd5
-MAKEFILE_DATE = 01-03-2017 01:31
+MAKEFILE_VERSION = v1.5.4
+MAKEFILE_DATE = 01-03-2017 10:59
 
 ## <<HELP
 #
@@ -100,9 +100,9 @@ discoverMain = $(shell \
                    | $(AWK) -F ":" '{print $$1}')
 
 discoverIncludes = $(shell \
-                   $(GREP) -E '\\(include|input)[^gp]' $(1)  \
-                       | $(SED) 's/\.tex//' \
-                       | $(SED) 's/.*{\(.*\)}.*/\1.tex /' )
+            $(SED) -n "/^\s*[^%].*\in\(clude\|put\)[^a-z]/p" $(1) 2>/dev/null \
+                | $(SED) 's/\.tex//g' \
+                | $(SED) 's/.*{\(.*\)}.*/\1.tex /' )
 
 discoverBibtexFiles = $(shell \
                    $(GREP) -E '\\bibliography\s*{' $(1) 2> /dev/null  \
@@ -135,6 +135,10 @@ CLEAN_FILES     ?=
 FIGURES         ?=
 # Texfiles included in the main tex file
 INCLUDES        ?= $(call discoverIncludes,$(MAIN_SRC))
+# This line includes the tex document included in the
+# includes of the MAIN_SRC, if you want to include even more
+# just copy this line again.
+INCLUDES        := $(INCLUDES) $(call discoverIncludes,$(INCLUDES))
 # All `texfiles` in the project
 TEXFILES        ?= $(MAIN_SRC) $(INCLUDES)
 # Bibtex files in the current directory
