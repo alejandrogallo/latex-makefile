@@ -7,7 +7,7 @@ eval $(make --no-print-directory print-BUILD_DOCUMENT)
 eval $(make --no-print-directory print-BUILD_DIR)
 eval $(make --no-print-directory print-TOC_FILE)
 eval $(make --no-print-directory print-TOC_DEP)
-eval $(make --no-print-directory print-BIBITEM_FILE)
+eval $(make --no-print-directory print-BIBITEM_FILES)
 
 echo "${TOC_FILE}"
 echo "${TOC_DEP}"
@@ -18,25 +18,25 @@ make --no-print-directory QUIET=1 VIEW=
 main=$(basename ${MAIN_SRC} .tex)
 
 if [[ ! -f "${BUILD_DOCUMENT}" ]]; then
-  echo "File ${BUILD_DOCUMENT} not found !!"
+  echo "File BUILD_DOCUMENT = ${BUILD_DOCUMENT} not found !!"
   TEST_RESULT=1
 elif [[ ! -f "${BUILD_DIR}/${BUILD_DOCUMENT}" ]]; then
-  echo "File ${BUILD_DIR}/${BUILD_DOCUMENT} not found !!"
+  echo "File BUILD_DIR = ${BUILD_DIR}/${BUILD_DOCUMENT} not found !!"
   TEST_RESULT=1
 elif [[ -f "${main}.aux" ]]; then
-  echo "File ${main}.aux found !!"
+  echo "File main = ${main}.aux found !!"
   TEST_RESULT=1
 elif [[ -f "${main}.log" ]]; then
-  echo "File ${main}.log found !!"
+  echo "File main = ${main}.log found !!"
   TEST_RESULT=1
 elif [[ ! -f "${TOC_DEP}" ]]; then
-  echo "File ${TOC_DEP} not found !!"
+  echo "File TOC_DEP = ${TOC_DEP} not found !!"
   TEST_RESULT=1
 elif [[ ! -f "${TOC_FILE}" ]]; then
-  echo "File ${TOC_FILE} not found !!"
+  echo "File TOC_FILE = ${TOC_FILE} not found !!"
   TEST_RESULT=1
-elif [[ ! -f "${BIBITEM_FILE}" ]]; then
-  echo "File ${BIBITEM_FILE} not found !!"
+elif [[ ! -f "${BIBITEM_FILES}" ]]; then
+  echo "File BIBITEM_FILE = ${BIBITEM_FILES} not found !!"
   TEST_RESULT=1
 elif [[ ! -f "images/test.pdf" ]]; then
   echo "File images/test.pdf not found !!"
@@ -50,3 +50,5 @@ fi
 
 
 echo TEST_RESULT = ${TEST_RESULT}
+
+#vim-run: bash %
