@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.5.3-1-ge8c4da3
-MAKEFILE_DATE = 21-02-2017 21:42
+MAKEFILE_VERSION = v1.5.3-2-g4e59fd5
+MAKEFILE_DATE = 01-03-2017 01:31
 
 ## <<HELP
 #
@@ -105,7 +105,7 @@ discoverIncludes = $(shell \
                        | $(SED) 's/.*{\(.*\)}.*/\1.tex /' )
 
 discoverBibtexFiles = $(shell \
-                   $(GREP) -E '\\bibliography\s*{' $(1)  \
+                   $(GREP) -E '\\bibliography\s*{' $(1) 2> /dev/null  \
                        | $(SED) 's/.*\\bibliography//' \
                        | $(SED) 's/\.bib//g' \
                        | $(TR) "," "\n" \
@@ -363,9 +363,17 @@ $(FIGS_SUFFIXES): %.sh
 	$(ARROW) Compiling $<
 	$(DEBUG)cd $(dir $< ) && $(SH) $(notdir $< ) $(FD_OUTPUT)
 
+%.tex: %.sh
+	$(ARROW) Creating $@ from $<
+	$(DEBUG)$(SH) $<
+
 $(FIGS_SUFFIXES): %.py
 	$(ARROW) Compiling $<
 	$(DEBUG)cd $(dir $< ) && $(PY) $(notdir $< ) $(FD_OUTPUT)
+
+%.tex: %.py
+	$(ARROW) Creating $@ from $<
+	$(DEBUG)$(PY) $<
 
 $(FIGS_SUFFIXES): %.tex
 	$(ARROW) Compiling $< into $@
