@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.5.4-1-ge9ed715
-MAKEFILE_DATE = 01-03-2017 11:00
+MAKEFILE_VERSION = v1.5.4-2-gc637020
+MAKEFILE_DATE = 01-03-2017 11:06
 
 ## <<HELP
 #
@@ -100,6 +100,7 @@ discoverMain = $(shell \
                    | $(AWK) -F ":" '{print $$1}')
 
 discoverIncludes = $(shell \
+            test -n "$(1)" && \
             $(SED) -n "/^\s*[^%].*\in\(clude\|put\)[^a-z]/p" $(1) 2>/dev/null \
                 | $(SED) 's/\.tex//g' \
                 | $(SED) 's/.*{\(.*\)}.*/\1.tex /' )

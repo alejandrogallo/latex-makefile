@@ -100,6 +100,7 @@ discoverMain = $(shell \
                    | $(AWK) -F ":" '{print $$1}')
 
 discoverIncludes = $(shell \
+            test -n "$(1)" && \
             $(SED) -n "/^\s*[^%].*\in\(clude\|put\)[^a-z]/p" $(1) 2>/dev/null \
                 | $(SED) 's/\.tex//g' \
                 | $(SED) 's/.*{\(.*\)}.*/\1.tex /' )
