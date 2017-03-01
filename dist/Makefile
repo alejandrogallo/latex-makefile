@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.5.4-2-gc637020
-MAKEFILE_DATE = 01-03-2017 11:06
+MAKEFILE_VERSION = v1.5.4-4-g64da91f
+MAKEFILE_DATE = 01-03-2017 11:31
 
 ## <<HELP
 #
@@ -370,7 +370,7 @@ $(FIGS_SUFFIXES): %.sh
 
 %.tex: %.sh
 	$(ARROW) Creating $@ from $<
-	$(DEBUG)$(SH) $< $(FD_OUTPUT)
+	$(DEBUG)cd $(dir $<) && $(SH) $(notdir $<) $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.py
 	$(ARROW) Compiling $<
@@ -378,7 +378,7 @@ $(FIGS_SUFFIXES): %.py
 
 %.tex: %.py
 	$(ARROW) Creating $@ from $<
-	$(DEBUG)$(PY) $< $(FD_OUTPUT)
+	$(DEBUG)cd $(dir $<) && $(PY) $(notdir $<) $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.tex
 	$(ARROW) Compiling $< into $@
