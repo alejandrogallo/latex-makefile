@@ -369,7 +369,7 @@ $(FIGS_SUFFIXES): %.sh
 
 %.tex: %.sh
 	$(ARROW) Creating $@ from $<
-	$(DEBUG)$(SH) $<
+	$(DEBUG)$(SH) $< $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.py
 	$(ARROW) Compiling $<
@@ -377,7 +377,7 @@ $(FIGS_SUFFIXES): %.py
 
 %.tex: %.py
 	$(ARROW) Creating $@ from $<
-	$(DEBUG)$(PY) $<
+	$(DEBUG)$(PY) $< $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.tex
 	$(ARROW) Compiling $< into $@
