@@ -92,33 +92,48 @@ ARROW           := @ > /dev/null echo
 ECHO            := @ > /dev/null echo
 endif #QQUIET
 
-# Function to try to discover automatically
-# the main latex document
-discoverMain = $(shell \
-                   $(GREP) -H '\\begin{document}' *.tex 2>/dev/null \
-                   | head -1 \
-                   | $(AWK) -F ":" '{print $$1}')
+# Function to try to discover automatically the main latex document
+define discoverMain
+$(shell \
+	$(GREP) -H '\\begin{document}' *.tex 2>/dev/null \
+	| head -1 \
+	| $(AWK) -F ":" '{print $$1}' \
+)
+endef
 
-discoverIncludes = $(shell \
-            test -n "$(1)" && \
-            $(SED) -n "/^\s*[^%].*\in\(clude\|put\)[^a-z]/p" $(1) 2>/dev/null \
-                | $(SED) 's/\.tex//g' \
-                | $(SED) 's/.*{\(.*\)}.*/\1.tex /' )
+define discoverBibtexFiles
+$(shell \
+	$(GREP) -E '\\bibliography\s*{' $(1) 2> /dev/null  \
+		| $(SED) 's/.*\\bibliography//' \
+		| $(SED) 's/\.bib//g' \
+		| $(TR) "," "\n" \
+		| $(TR) -d "{}" \
+		| $(SED) 's/\s*$$/.bib /' \
+		| sort \
+		| uniq \
+)
+endef
 
-discoverBibtexFiles = $(shell \
-                   $(GREP) -E '\\bibliography\s*{' $(1) 2> /dev/null  \
-                       | $(SED) 's/.*\\bibliography//' \
-                       | $(SED) 's/\.bib//g' \
-                       | $(TR) "," "\n" \
-                       | $(TR) -d "{}" \
-                       | $(SED) 's/\s*$$/.bib /' \
-                       | sort | uniq )
+define recursiveDiscoverIncludes
+$(shell \
+	files=$(1);\
+	for i in $$(seq 1 $(2)); do \
+		files="$$(\
+			$(SED) -n "/^\s*[^%].*\in\(clude\|put\)[^a-z]/p" $$files 2>/dev/null \
+					| $(SED) 's/\.tex//g' \
+					| $(SED) 's/.*{\(.*\)}.*/\1.tex /' \
+		)"; \
+		test -n "$$files" || break; \
+		echo $$files; \
+	done \
+)
+endef
 
-
-
-
-hasToc = $(shell\
-             $(GREP) '\\tableofcontents' $(1))
+define hasToc
+$(shell\
+	$(GREP) '\\tableofcontents' $(1)\
+)
+endef
 
 # Main texfile in the current directory
 MAIN_SRC        ?= $(call discoverMain)
@@ -134,12 +149,10 @@ DEPENDENCIES    ?=
 CLEAN_FILES     ?=
 # Figures included in all texfiles
 FIGURES         ?=
+# Depth for discovering automatically included texfiles
+INCLUDES_REC    ?= 3
 # Texfiles included in the main tex file
-INCLUDES        ?= $(call discoverIncludes,$(MAIN_SRC))
-# This line includes the tex document included in the
-# includes of the MAIN_SRC, if you want to include even more
-# just copy this line again.
-INCLUDES        := $(INCLUDES) $(call discoverIncludes,$(INCLUDES))
+INCLUDES        ?= $(call recursiveDiscoverIncludes,$(MAIN_SRC),$(INCLUDES_REC))
 # All `texfiles` in the project
 TEXFILES        ?= $(MAIN_SRC) $(INCLUDES)
 # Bibtex files in the current directory
@@ -195,7 +208,7 @@ ifneq ($(strip $(MAIN_SRC)),) # Do this only if MAIN_SRC is defined
 
 BUILD_DOCUMENT       = $(patsubst %.tex,%.$(FMT),$(MAIN_SRC))
 TOC_FILE             = $(patsubst %.tex,$(BUILD_DIR)/%.toc,$(MAIN_SRC))
-BIBITEM_FILES         = $(patsubst %.tex,$(BUILD_DIR)/%.bbl,$(MAIN_SRC))
+BIBITEM_FILES        = $(patsubst %.tex,$(BUILD_DIR)/%.bbl,$(MAIN_SRC))
 AUX_FILE             = $(patsubst %.tex,$(BUILD_DIR)/%.aux,$(MAIN_SRC))
 PYTHONTEX_FILE       = $(patsubst %.tex,$(BUILD_DIR)/%.pytxcode,$(MAIN_SRC))
 PDFPC_FILE           = $(patsubst %.tex,%.pdfpc,$(MAIN_SRC))

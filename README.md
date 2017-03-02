@@ -74,6 +74,7 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `DEPENDENCIES`(`empty`): General dependencies for BUILD_DOCUMENT
   * `CLEAN_FILES`(`empty`): File to be cleaned
   * `FIGURES`(`empty`): Figures included in all texfiles
+  * `INCLUDES_REC`(`3`): Depth for discovering automatically included texfiles
   * `INCLUDES`(`see`): Texfiles included in the main tex file
   * `TEXFILES`(`see`): All `texfiles` in the project
   * `BIBTEX_FILES`(`see`): Bibtex files in the current directory
