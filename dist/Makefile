@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.5.5
-MAKEFILE_DATE = 03-03-2017 00:33
+MAKEFILE_VERSION = v1.5.5-2-g52f1a5d
+MAKEFILE_DATE = 09-03-2017 15:12
 
 ## <<HELP
 #
@@ -119,7 +119,7 @@ $(shell \
 	files=$(1);\
 	for i in $$(seq 1 $(2)); do \
 		files="$$(\
-			$(SED) -n "/^\s*[^%].*\in\(clude\|put\)[^a-z]/p" $$files 2>/dev/null \
+			$(SED) -n "/^\s*[^%].*\\\\in\(clude\|put\)[^a-z]/p" $$files 2>/dev/null \
 					| $(SED) 's/\.tex//g' \
 					| $(SED) 's/.*{\(.*\)}.*/\1.tex /' \
 		)"; \
