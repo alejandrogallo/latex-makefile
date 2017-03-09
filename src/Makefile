@@ -119,7 +119,7 @@ $(shell \
 	files=$(1);\
 	for i in $$(seq 1 $(2)); do \
 		files="$$(\
-			$(SED) -n "/^\s*[^%].*\in\(clude\|put\)[^a-z]/p" $$files 2>/dev/null \
+			$(SED) -n "/^\s*[^%].*\\\\in\(clude\|put\)[^a-z]/p" $$files 2>/dev/null \
 					| $(SED) 's/\.tex//g' \
 					| $(SED) 's/.*{\(.*\)}.*/\1.tex /' \
 		)"; \
