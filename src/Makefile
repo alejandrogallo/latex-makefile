@@ -94,10 +94,15 @@ ARROW           := @ > /dev/null echo
 ECHO            := @ > /dev/null echo
 endif #QQUIET
 
+# Remove comments from some file, this variables is intended to be put
+# in a shell call for processing of TeX files
+removeTexComments=$(SED) "s/[^\\]%.*//g; s/^%.*//g"
+
 # Function to try to discover automatically the main latex document
 define discoverMain
 $(shell \
 	$(GREP) -H '\\begin{document}' *.tex 2>/dev/null \
+	| $(removeTexComments) \
 	| head -1 \
 	| $(AWK) -F ":" '{print $$1}' \
 )
@@ -106,6 +111,7 @@ endef
 define discoverBibtexFiles
 $(shell \
 	$(GREP) -E '\\bibliography\s*{' $(1) 2> /dev/null  \
+		| $(removeTexComments) \
 		| $(SED) 's/.*\\bibliography//' \
 		| $(SED) 's/\.bib//g' \
 		| $(TR) "," "\n" \
@@ -121,7 +127,8 @@ $(shell \
 	files=$(1);\
 	for i in $$(seq 1 $(2)); do \
 		files="$$(\
-			$(SED) -n "/^\s*[^%].*\\\\in\(clude\|put\)[^a-z]/p" $$files 2>/dev/null \
+			$(SED) -n '/\in\(clude\|put\)[^a-z]/p' $$files 2>/dev/null \
+					| $(removeTexComments) \
 					| $(SED) 's/\.tex//g' \
 					| $(SED) 's/.*{\(.*\)}.*/\1.tex /' \
 		)"; \
@@ -133,7 +140,9 @@ endef
 
 define hasToc
 $(shell\
-	$(GREP) '\\tableofcontents' $(1)\
+	$(GREP) '\\tableofcontents' $(1) \
+	| $(removeTexComments) \
+	| $(SED) "s/ //g" \
 )
 endef
 
@@ -416,11 +425,12 @@ $(TOC_FILE): $(TOC_DEP)
 		$(BUILD_DIR_FLAG) $(notdir $(MAIN_SRC) ) $(FD_OUTPUT)
 
 $(TOC_DEP): $(TEXFILES)
-	$(ARROW) Parsing the toc entries
+	$(ARROW) Parsing table of contents
 	$(DEBUG)mkdir -p $(dir $@)
 	$(DEBUG)$(GREP) -E \
 		'\\(section|subsection|subsubsection|chapter|part|subsubsubsection).' \
 		$(TEXFILES)  \
+		| $(removeTexComments) \
 		| $(SED) 's/.*{\(.*\)}.*/\1/' > $@.control
 	$(DEBUG)if ! diff $@ $@.control 2>&1 > /dev/null ; then mv $@.control $@; fi
 
@@ -428,8 +438,8 @@ $(FIGS_DEP): $(TEXFILES)
 	$(ARROW) Parsing the graphics dependencies
 	$(DEBUG)mkdir -p $(dir $@)
 	$(DEBUG)echo FIGURES = \\ > $@
-	$(DEBUG)$(GREP) -E '\\include(graphic|pdf).' $(TEXFILES)  \
-	| $(GREP) -v "%" \
+	$(DEBUG)$(GREP) --no-filename -E '\\include(graphic|pdf).' $(TEXFILES)  \
+	| $(removeTexComments) \
 	| $(SED) 's/.*{\(.*\)}.*/\1 \\/' >> $@
 
 # =============
