@@ -72,8 +72,10 @@ WITH_COLOR ?= 1
 QQUIET     ?=
 DEBUG      ?= @
 CHECK_SPELL?=
-SPELL_LANG  ?= en
+SPELL_LANG ?= en
 SPELL_DIR  ?= .spell
+# Eps to pdf converter
+EPS2PDF    ?= epstopdf
 
 ifndef QQUIET
 
@@ -288,7 +290,7 @@ $(BUILD_DIR):
 	$(DEBUG)mkdir -p $@ $(FD_OUTPUT)
 
 $(BUILD_DIR)/%: $(PACKAGES_DIR)/%
-	$(ARROW) Copying TeX libraries
+	$(ARROW) Copying TeX libraries: $@
 	$(DEBUG)mkdir -p $(BUILD_DIR)
 	$(DEBUG)cp $^ $@
 
@@ -380,6 +382,10 @@ $(FIGS_SUFFIXES): %.gnuplot
 $(FIGS_SUFFIXES): %.sh
 	$(ARROW) Compiling $<
 	$(DEBUG)cd $(dir $< ) && $(SH) $(notdir $< ) $(FD_OUTPUT)
+
+%.pdf: %.eps
+	$(ARROW) Converting $< into $@
+	$(DEBUG)cd $(dir $< ) && $(EPS2PDF) $(notdir $< ) $(FD_OUTPUT)
 
 %.tex: %.sh
 	$(ARROW) Creating $@ from $<
