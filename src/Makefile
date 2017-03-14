@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.5.4-4-g64da91f
-MAKEFILE_DATE = 01-03-2017 11:31
+MAKEFILE_VERSION = v1.5.6
+MAKEFILE_DATE = 13-03-2017 23:08
 
 ## <<HELP
 #
@@ -205,6 +205,8 @@ $(shell $(WHICH) okular 2> /dev/null),\
 $(shell $(WHICH) xdg-open 2> /dev/null),\
 $(shell $(WHICH) open 2> /dev/null),\
 )
+# Filename for the merged TeXfile
+MERGE_MAIN_SRC  ?= $(patsubst %.tex,%_merged.tex,$(MAIN_SRC))
 
 .DEFAULT_GOAL   := all
 
@@ -548,6 +550,20 @@ releases: $(BUILD_DOCUMENT) ## Create all releases (according to tags)
 		$(GIT) archive --format=$(RELEASES_FMT) \
 		--prefix=$$tag/ $$tag > $(RELEASES_DIR)/$$tag.$(RELEASES_FMT); \
 	done
+
+# =====
+# Merge
+# =====
+#
+# Create a TeX file with all included TeX files have been merged into it.
+#
+merge: $(MERGE_MAIN_SRC) ## Create a TeX file with all included files merged
+$(MERGE_MAIN_SRC): $(BUILD_DOCUMENT)
+	$(DEBUG){\
+		for i in $(TEXFILES); do \
+			echo $$i; \
+		done \
+	}
 
 # ============
 # Distribution
