@@ -197,6 +197,14 @@ configuration.
 ```bash 
 make dist
 ```
+### Distribution clean ###
+
+
+Clean distribution files
+
+```bash 
+make dist-clean
+```
 ### Diff ###
 
 
