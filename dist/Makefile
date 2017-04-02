@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.5.6
-MAKEFILE_DATE = 13-03-2017 23:08
+MAKEFILE_VERSION = v1.5.6-2-g3d8a393
+MAKEFILE_DATE = 02-04-2017 21:36
 
 ## <<HELP
 #
@@ -440,7 +440,7 @@ $(FIGS_DEP): $(TEXFILES)
 	$(DEBUG)echo FIGURES = \\ > $@
 	$(DEBUG)$(GREP) --no-filename -E '\\include(graphic|pdf).' $(TEXFILES)  \
 	| $(removeTexComments) \
-	| $(SED) 's/.*{\(.*\)}.*/\1 \\/' >> $@
+	| $(SED) -n 's/.*{\(.*\)}.*/\1 \\/p' >> $@
 
 # =============
 # Main cleaning
