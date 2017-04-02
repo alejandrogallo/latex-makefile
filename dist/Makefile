@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.5.6-2-g3d8a393
-MAKEFILE_DATE = 02-04-2017 21:36
+MAKEFILE_VERSION = v1.5.6-3-g583d90f
+MAKEFILE_DATE = 02-04-2017 21:39
 
 ## <<HELP
 #
@@ -580,6 +580,7 @@ dist: $(BUILD_DOCUMENT) ## Create a dist folder with the bare minimum to compile
 	$(DEBUG)echo $(DEPENDENCIES)\
 		| $(TR) " " "\n" \
 		| $(XARGS) -n1 -I FF cp -r FF $(DIST_DIR)/FF
+ifneq ($(strip $(PACKAGES_FILES)),)
 	$(ARROW) "Creating folder for latex libraries"
 	$(DEBUG)test -n "$(PACKAGES_FILES)" && echo $(PACKAGES_FILES)\
 		| $(XARGS) -n1 dirname\
@@ -588,6 +589,16 @@ dist: $(BUILD_DOCUMENT) ## Create a dist folder with the bare minimum to compile
 	$(DEBUG)test -n "$(PACKAGES_FILES)" && echo $(PACKAGES_FILES)\
 		| $(TR) " " "\n" \
 		| $(XARGS) -n1 -I FF cp FF $(DIST_DIR)/FF
+endif
+
+# ==================
+# Distribution clean
+# ==================
+#
+# Clean distribution files
+#
+dist-clean: CLEAN_FILES=$(DIST_DIR) ## Clean distribution files
+dist-clean: clean
 
 DIFF ?=HEAD HEAD~1
 NEW_COMMIT = $(word 1,$(DIFF))
