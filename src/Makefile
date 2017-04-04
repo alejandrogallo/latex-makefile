@@ -440,7 +440,7 @@ $(FIGS_DEP): $(TEXFILES)
 	$(DEBUG)echo FIGURES = \\ > $@
 	$(DEBUG)$(GREP) --no-filename -E '\\include(graphic|pdf).' $(TEXFILES)  \
 	| $(removeTexComments) \
-	| $(SED) -n 's/.*{\(.*\)}.*/\1 \\/p' >> $@
+	| $(SED) -n 's/.*{\([^{}]\+\)}.*/\1 \\/p' >> $@
 
 # =============
 # Main cleaning
