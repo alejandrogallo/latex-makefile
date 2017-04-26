@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.5.7-5-gab305b7
-MAKEFILE_DATE = 04-04-2017 15:16
+MAKEFILE_VERSION = v1.5.7-6-g682018d
+MAKEFILE_DATE = 26-04-2017 16:41
 
 ## <<HELP
 #
@@ -127,7 +127,7 @@ $(shell \
 	files=$(1);\
 	for i in $$(seq 1 $(2)); do \
 		files="$$(\
-			$(SED) -n '/\in\(clude\|put\)[^a-z]/p' $$files 2>/dev/null \
+			$(SED) -n '/\in\(clude\|put\)\s*[{]/p' $$files 2>/dev/null \
 					| $(removeTexComments) \
 					| $(SED) 's/\.tex//g' \
 					| $(SED) 's/.*{\(.*\)}.*/\1.tex /' \
