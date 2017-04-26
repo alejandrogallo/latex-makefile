@@ -2,12 +2,12 @@ cp ../../dist/Makefile .
 
 TEST_DESCRIPTION="Simplest build directory test"
 
-eval $(make --no-print-directory print-MAIN_SRC)
-eval $(make --no-print-directory print-BUILD_DOCUMENT)
-eval $(make --no-print-directory print-BUILD_DIR)
-eval $(make --no-print-directory print-TOC_FILE)
-eval $(make --no-print-directory print-TOC_DEP)
-eval $(make --no-print-directory print-BIBITEM_FILES)
+eval "$(make --no-print-directory print-MAIN_SRC)"
+eval "$(make --no-print-directory print-BUILD_DOCUMENT)"
+eval "$(make --no-print-directory print-BUILD_DIR)"
+eval "$(make --no-print-directory print-TOC_FILE)"
+eval "$(make --no-print-directory print-TOC_DEP)"
+eval "$(make --no-print-directory print-BIBITEM_FILES)"
 
 echo "${TOC_FILE}"
 echo "${TOC_DEP}"
