@@ -1,0 +1,45 @@
+%  Preamble {{{1 %
+%%%%%%%%%%%%%%%%%%
+\documentclass[A4paper, 12pt]{article}
+
+
+\usepackage[]{graphicx}
+
+\title{Hello World}
+\author{Fulano}
+
+
+
+%  Document {{{1 %
+%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Hello World 1} %{{{1
+
+\include{includes/hello_world.tex}
+
+\section{Hello World 2} %{{{1
+
+\include{includes/hello_world_2}
+
+
+
+
+include : 
+\input{includes/hello_world_2}
+\input{includes/hello_world_2.tex}
+\include{includes/hello_world_2}
+include: 
+
+%\include{pepe.tex}
+%\input{pepe.tex}
+
+
+
+
+\end{document}
+% vim: spell ft=tex
