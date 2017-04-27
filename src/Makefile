@@ -344,41 +344,6 @@ $(AUX_FILE):
 	$(ARROW) "Creating pythontex"
 	$(PYTHONTEX) $<
 
-# =============
-# View document
-# =============
-#
-# Open and refresh pdf.
-#
-view-pdf: $(PDF_VIEWER) open-pdf ## Refresh and open pdf
-
-# ===============
-# Open pdf viewer
-# ===============
-#
-# Open a viewer if there is none open viewing `$(BUILD_DOCUMENT)`
-#
-open-pdf: $(DEPENDENCIES) $(BUILD_DOCUMENT) ## Open pdf build document
-	-$(DEBUG)ps aux | $(GREP) -v $(GREP) \
-	| $(GREP) "$(PDF_VIEWER)" \
-	| $(GREP) -q "$(BUILD_DOCUMENT)" \
-	||  $(PDF_VIEWER) "$(BUILD_DOCUMENT)" 2>&1 > /dev/null &
-
-# =============
-# Refresh mupdf
-# =============
-#
-# If the opened document is being viewed with `mupdf` this target uses the
-# mupdf signal API to refresh the document.
-#
-mupdf /usr/bin/mupdf: ## Refresh mupdf
-	-$(DEBUG)ps aux \
-	| $(GREP) -v $(GREP) \
-	| $(GREP) "$(PDF_VIEWER)" \
-	| $(GREP) "$(BUILD_DOCUMENT)" \
-	| $(AWK) '{print $$2}'\
-	| { read pid; test -z "$$pid" || kill -s HUP $$pid; }
-
 $(FIGS_SUFFIXES): %.asy
 	$(ARROW) Compiling $<
 	$(DEBUG)cd $(dir $<) && $(ASYMPTOTE) -f \
@@ -418,327 +383,38 @@ ifneq ($(strip $(BUILD_DIR)),.)
 		$(PWD)/$(dir $<)/$(BUILD_DIR)/$(notdir $@) $(PWD)/$(dir $<)/$(notdir $@)
 endif
 
-$(TOC_FILE): $(TOC_DEP)
-	$(ARROW) Creating $(TOC_FILE)
-	$(DEBUG)mkdir -p $(BUILD_DIR)
-	$(DEBUG)cd $(dir $(MAIN_SRC) ) && $(PDFLATEX) \
-		$(BUILD_DIR_FLAG) $(notdir $(MAIN_SRC) ) $(FD_OUTPUT)
+include(pdf-viewer.mk)
 
-$(TOC_DEP): $(TEXFILES)
-	$(ARROW) Parsing table of contents
-	$(DEBUG)mkdir -p $(dir $@)
-	$(DEBUG)$(GREP) -E \
-		'\\(section|subsection|subsubsection|chapter|part|subsubsubsection).' \
-		$(TEXFILES)  \
-		| $(removeTexComments) \
-		| $(SED) 's/.*{\(.*\)}.*/\1/' > $@.control
-	$(DEBUG)if ! diff $@ $@.control 2>&1 > /dev/null ; then mv $@.control $@; fi
+include(deps.mk)
 
-$(FIGS_DEP): $(TEXFILES)
-	$(ARROW) Parsing the graphics dependencies
-	$(DEBUG)mkdir -p $(dir $@)
-	$(DEBUG)echo FIGURES = \\ > $@
-	$(DEBUG)$(GREP) --no-filename -E '\\include(graphic|pdf).' $(TEXFILES)  \
-	| $(removeTexComments) \
-	| $(SED) -n 's/.*{\([^{}]\+\)}.*/\1 \\/p' >> $@
+include(clean.mk)
 
-# =============
-# Main cleaning
-# =============
-#
-# This does a main cleaning of the produced auxiliary files.  Before using it
-# check which files are going to be cleaned up.
-#
-clean: ## Remove build and temporary files
-	$(ARROW) Cleaning up...
-	$(DEBUG){ for file in $(CLEAN_FILES); do echo "  *  $$file"; done }
-	$(DEBUG)rm -rf $(CLEAN_FILES)
+include(todo.mk)
 
+include(pandoc.mk)
 
-#PANDOC CONVERSIONS
-###################
+include(pdfpc.mk)
 
-# FIXME: It doesn't work out of the box
-#
-# ======================
-# Reveal.js presentation
-# ======================
-#
-# This creates a revealjs presentation using the the pandoc program stored in
-# the make variable PANDOC.
-#
-revealjs: $(MAIN_SRC)
-	$(ARROW) Creating revealjs presentation...
-	$(ARROW) Gettin revealjs from $(REVEALJS_SRC)
-	$(GIT) clone --depth=1 $(REVEALJS_SRC) && rm -rf reveal.js/.git
-	$(PANDOC) --mathjax -s -f latex -t revealjs $(MAIN_SRC) -o $(BUILD_DOCUMENT)
-REVEALJS_SRC ?= https://github.com/hakimel/reveal.js/
+include(release.mk)
 
-# =================
-# Unix man document
-# =================
-#
-# This creates a man page using `pandoc`.
-#
-man: $(MAIN_SRC)
-	$(ARROW) Creating man pages...
-	$(PANDOC) -s -f latex -t man $(MAIN_SRC) -o $(BUILD_DOCUMENT)
+include(dist.mk)
 
-# =============
-# HTML document
-# =============
-#
-# This creates an html page using `pandoc`.
-#
-html: $(MAIN_SRC)
-	$(ARROW) Compiling html document...
-	$(PANDOC) --mathjax -s -f latex -t html5 $(MAIN_SRC) -o $(BUILD_DOCUMENT)
+include(diff.mk)
 
-todo: $(TEXFILES) ## Print the todos from the main document
-	$(ARROW) Parsing \\TODO{} in $(MAIN_SRC)
-	$(DEBUG)$(SED) -n "/\\TODO{/,/}/\
-	{\
-		s/.TODO/===/; \
-		s/[{]//g; \
-		s/[}]/===/g; \
-		p\
-	}" $(TEXFILES)
+include(spelling.mk)
 
-# ===========================
-# Presenter console generator
-# ===========================
-#
-# `pdfpc` is a nice program for presenting beamer presentations with notes
-# and a speaker clock. This target implements a simple script to convert
-# the standard `\notes{ }` beamer  command into `pdfpc` compatible files, so
-# that you can also see your beamer notes inside the `pdfpc` program.
-#
-pdf-presenter-console: $(PDFPC_FILE) ## Create annotations file for the pdfpc program
-$(PDFPC_FILE): $(TEXFILES)
-	echo "[file]" > $@
-	echo "$(PDF_DOCUMENT)" >> $@
-	echo "[notes]" >> $@
-	cat $(MAIN_SRC) | $(AWK) '\
-		BEGIN { frame = 0; initialized = 0; } \
-		/(\\begin{frame}|\\frame{)/ { \
-			if(!/[%]/) { \
-				frame++; print "###",frame \
-			} \
-		} \
-		/\\note{/,/^\s*}\s*$$/ { \
-			if(!/\\note{/ && !/^[ ]*}[ ]*$$/) {\
-				if (frame == 0 && initialized == 0){ \
-					frame++; \
-					print "###",frame; \
-					initialized = 1; \
-				} \
-				print $$0 ; \
-			}\
-		} \
-		END { print frame } \
-	' | tee -a $@
+include(lint.mk)
 
-RELEASES_DIR=releases
-RELEASES_FMT=tar
-releases: $(BUILD_DOCUMENT) ## Create all releases (according to tags)
-	$(ARROW) Copying releases to $(RELEASES_DIR) folder in $(RELEASES_FMT) format
-	$(DEBUG)mkdir -p $(RELEASES_DIR)
-	$(DEBUG)for tag in $$($(GIT) tag); do\
-		echo "Processing $$tag"; \
-		$(GIT) archive --format=$(RELEASES_FMT) \
-		--prefix=$$tag/ $$tag > $(RELEASES_DIR)/$$tag.$(RELEASES_FMT); \
-	done
+include(watch.mk)
 
-# ============
-# Distribution
-# ============
-#
-# Create a distribution folder wit the bare minimum to compile your project.
-# For example it will consider the files in the DEPENDENCIES variable, so make
-# sure to update or add DEPENDENCIES to it in the config.mk per user
-# configuration.
-#
-dist: $(BUILD_DOCUMENT) ## Create a dist folder with the bare minimum to compile
-	$(ARROW) "Creating dist folder"
-	$(DEBUG)mkdir -p $(DIST_DIR)
-	$(ARROW) "Copying the Makefile"
-	$(DEBUG)cp Makefile $(DIST_DIR)/
-	$(ARROW) "Copying the target document"
-	$(DEBUG)cp $(BUILD_DOCUMENT) $(DIST_DIR)/
-	$(ARROW) "Copying .bib files"
-	$(DEBUG)test -n "$(BIBTEX_FILES)" && {\
-		for bibfile in $(BIBTEX_FILES); do \
-			mkdir -p $(DIST_DIR)/$$(dirname $$bibfile); \
-			cp -u $$bibfile $(DIST_DIR)/$$(dirname $$bibfile); \
-		done \
-		} || echo "No bibfiles"
-	$(ARROW) "Creating folder for dependencies"
-	$(DEBUG)echo $(DEPENDENCIES)\
-		| $(XARGS) -n1 dirname\
-		| $(XARGS) -n1 -I FF mkdir -p $(DIST_DIR)/FF
-	$(ARROW) "Copying dependencies"
-	$(DEBUG)echo $(DEPENDENCIES)\
-		| $(TR) " " "\n" \
-		| $(XARGS) -n1 -I FF cp -r FF $(DIST_DIR)/FF
-ifneq ($(strip $(PACKAGES_FILES)),)
-	$(ARROW) "Creating folder for latex libraries"
-	$(DEBUG)test -n "$(PACKAGES_FILES)" && echo $(PACKAGES_FILES)\
-		| $(XARGS) -n1 dirname\
-		| $(XARGS) -n1 -I FF mkdir -p $(DIST_DIR)/FF
-	$(ARROW) "Copying latex libraries"
-	$(DEBUG)test -n "$(PACKAGES_FILES)" && echo $(PACKAGES_FILES)\
-		| $(TR) " " "\n" \
-		| $(XARGS) -n1 -I FF cp FF $(DIST_DIR)/FF
-endif
+include(update.mk)
 
-# ==================
-# Distribution clean
-# ==================
-#
-# Clean distribution files
-#
-dist-clean: CLEAN_FILES=$(DIST_DIR) ## Clean distribution files
-dist-clean: clean
+include(tags.mk)
 
-DIFF ?=HEAD HEAD~1
-NEW_COMMIT = $(word 1,$(DIFF))
-OLD_COMMIT = $(word 2,$(DIFF))
-DIFF_BUILD_DIR_MAIN ?= diffs
-DIFF_BUILD_DIR ?= $(DIFF_BUILD_DIR_MAIN)/$(NEW_COMMIT)_$(OLD_COMMIT)
-DIFF_SRC_NAME  ?= diff.tex
-# ====
-# Diff
-# ====
-#
-# This target creates differences between older versions of the main latex file
-# by means of [GIT](https://git-scm.com/). You have to specify the commits that
-# you want to compare by doing
-#
-# ```bash
-# make DIFF="HEAD HEAD~3" diff
-# ```
-# If you want to compare the HEAD commit with the commit three times older than
-# HEAD. You can also provide a *commit hash*. The default value is `HEAD HEAD~1`.
-#
-# The target creates a distribution folder located in the variable
-# DIFF_BUILD_DIR. *Warning*: It only works for single document tex projects.
-diff: ## Create a latexdiff using git versions
-	$(ARROW) Creating diff between $(NEW_COMMIT) and $(OLD_COMMIT)
-	$(DEBUG)mkdir -p $(DIFF_BUILD_DIR)
-	git checkout $(NEW_COMMIT) $(MAIN_SRC)
-	cp $(MAIN_SRC) $(DIFF_BUILD_DIR)/$(strip $(MAIN_SRC)).$(NEW_COMMIT)
-	git checkout $(OLD_COMMIT) $(MAIN_SRC)
-	cp $(MAIN_SRC) $(DIFF_BUILD_DIR)/$(strip $(MAIN_SRC)).$(OLD_COMMIT)
-	$(LATEXDIFF) \
-		$(DIFF_BUILD_DIR)/$(strip $(MAIN_SRC)).$(OLD_COMMIT) \
-		$(DIFF_BUILD_DIR)/$(strip $(MAIN_SRC)).$(NEW_COMMIT) \
-		> $(DIFF_SRC_NAME)
-	$(MAKE) dist \
-		BUILD_DIR=$(DIFF_BUILD_DIR) \
-		MAIN_SRC=$(DIFF_SRC_NAME) \
-		DIST_DIR=$(DIFF_BUILD_DIR)
-	rm $(DIFF_SRC_NAME) $(patsubst %.tex,%.pdf,$(DIFF_SRC_NAME))
-	git checkout HEAD $(MAIN_SRC)
+include(print-variable.mk)
 
-# ==============
-# Check spelling
-# ==============
-#
-# It checks the spelling of all the tex sources using the program in the
-# SPELLER variable. The default value of the language is english, you can
-# change it by setting in your `config.mk` file
-# ```make
-# SPELL_LANG = fr
-# ```
-# if you happen to write in french.
-#
-spelling: $(TEXFILES) ## Check spelling of latex sources
-	$(ARROW) Checking the spelling in $(SPELL_LANG)
-	$(DEBUG)mkdir -p $(SPELL_DIR)
-	$(DEBUG)for file in $?; do \
-		$(SPELLER) --home-dir=$(SPELL_DIR) \
-		-l $(SPELL_LANG) -t -c $$file; \
-	done
+include(help.mk)
 
-# ============
-# Check syntax
-# ============
-#
-# It checks the syntax (lints) of all the tex sources using the program in the
-# TEX_LINTER variable.
-#
-lint: $(TEXFILES) ## Check syntax of latex sources (TEX_LINTER)
-	$(TEX_LINTER) $(TEXFILES)
-
-watch: ## Build if changes
-	(echo $(TEXFILES) $(BIBTEX_FILES) | $(TR) " " "\n" | entr make &)&
-unwatch: ## Cancel Watching
-	killall entr
-
-# ===============================
-# Update the makefile from source
-# ===============================
-#
-# You can always get the  last `latex-makefile` version using this target.
-# You may override the `GH_REPO_FILE` to  any path where you save your own
-# personal makefile
-#
-update: ## Update the makefile from the repository
-	$(ARROW) "Getting makefile from $(GH_REPO_FILE)"
-	$(DEBUG)wget $(GH_REPO_FILE) -O Makefile
-GH_REPO_FILE ?= https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile
-
-# ====================================
-# Ctags generation for latex documents
-# ====================================
-#
-# Generate a tags  file so that you can navigate  through the tags using
-# compatible editors such as emacs or (n)vi(m).
-#
-tags: $(TEXFILES) ## Create TeX exhuberant ctags
-	$(CTAGS) --language-force=tex -R *
-
-# This is used for printing defined variables from Some other scripts. For
-# instance if you want to know the value of the PDF_VIEWER defined in the
-# Makefile, then you would do
-#    make print-PDF_VIEWER
-# and this would output PDF_VIEWER=mupdf for instance.
-FORCE:
-print-%:
-	$(DEBUG)echo '$*=$($*)'
-
-# ================
-# Print quick help
-# ================
-#
-# It prints a quick help in the terminal
-help: ## Prints help for targets with comments
-	$(DEBUG)$(or $(AWK),awk) ' \
-		BEGIN {FS = ":.*?## "}; \
-		/^## *<<HELP/,/^## *HELP/ { \
-			help=$$1; \
-			gsub("#","",help); \
-			if (! match(help, "HELP")) \
-				print help ; \
-		}; \
-		/^[a-zA-Z0-9_\-.]+:.*?## .*$$/{ \
-			printf "\033[36m%-30s\033[0m %s\n", $$1, $$2 ; \
-		};' \
-		$(MAKEFILE_LIST)
-	@echo ""
-	@echo "  $(MAKEFILE_VERSION)"
-	@echo "  https://github.com/alejandrogallo/latex-makefile"
-	@echo "  Copyright Alejandro Gallo GPLv3 $(MAKEFILE_DATE)"
-	@echo ""
-
-FORCE:
-help-%:
-	$(DEBUG)sed -n "/[#] [=]\+/,/^$*: / { /"$*":/{q}; p; } " $(MAKEFILE_LIST) \
-		| tac \
-		| sed -n "1,/===/ {/===/n; s/^# //p}" \
-		| tac \
-		| sed -n "p; 1s/./=/gp; 1a\ "
-
-
+include(help-target.mk)
 
 # vim: cc=80
