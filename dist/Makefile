@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.5.8
-MAKEFILE_DATE = 26-04-2017 17:36
+MAKEFILE_VERSION = v1.5.8-2-g812907b
+MAKEFILE_DATE = 27-04-2017 10:58
 
 ## <<HELP
 #
@@ -344,41 +344,6 @@ $(AUX_FILE):
 	$(ARROW) "Creating pythontex"
 	$(PYTHONTEX) $<
 
-# =============
-# View document
-# =============
-#
-# Open and refresh pdf.
-#
-view-pdf: $(PDF_VIEWER) open-pdf ## Refresh and open pdf
-
-# ===============
-# Open pdf viewer
-# ===============
-#
-# Open a viewer if there is none open viewing `$(BUILD_DOCUMENT)`
-#
-open-pdf: $(DEPENDENCIES) $(BUILD_DOCUMENT) ## Open pdf build document
-	-$(DEBUG)ps aux | $(GREP) -v $(GREP) \
-	| $(GREP) "$(PDF_VIEWER)" \
-	| $(GREP) -q "$(BUILD_DOCUMENT)" \
-	||  $(PDF_VIEWER) "$(BUILD_DOCUMENT)" 2>&1 > /dev/null &
-
-# =============
-# Refresh mupdf
-# =============
-#
-# If the opened document is being viewed with `mupdf` this target uses the
-# mupdf signal API to refresh the document.
-#
-mupdf /usr/bin/mupdf: ## Refresh mupdf
-	-$(DEBUG)ps aux \
-	| $(GREP) -v $(GREP) \
-	| $(GREP) "$(PDF_VIEWER)" \
-	| $(GREP) "$(BUILD_DOCUMENT)" \
-	| $(AWK) '{print $$2}'\
-	| { read pid; test -z "$$pid" || kill -s HUP $$pid; }
-
 $(FIGS_SUFFIXES): %.asy
 	$(ARROW) Compiling $<
 	$(DEBUG)cd $(dir $<) && $(ASYMPTOTE) -f \
@@ -418,6 +383,43 @@ ifneq ($(strip $(BUILD_DIR)),.)
 		$(PWD)/$(dir $<)/$(BUILD_DIR)/$(notdir $@) $(PWD)/$(dir $<)/$(notdir $@)
 endif
 
+# =============
+# View document
+# =============
+#
+# Open and refresh pdf.
+#
+view-pdf: $(PDF_VIEWER) open-pdf ## Refresh and open pdf
+
+# ===============
+# Open pdf viewer
+# ===============
+#
+# Open a viewer if there is none open viewing `$(BUILD_DOCUMENT)`
+#
+open-pdf: $(DEPENDENCIES) $(BUILD_DOCUMENT) ## Open pdf build document
+	-$(DEBUG)ps aux | $(GREP) -v $(GREP) \
+	| $(GREP) "$(PDF_VIEWER)" \
+	| $(GREP) -q "$(BUILD_DOCUMENT)" \
+	||  $(PDF_VIEWER) "$(BUILD_DOCUMENT)" 2>&1 > /dev/null &
+
+# =============
+# Refresh mupdf
+# =============
+#
+# If the opened document is being viewed with `mupdf` this target uses the
+# mupdf signal API to refresh the document.
+#
+mupdf /usr/bin/mupdf: ## Refresh mupdf
+	-$(DEBUG)ps aux \
+	| $(GREP) -v $(GREP) \
+	| $(GREP) "$(PDF_VIEWER)" \
+	| $(GREP) "$(BUILD_DOCUMENT)" \
+	| $(AWK) '{print $$2}'\
+	| { read pid; test -z "$$pid" || kill -s HUP $$pid; }
+
+
+
 $(TOC_FILE): $(TOC_DEP)
 	$(ARROW) Creating $(TOC_FILE)
 	$(DEBUG)mkdir -p $(BUILD_DIR)
@@ -442,6 +444,7 @@ $(FIGS_DEP): $(TEXFILES)
 	| $(removeTexComments) \
 	| $(SED) -n 's/.*{\([^{}]\+\)}.*/\1 \\/p' >> $@
 
+
 # =============
 # Main cleaning
 # =============
@@ -453,6 +456,17 @@ clean: ## Remove build and temporary files
 	$(ARROW) Cleaning up...
 	$(DEBUG){ for file in $(CLEAN_FILES); do echo "  *  $$file"; done }
 	$(DEBUG)rm -rf $(CLEAN_FILES)
+
+
+todo: $(TEXFILES) ## Print the todos from the main document
+	$(ARROW) Parsing \\TODO{} in $(MAIN_SRC)
+	$(DEBUG)$(SED) -n "/\\TODO{/,/}/\
+	{\
+		s/.TODO/===/; \
+		s/[{]//g; \
+		s/[}]/===/g; \
+		p\
+	}" $(TEXFILES)
 
 
 #PANDOC CONVERSIONS
@@ -494,15 +508,6 @@ html: $(MAIN_SRC)
 	$(ARROW) Compiling html document...
 	$(PANDOC) --mathjax -s -f latex -t html5 $(MAIN_SRC) -o $(BUILD_DOCUMENT)
 
-todo: $(TEXFILES) ## Print the todos from the main document
-	$(ARROW) Parsing \\TODO{} in $(MAIN_SRC)
-	$(DEBUG)$(SED) -n "/\\TODO{/,/}/\
-	{\
-		s/.TODO/===/; \
-		s/[{]//g; \
-		s/[}]/===/g; \
-		p\
-	}" $(TEXFILES)
 
 # ===========================
 # Presenter console generator
@@ -538,6 +543,7 @@ $(PDFPC_FILE): $(TEXFILES)
 		END { print frame } \
 	' | tee -a $@
 
+
 RELEASES_DIR=releases
 RELEASES_FMT=tar
 releases: $(BUILD_DOCUMENT) ## Create all releases (according to tags)
@@ -548,6 +554,7 @@ releases: $(BUILD_DOCUMENT) ## Create all releases (according to tags)
 		$(GIT) archive --format=$(RELEASES_FMT) \
 		--prefix=$$tag/ $$tag > $(RELEASES_DIR)/$$tag.$(RELEASES_FMT); \
 	done
+
 
 # ============
 # Distribution
@@ -600,6 +607,7 @@ endif
 dist-clean: CLEAN_FILES=$(DIST_DIR) ## Clean distribution files
 dist-clean: clean
 
+
 DIFF ?=HEAD HEAD~1
 NEW_COMMIT = $(word 1,$(DIFF))
 OLD_COMMIT = $(word 2,$(DIFF))
@@ -640,6 +648,7 @@ diff: ## Create a latexdiff using git versions
 	rm $(DIFF_SRC_NAME) $(patsubst %.tex,%.pdf,$(DIFF_SRC_NAME))
 	git checkout HEAD $(MAIN_SRC)
 
+
 # ==============
 # Check spelling
 # ==============
@@ -660,6 +669,7 @@ spelling: $(TEXFILES) ## Check spelling of latex sources
 		-l $(SPELL_LANG) -t -c $$file; \
 	done
 
+
 # ============
 # Check syntax
 # ============
@@ -670,10 +680,12 @@ spelling: $(TEXFILES) ## Check spelling of latex sources
 lint: $(TEXFILES) ## Check syntax of latex sources (TEX_LINTER)
 	$(TEX_LINTER) $(TEXFILES)
 
+
 watch: ## Build if changes
 	(echo $(TEXFILES) $(BIBTEX_FILES) | $(TR) " " "\n" | entr make &)&
 unwatch: ## Cancel Watching
 	killall entr
+
 
 # ===============================
 # Update the makefile from source
@@ -688,6 +700,7 @@ update: ## Update the makefile from the repository
 	$(DEBUG)wget $(GH_REPO_FILE) -O Makefile
 GH_REPO_FILE ?= https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile
 
+
 # ====================================
 # Ctags generation for latex documents
 # ====================================
@@ -698,6 +711,7 @@ GH_REPO_FILE ?= https://raw.githubusercontent.com/alejandrogallo/latex-makefile/
 tags: $(TEXFILES) ## Create TeX exhuberant ctags
 	$(CTAGS) --language-force=tex -R *
 
+
 # This is used for printing defined variables from Some other scripts. For
 # instance if you want to know the value of the PDF_VIEWER defined in the
 # Makefile, then you would do
@@ -706,6 +720,7 @@ tags: $(TEXFILES) ## Create TeX exhuberant ctags
 FORCE:
 print-%:
 	$(DEBUG)echo '$*=$($*)'
+
 
 # ================
 # Print quick help
@@ -731,6 +746,8 @@ help: ## Prints help for targets with comments
 	@echo "  Copyright Alejandro Gallo GPLv3 $(MAKEFILE_DATE)"
 	@echo ""
 
+
+
 FORCE:
 help-%:
 	$(DEBUG)sed -n "/[#] [=]\+/,/^$*: / { /"$*":/{q}; p; } " $(MAKEFILE_LIST) \
@@ -738,7 +755,6 @@ help-%:
 		| sed -n "1,/===/ {/===/n; s/^# //p}" \
 		| tac \
 		| sed -n "p; 1s/./=/gp; 1a\ "
-
 
 
 # vim: cc=80

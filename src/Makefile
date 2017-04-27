@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.5.7-5-gab305b7
-MAKEFILE_DATE = 04-04-2017 15:16
+MAKEFILE_VERSION = syscmd(git describe --tags)dnl
+MAKEFILE_DATE = syscmd(date +"%d-%m-%Y %H:%M")dnl
 
 ## <<HELP
 #

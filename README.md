@@ -139,7 +139,7 @@ If the opened document is being viewed with `mupdf` this target uses the
 mupdf signal API to refresh the document.
 
 ```bash 
-make $(FIGS_SUFFIXES)
+make $(TOC_FILE)
 ```
 ### Main cleaning ###
 

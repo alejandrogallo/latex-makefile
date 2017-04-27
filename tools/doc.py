@@ -6,7 +6,7 @@ import os
 import sys
 
 
-source_file = "src/Makefile"
+source_file = "dist/Makefile"
 
 Makefile = open(source_file).readlines();
 

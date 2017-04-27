@@ -18,7 +18,7 @@ all: $(MAIN_BIN) doc
 
 $(MAIN_BIN): $(SOURCES)
 	@mkdir -p $(shell dirname $@)
-	bash tools/compile_makefile.sh src/Makefile > dist/Makefile
+	(cd $(SRC) && m4 Makefile) > dist/Makefile
 
 doc: $(README) $(MAIN_BIN)
 $(README): $(SOURCES) README.md.in
