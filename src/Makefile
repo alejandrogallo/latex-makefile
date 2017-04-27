@@ -383,38 +383,38 @@ ifneq ($(strip $(BUILD_DIR)),.)
 		$(PWD)/$(dir $<)/$(BUILD_DIR)/$(notdir $@) $(PWD)/$(dir $<)/$(notdir $@)
 endif
 
-include(pdf-viewer.mk)
+include(pdf-viewer.m4)
 
-include(deps.mk)
+include(deps.m4)
 
-include(clean.mk)
+include(clean.m4)
 
-include(todo.mk)
+include(todo.m4)
 
-include(pandoc.mk)
+include(pandoc.m4)
 
-include(pdfpc.mk)
+include(pdfpc.m4)
 
-include(release.mk)
+include(release.m4)
 
-include(dist.mk)
+include(dist.m4)
 
-include(diff.mk)
+include(diff.m4)
 
-include(spelling.mk)
+include(spelling.m4)
 
-include(lint.mk)
+include(lint.m4)
 
-include(watch.mk)
+include(watch.m4)
 
-include(update.mk)
+include(update.m4)
 
-include(tags.mk)
+include(tags.m4)
 
-include(print-variable.mk)
+include(print-variable.m4)
 
-include(help.mk)
+include(help.m4)
 
-include(help-target.mk)
+include(help-target.m4)
 
 # vim: cc=80
