@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.5.8
-MAKEFILE_DATE = 26-04-2017 17:36
+MAKEFILE_VERSION = v1.5.7-5-gab305b7
+MAKEFILE_DATE = 04-04-2017 15:16
 
 ## <<HELP
 #
@@ -303,6 +303,7 @@ $(BUILD_DIR)/%: $(PACKAGES_DIR)/%
 	$(DEBUG)mkdir -p $(BUILD_DIR)
 	$(DEBUG)cp $^ $@
 
+
 # =================
 # Force compilation
 # =================
@@ -333,6 +334,7 @@ $(BIBITEM_FILES): $(BIBTEX_FILES)
 	$(ARROW) Compiling again $(BUILD_DOCUMENT) to update refs
 	$(DEBUG)$(MAKE) --no-print-directory force
 
+
 $(AUX_FILE):
 	$(ARROW) Creating $@
 	$(DEBUG)$(PDFLATEX) $(BUILD_DIR_FLAG) $(MAIN_SRC) $(FD_OUTPUT)
@@ -343,6 +345,46 @@ $(AUX_FILE):
 	$(PDFLATEX) $<
 	$(ARROW) "Creating pythontex"
 	$(PYTHONTEX) $<
+
+$(FIGS_SUFFIXES): %.asy
+	$(ARROW) Compiling $<
+	$(DEBUG)cd $(dir $<) && $(ASYMPTOTE) -f \
+		$(shell echo $(suffix $@) | $(TR) -d "\.") $(notdir $< ) $(FD_OUTPUT)
+
+$(FIGS_SUFFIXES): %.gnuplot
+	$(ARROW) Compiling $<
+	$(DEBUG)cd $(dir $< ) && $(GNUPLOT) $(notdir $< ) $(FD_OUTPUT)
+
+$(FIGS_SUFFIXES): %.sh
+	$(ARROW) Compiling $<
+	$(DEBUG)cd $(dir $< ) && $(SH) $(notdir $< ) $(FD_OUTPUT)
+
+$(FIGS_SUFFIXES): %.py
+	$(ARROW) Compiling $<
+	$(DEBUG)cd $(dir $< ) && $(PY) $(notdir $< ) $(FD_OUTPUT)
+
+$(FIGS_SUFFIXES): %.tex
+	$(ARROW) Compiling $< into $@
+	$(DEBUG)mkdir -p $(dir $<)/$(BUILD_DIR)
+	$(DEBUG)cd $(dir $<) && $(PDFLATEX) \
+		$(BUILD_DIR_FLAG) $(notdir $*.tex ) $(FD_OUTPUT)
+ifneq ($(strip $(BUILD_DIR)),.)
+	-$(DEBUG)test ! "$@ = *.aux" || cp \
+		$(PWD)/$(dir $<)/$(BUILD_DIR)/$(notdir $@) $(PWD)/$(dir $<)/$(notdir $@)
+endif
+
+%.pdf: %.eps
+  $(ARROW) Converting $< into $@
+  $(DEBUG)cd $(dir $< ) && $(EPS2PDF) $(notdir $< ) $(FD_OUTPUT)
+
+
+%.tex: %.sh
+	$(ARROW) Creating $@ from $<
+	$(DEBUG)cd $(dir $<) && $(SH) $(notdir $<) $(FD_OUTPUT)
+
+%.tex: %.py
+	$(ARROW) Creating $@ from $<
+	$(DEBUG)cd $(dir $<) && $(PY) $(notdir $<) $(FD_OUTPUT)
 
 # =============
 # View document
@@ -379,44 +421,7 @@ mupdf /usr/bin/mupdf: ## Refresh mupdf
 	| $(AWK) '{print $$2}'\
 	| { read pid; test -z "$$pid" || kill -s HUP $$pid; }
 
-$(FIGS_SUFFIXES): %.asy
-	$(ARROW) Compiling $<
-	$(DEBUG)cd $(dir $<) && $(ASYMPTOTE) -f \
-		$(shell echo $(suffix $@) | $(TR) -d "\.") $(notdir $< ) $(FD_OUTPUT)
 
-$(FIGS_SUFFIXES): %.gnuplot
-	$(ARROW) Compiling $<
-	$(DEBUG)cd $(dir $< ) && $(GNUPLOT) $(notdir $< ) $(FD_OUTPUT)
-
-$(FIGS_SUFFIXES): %.sh
-	$(ARROW) Compiling $<
-	$(DEBUG)cd $(dir $< ) && $(SH) $(notdir $< ) $(FD_OUTPUT)
-
-%.pdf: %.eps
-	$(ARROW) Converting $< into $@
-	$(DEBUG)cd $(dir $< ) && $(EPS2PDF) $(notdir $< ) $(FD_OUTPUT)
-
-%.tex: %.sh
-	$(ARROW) Creating $@ from $<
-	$(DEBUG)cd $(dir $<) && $(SH) $(notdir $<) $(FD_OUTPUT)
-
-$(FIGS_SUFFIXES): %.py
-	$(ARROW) Compiling $<
-	$(DEBUG)cd $(dir $< ) && $(PY) $(notdir $< ) $(FD_OUTPUT)
-
-%.tex: %.py
-	$(ARROW) Creating $@ from $<
-	$(DEBUG)cd $(dir $<) && $(PY) $(notdir $<) $(FD_OUTPUT)
-
-$(FIGS_SUFFIXES): %.tex
-	$(ARROW) Compiling $< into $@
-	$(DEBUG)mkdir -p $(dir $<)/$(BUILD_DIR)
-	$(DEBUG)cd $(dir $<) && $(PDFLATEX) \
-		$(BUILD_DIR_FLAG) $(notdir $*.tex ) $(FD_OUTPUT)
-ifneq ($(strip $(BUILD_DIR)),.)
-	-$(DEBUG)test ! "$@ = *.aux" || cp \
-		$(PWD)/$(dir $<)/$(BUILD_DIR)/$(notdir $@) $(PWD)/$(dir $<)/$(notdir $@)
-endif
 
 $(TOC_FILE): $(TOC_DEP)
 	$(ARROW) Creating $(TOC_FILE)
@@ -442,6 +447,7 @@ $(FIGS_DEP): $(TEXFILES)
 	| $(removeTexComments) \
 	| $(SED) -n 's/.*{\([^{}]\+\)}.*/\1 \\/p' >> $@
 
+
 # =============
 # Main cleaning
 # =============
@@ -453,6 +459,17 @@ clean: ## Remove build and temporary files
 	$(ARROW) Cleaning up...
 	$(DEBUG){ for file in $(CLEAN_FILES); do echo "  *  $$file"; done }
 	$(DEBUG)rm -rf $(CLEAN_FILES)
+
+
+todo: $(TEXFILES) ## Print the todos from the main document
+	$(ARROW) Parsing \\TODO{} in $(MAIN_SRC)
+	$(DEBUG)$(SED) -n "/\\TODO{/,/}/\
+	{\
+		s/.TODO/===/; \
+		s/[{]//g; \
+		s/[}]/===/g; \
+		p\
+	}" $(TEXFILES)
 
 
 #PANDOC CONVERSIONS
@@ -494,15 +511,6 @@ html: $(MAIN_SRC)
 	$(ARROW) Compiling html document...
 	$(PANDOC) --mathjax -s -f latex -t html5 $(MAIN_SRC) -o $(BUILD_DOCUMENT)
 
-todo: $(TEXFILES) ## Print the todos from the main document
-	$(ARROW) Parsing \\TODO{} in $(MAIN_SRC)
-	$(DEBUG)$(SED) -n "/\\TODO{/,/}/\
-	{\
-		s/.TODO/===/; \
-		s/[{]//g; \
-		s/[}]/===/g; \
-		p\
-	}" $(TEXFILES)
 
 # ===========================
 # Presenter console generator
@@ -538,6 +546,7 @@ $(PDFPC_FILE): $(TEXFILES)
 		END { print frame } \
 	' | tee -a $@
 
+
 RELEASES_DIR=releases
 RELEASES_FMT=tar
 releases: $(BUILD_DOCUMENT) ## Create all releases (according to tags)
@@ -548,6 +557,7 @@ releases: $(BUILD_DOCUMENT) ## Create all releases (according to tags)
 		$(GIT) archive --format=$(RELEASES_FMT) \
 		--prefix=$$tag/ $$tag > $(RELEASES_DIR)/$$tag.$(RELEASES_FMT); \
 	done
+
 
 # ============
 # Distribution
@@ -600,6 +610,7 @@ endif
 dist-clean: CLEAN_FILES=$(DIST_DIR) ## Clean distribution files
 dist-clean: clean
 
+
 DIFF ?=HEAD HEAD~1
 NEW_COMMIT = $(word 1,$(DIFF))
 OLD_COMMIT = $(word 2,$(DIFF))
@@ -640,6 +651,7 @@ diff: ## Create a latexdiff using git versions
 	rm $(DIFF_SRC_NAME) $(patsubst %.tex,%.pdf,$(DIFF_SRC_NAME))
 	git checkout HEAD $(MAIN_SRC)
 
+
 # ==============
 # Check spelling
 # ==============
@@ -660,6 +672,7 @@ spelling: $(TEXFILES) ## Check spelling of latex sources
 		-l $(SPELL_LANG) -t -c $$file; \
 	done
 
+
 # ============
 # Check syntax
 # ============
@@ -670,10 +683,12 @@ spelling: $(TEXFILES) ## Check spelling of latex sources
 lint: $(TEXFILES) ## Check syntax of latex sources (TEX_LINTER)
 	$(TEX_LINTER) $(TEXFILES)
 
+
 watch: ## Build if changes
 	(echo $(TEXFILES) $(BIBTEX_FILES) | $(TR) " " "\n" | entr make &)&
 unwatch: ## Cancel Watching
 	killall entr
+
 
 # ===============================
 # Update the makefile from source
@@ -688,6 +703,7 @@ update: ## Update the makefile from the repository
 	$(DEBUG)wget $(GH_REPO_FILE) -O Makefile
 GH_REPO_FILE ?= https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile
 
+
 # ====================================
 # Ctags generation for latex documents
 # ====================================
@@ -698,6 +714,7 @@ GH_REPO_FILE ?= https://raw.githubusercontent.com/alejandrogallo/latex-makefile/
 tags: $(TEXFILES) ## Create TeX exhuberant ctags
 	$(CTAGS) --language-force=tex -R *
 
+
 # This is used for printing defined variables from Some other scripts. For
 # instance if you want to know the value of the PDF_VIEWER defined in the
 # Makefile, then you would do
@@ -706,6 +723,7 @@ tags: $(TEXFILES) ## Create TeX exhuberant ctags
 FORCE:
 print-%:
 	$(DEBUG)echo '$*=$($*)'
+
 
 # ================
 # Print quick help
@@ -731,6 +749,8 @@ help: ## Prints help for targets with comments
 	@echo "  Copyright Alejandro Gallo GPLv3 $(MAKEFILE_DATE)"
 	@echo ""
 
+
+
 FORCE:
 help-%:
 	$(DEBUG)sed -n "/[#] [=]\+/,/^$*: / { /"$*":/{q}; p; } " $(MAKEFILE_LIST) \
@@ -738,7 +758,6 @@ help-%:
 		| sed -n "1,/===/ {/===/n; s/^# //p}" \
 		| tac \
 		| sed -n "p; 1s/./=/gp; 1a\ "
-
 
 
 # vim: cc=80

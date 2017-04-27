@@ -294,14 +294,7 @@ $(BUILD_DOCUMENT): $(DEPENDENCIES)
 view-html: $(BUILD_DOCUMENT)
 	(firefox $(BUILD_DOCUMENT) &)&
 
-$(BUILD_DIR):
-	$(ARROW) Creating the $@ directory
-	$(DEBUG)mkdir -p $@ $(FD_OUTPUT)
-
-$(BUILD_DIR)/%: $(PACKAGES_DIR)/%
-	$(ARROW) Copying TeX libraries: $@
-	$(DEBUG)mkdir -p $(BUILD_DIR)
-	$(DEBUG)cp $^ $@
+include(build-dir.m4)
 
 # =================
 # Force compilation
@@ -313,25 +306,7 @@ $(BUILD_DIR)/%: $(PACKAGES_DIR)/%
 force: ## Force creation of BUILD_DOCUMENT
 	$(DEBUG)$(MAKE) --no-print-directory -W $(MAIN_SRC) $(BUILD_DOCUMENT)
 
-# =======================
-# Bibliography generation
-# =======================
-#
-# This generates a `bbl` file from a  `bib` file For documents without a `bib`
-# file, this  will also be  targeted, bit  the '-' before  the `$(BIBTEX)`
-# ensures that the whole building doesn't fail because of it
-#
-$(BIBITEM_FILES): $(BIBTEX_FILES)
-	$(ARROW) "Compiling the bibliography"
-	-$(DEBUG)test $(BUILD_DIR) = . || { \
-		for bibfile in $(BIBTEX_FILES); do \
-			mkdir -p $(BUILD_DIR)/$$(dirname $$bibfile); \
-			cp -u $$bibfile $(BUILD_DIR)/$$(dirname $$bibfile); \
-		done \
-		}
-	$(DEBUG)cd $(BUILD_DIR); $(BIBTEX) $(patsubst %.tex,%,$(MAIN_SRC)) $(FD_OUTPUT)
-	$(ARROW) Compiling again $(BUILD_DOCUMENT) to update refs
-	$(DEBUG)$(MAKE) --no-print-directory force
+include(bilbiography.m4)
 
 $(AUX_FILE):
 	$(ARROW) Creating $@
@@ -344,44 +319,15 @@ $(AUX_FILE):
 	$(ARROW) "Creating pythontex"
 	$(PYTHONTEX) $<
 
-$(FIGS_SUFFIXES): %.asy
-	$(ARROW) Compiling $<
-	$(DEBUG)cd $(dir $<) && $(ASYMPTOTE) -f \
-		$(shell echo $(suffix $@) | $(TR) -d "\.") $(notdir $< ) $(FD_OUTPUT)
-
-$(FIGS_SUFFIXES): %.gnuplot
-	$(ARROW) Compiling $<
-	$(DEBUG)cd $(dir $< ) && $(GNUPLOT) $(notdir $< ) $(FD_OUTPUT)
-
-$(FIGS_SUFFIXES): %.sh
-	$(ARROW) Compiling $<
-	$(DEBUG)cd $(dir $< ) && $(SH) $(notdir $< ) $(FD_OUTPUT)
-
-%.pdf: %.eps
-	$(ARROW) Converting $< into $@
-	$(DEBUG)cd $(dir $< ) && $(EPS2PDF) $(notdir $< ) $(FD_OUTPUT)
+include(figure-targets.m4)
 
 %.tex: %.sh
 	$(ARROW) Creating $@ from $<
 	$(DEBUG)cd $(dir $<) && $(SH) $(notdir $<) $(FD_OUTPUT)
 
-$(FIGS_SUFFIXES): %.py
-	$(ARROW) Compiling $<
-	$(DEBUG)cd $(dir $< ) && $(PY) $(notdir $< ) $(FD_OUTPUT)
-
 %.tex: %.py
 	$(ARROW) Creating $@ from $<
 	$(DEBUG)cd $(dir $<) && $(PY) $(notdir $<) $(FD_OUTPUT)
-
-$(FIGS_SUFFIXES): %.tex
-	$(ARROW) Compiling $< into $@
-	$(DEBUG)mkdir -p $(dir $<)/$(BUILD_DIR)
-	$(DEBUG)cd $(dir $<) && $(PDFLATEX) \
-		$(BUILD_DIR_FLAG) $(notdir $*.tex ) $(FD_OUTPUT)
-ifneq ($(strip $(BUILD_DIR)),.)
-	-$(DEBUG)test ! "$@ = *.aux" || cp \
-		$(PWD)/$(dir $<)/$(BUILD_DIR)/$(notdir $@) $(PWD)/$(dir $<)/$(notdir $@)
-endif
 
 include(pdf-viewer.m4)
 
