@@ -1,5 +1,5 @@
 $(TOC_FILE): $(TOC_DEP)
-	$(ARROW) Creating $(TOC_FILE)
+	$(ARROW) $(call print-cmd-name,$(PDFLATEX)) $@
 	$(DEBUG)mkdir -p $(BUILD_DIR)
 	$(DEBUG)cd $(dir $(MAIN_SRC) ) && $(PDFLATEX) \
 		$(BUILD_DIR_FLAG) $(notdir $(MAIN_SRC) ) $(FD_OUTPUT)

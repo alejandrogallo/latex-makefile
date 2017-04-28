@@ -24,7 +24,7 @@ REVEALJS_SRC ?= https://github.com/hakimel/reveal.js/
 # This creates a man page using `pandoc`.
 #
 man: $(MAIN_SRC)
-	$(ARROW) Creating man pages...
+	$(ARROW) $(call print-cmd-name,$(PANDOC)) $(BUILD_DOCUMENT)
 	$(PANDOC) -s -f latex -t man $(MAIN_SRC) -o $(BUILD_DOCUMENT)
 
 # =============
@@ -34,7 +34,7 @@ man: $(MAIN_SRC)
 # This creates an html page using `pandoc`.
 #
 html: $(MAIN_SRC)
-	$(ARROW) Compiling html document...
+	$(ARROW) $(call print-cmd-name,$(PANDOC)) $(BUILD_DOCUMENT)
 	$(PANDOC) --mathjax -s -f latex -t html5 $(MAIN_SRC) -o $(BUILD_DOCUMENT)
 
 dnl vim: noexpandtab

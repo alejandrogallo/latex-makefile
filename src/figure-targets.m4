@@ -2,24 +2,26 @@
 EPS2PDF ?= epstopdf
 
 $(FIGS_SUFFIXES): %.asy
-	$(ARROW) Compiling $<
+	$(ARROW) $(call print-cmd-name,$(ASYMPTOTE)) $@
 	$(DEBUG)cd $(dir $<) && $(ASYMPTOTE) -f \
 		$(shell echo $(suffix $@) | $(TR) -d "\.") $(notdir $< ) $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.gnuplot
+	$(ARROW) $(call print-cmd-name,$(GNUPLOT)) $@
 	$(ARROW) Compiling $<
 	$(DEBUG)cd $(dir $< ) && $(GNUPLOT) $(notdir $< ) $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.sh
-	$(ARROW) Compiling $<
+	$(ARROW) $(call print-cmd-name,$(SH)) $@
 	$(DEBUG)cd $(dir $< ) && $(SH) $(notdir $< ) $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.py
+	$(ARROW) $(call print-cmd-name,$(PY)) $@
 	$(ARROW) Compiling $<
 	$(DEBUG)cd $(dir $< ) && $(PY) $(notdir $< ) $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.tex
-	$(ARROW) Compiling $< into $@
+	$(ARROW) $(call print-cmd-name,$(PDFLATEX)) $@
 	$(DEBUG)mkdir -p $(dir $<)/$(BUILD_DIR)
 	$(DEBUG)cd $(dir $<) && $(PDFLATEX) \
 		$(BUILD_DIR_FLAG) $(notdir $*.tex ) $(FD_OUTPUT)
@@ -29,7 +31,7 @@ ifneq ($(strip $(BUILD_DIR)),.)
 endif
 
 %.pdf: %.eps
-	$(ARROW) Converting $< into $@
+	$(ARROW) $(call print-cmd-name,$(EPS2PDF)) $@
 	$(DEBUG)cd $(dir $< ) && $(EPS2PDF) $(notdir $< ) $(FD_OUTPUT)
 
 dnl vim: noexpandtab

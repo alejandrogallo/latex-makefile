@@ -1,3 +1,8 @@
+
+# Remove command
+RM ?= rm
+RM_FLAGS ?= -rf
+
 # File to be cleaned
 CLEAN_FILES ?= \
 $(wildcard $(PACKAGES_FILES_BUILD)) \
@@ -21,7 +26,11 @@ $(if $(filter-out .,$(strip $(BUILD_DIR))),$(wildcard $(BUILD_DIR))) \
 #
 clean: ## Remove build and temporary files
 	$(ARROW) Cleaning up...
-	$(DEBUG){ for file in $(CLEAN_FILES); do echo "  *  $$file"; done }
-	$(DEBUG)rm -rf $(CLEAN_FILES)
+	$(DEBUG){\
+		for file in $(CLEAN_FILES); do \
+			$(RM) $(RM_FLAGS) $$file &&      \
+			echo -e $(call print-cmd-name,RM)  "$$file"; \
+		done \
+	}
 
 dnl vim: noexpandtab
