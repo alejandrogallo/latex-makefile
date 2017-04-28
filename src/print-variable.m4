@@ -7,4 +7,17 @@ FORCE:
 print-%:
 	$(DEBUG)echo '$*=$($*)'
 
+# =====================================
+# Print a variable used by the Makefile
+# =====================================
+#
+# For debugging purposes it is useful to print out some variables that the
+# makefile is using, for that just type `make print` and you will be prompted
+# to insert the name of the variable that you want to know.
+#
+FORCE:
+print: ## Print a variable
+	$(DEBUG)read -p "Variable to print: " && \
+		$(MAKE) --no-print-directory print-$$REPLY
+
 dnl vim: noexpandtab
