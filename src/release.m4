@@ -8,3 +8,5 @@ releases: $(BUILD_DOCUMENT) ## Create all releases (according to tags)
 		$(GIT) archive --format=$(RELEASES_FMT) \
 		--prefix=$$tag/ $$tag > $(RELEASES_DIR)/$$tag.$(RELEASES_FMT); \
 	done
+
+dnl vim: noexpandtab

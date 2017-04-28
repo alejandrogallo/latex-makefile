@@ -36,3 +36,5 @@ man: $(MAIN_SRC)
 html: $(MAIN_SRC)
 	$(ARROW) Compiling html document...
 	$(PANDOC) --mathjax -s -f latex -t html5 $(MAIN_SRC) -o $(BUILD_DOCUMENT)
+
+dnl vim: noexpandtab

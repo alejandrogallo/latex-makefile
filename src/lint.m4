@@ -7,3 +7,5 @@
 #
 lint: $(TEXFILES) ## Check syntax of latex sources (TEX_LINTER)
 	$(TEX_LINTER) $(TEXFILES)
+
+dnl vim: noexpandtab

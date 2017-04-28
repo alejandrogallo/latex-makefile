@@ -37,3 +37,5 @@ diff: ## Create a latexdiff using git versions
 		DIST_DIR=$(DIFF_BUILD_DIR)
 	rm $(DIFF_SRC_NAME) $(patsubst %.tex,%.pdf,$(DIFF_SRC_NAME))
 	git checkout HEAD $(MAIN_SRC)
+
+dnl vim: noexpandtab

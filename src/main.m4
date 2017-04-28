@@ -312,3 +312,5 @@ include(help.m4)
 include(help-target.m4)
 
 # vim: cc=80
+
+dnl vim: noexpandtab

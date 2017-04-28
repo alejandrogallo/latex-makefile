@@ -48,3 +48,5 @@ mupdf /usr/bin/mupdf: ## Refresh mupdf
 	| $(AWK) '{print $$2}'\
 	| { read pid; test -z "$$pid" || kill -s HUP $$pid; }
 
+
+dnl vim: noexpandtab

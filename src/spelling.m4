@@ -17,3 +17,5 @@ spelling: $(TEXFILES) ## Check spelling of latex sources
 		$(SPELLER) --home-dir=$(SPELL_DIR) \
 		-l $(SPELL_LANG) -t -c $$file; \
 	done
+
+dnl vim: noexpandtab

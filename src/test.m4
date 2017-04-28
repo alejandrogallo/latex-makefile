@@ -758,3 +758,5 @@ help-%:
 
 
 # vim: cc=80
+
+dnl vim: noexpandtab

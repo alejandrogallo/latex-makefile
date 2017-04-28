@@ -7,3 +7,5 @@
 #
 tags: $(TEXFILES) ## Create TeX exhuberant ctags
 	$(CTAGS) --language-force=tex -R *
+
+dnl vim: noexpandtab

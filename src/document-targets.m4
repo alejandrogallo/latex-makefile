@@ -9,3 +9,5 @@
 $(AUX_FILE):
 	$(ARROW) Creating $@
 	$(DEBUG)$(PDFLATEX) $(BUILD_DIR_FLAG) $(MAIN_SRC) $(FD_OUTPUT)
+
+dnl vim: noexpandtab

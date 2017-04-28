@@ -23,3 +23,5 @@ clean: ## Remove build and temporary files
 	$(ARROW) Cleaning up...
 	$(DEBUG){ for file in $(CLEAN_FILES); do echo "  *  $$file"; done }
 	$(DEBUG)rm -rf $(CLEAN_FILES)
+
+dnl vim: noexpandtab

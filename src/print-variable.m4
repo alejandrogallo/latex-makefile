@@ -6,3 +6,5 @@
 FORCE:
 print-%:
 	$(DEBUG)echo '$*=$($*)'
+
+dnl vim: noexpandtab

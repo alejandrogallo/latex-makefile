@@ -21,3 +21,5 @@ $(FIGS_DEP): $(TEXFILES)
 	$(DEBUG)$(GREP) --no-filename -E '\\`include'(graphic|pdf).' $(TEXFILES)  \
 	| $(removeTexComments) \
 	| $(SED) -n 's/.*{\([^{}]\+\)}.*/\1 \\/p' >> $@
+
+dnl vim: noexpandtab

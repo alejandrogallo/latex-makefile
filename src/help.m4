@@ -21,3 +21,5 @@ help: ## Prints help for targets with comments
 	@echo "  https://github.com/alejandrogallo/latex-makefile"
 	@echo "  Copyright Alejandro Gallo GPLv3 $(MAKEFILE_DATE)"
 	@echo ""
+
+dnl vim: noexpandtab

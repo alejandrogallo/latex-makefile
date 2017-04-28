@@ -6,3 +6,5 @@ else
 LINUX :=
 OSX   := 1
 endif
+
+dnl vim: noexpandtab

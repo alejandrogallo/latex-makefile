@@ -17,3 +17,5 @@ $(BIBITEM_FILES): $(BIBTEX_FILES)
 	$(DEBUG)cd $(BUILD_DIR); $(BIBTEX) $(patsubst %.tex,%,$(MAIN_SRC)) $(FD_OUTPUT)
 	$(ARROW) Compiling again $(BUILD_DOCUMENT) to update refs
 	$(DEBUG)$(MAKE) --no-print-directory force
+
+dnl vim: noexpandtab

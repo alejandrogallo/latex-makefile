@@ -6,3 +6,5 @@ $(BUILD_DIR)/%: $(PACKAGES_DIR)/%
 	$(ARROW) Copying TeX libraries: $@
 	$(DEBUG)mkdir -p $(BUILD_DIR)
 	$(DEBUG)cp $^ $@
+
+dnl vim: noexpandtab
