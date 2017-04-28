@@ -1,3 +1,6 @@
+# Eps to pdf converter
+EPS2PDF ?= epstopdf
+
 $(FIGS_SUFFIXES): %.asy
 	$(ARROW) Compiling $<
 	$(DEBUG)cd $(dir $<) && $(ASYMPTOTE) -f \

@@ -1,3 +1,8 @@
+SPELLER ?= aspell
+SPELL_DIR ?= .spell
+SPELL_LANG ?= en
+CHECK_SPELL ?=
+
 # ==============
 # Check spelling
 # ==============

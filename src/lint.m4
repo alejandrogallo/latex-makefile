@@ -1,3 +1,6 @@
+# For checking tex syntax
+TEX_LINTER ?= chktex
+
 # ============
 # Check syntax
 # ============

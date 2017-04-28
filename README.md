@@ -35,7 +35,6 @@ variables for the project, like the verbosity `QUIET=1` and many more.
     
   * `LATEX`(`pdflatex`): Shell utilities
   * `LATEXDIFF`(`latexdiff`): For creating differences
-  * `TEX_LINTER`(`chktex`): For checking tex syntax
   * `PDFLATEX`(`pdflatex`): 
   * `ASYMPTOTE`(`asy`): For asymptote figures
   * `GNUPLOT`(`gnuplot`): Gnuplot interpreter
@@ -43,25 +42,20 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `BIBTEX`(`bibtex`): 
   * `SH`(`bash`): Shell used
   * `PY`(`python`): Python interpreter
-  * `PYTHONTEX`(`pythontex`): 
   * `GREP`(`grep`): Grep program version
   * `FIND`(`find`): Find utility
   * `SED`(`see`): sed program version
   * `AWK`(`see`): 
-  * `SPELLER`(`aspell`): 
   * `CTAGS`(`ctags`): For creating tags
   * `READLINK`(`see`): To get complete paths
   * `XARGS`(`xargs`): 
   * `TR`(`tr`): 
   * `GIT`(`git`): 
   * `WHICH`(`which`): 
-  * `TPUT`(`see`): For coloring
-  * `WITH_COLOR`(`1`): If messages should have color
   * `QQUIET`(`empty`): If the main messages should be also muted
   * `DEBUG`(`@`): 
-  * `CHECK_SPELL`(`empty`): 
-  * `SPELL_LANG`(`en`): 
-  * `SPELL_DIR`(`.spell`): 
+  * `TPUT`(`see`): For coloring
+  * `WITH_COLOR`(`1`): If messages should have color
   * `COLOR_B`(`see`): 
   * `COLOR_E`(`see`): 
   * `ARROW`(`@echo "see`): 
@@ -86,6 +80,7 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `PACKAGES_DIR`(`libtex`): Tex libraries directory
   * `PACKAGES_FILES`(`see`): Which files are tex libraries
   * `BROWSER`(`firefox`): 
+  * `PYTHONTEX`(`pythontex`): 
   * `PDF_VIEWER`(`see`): Recognise pdf viewer automagically
   * `CLEAN_FILES`(`\`): File to be cleaned
   * `REVEALJS_SRC`(`https://github.com/hakimel/reveal.js/`): 
@@ -93,6 +88,11 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `DIFF_BUILD_DIR_MAIN`(`diffs`): 
   * `DIFF_BUILD_DIR`(`see`): 
   * `DIFF_SRC_NAME`(`diff.tex`): 
+  * `SPELLER`(`aspell`): 
+  * `SPELL_DIR`(`.spell`): 
+  * `SPELL_LANG`(`en`): 
+  * `CHECK_SPELL`(`empty`): 
+  * `TEX_LINTER`(`chktex`): For checking tex syntax
   * `GH_REPO_FILE`(`https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile`): 
 
 

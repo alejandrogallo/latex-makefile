@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.5.8-10-g465d7ae
-MAKEFILE_DATE = 28-04-2017 11:13
+MAKEFILE_VERSION = v1.5.8-12-g26049c3
+MAKEFILE_DATE = 28-04-2017 11:28
 
 ## <<HELP
 #
@@ -26,6 +26,7 @@ OSX   := 1
 endif
 
 
+
 # PARAMETERS, OVERRIDE THESE
 ############################
 
@@ -33,8 +34,6 @@ endif
 LATEX      ?= pdflatex
 # For creating differences
 LATEXDIFF  ?= latexdiff
-# For checking tex syntax
-TEX_LINTER ?= chktex
 PDFLATEX   ?= pdflatex
 # For asymptote figures
 ASYMPTOTE  ?= asy
@@ -47,7 +46,6 @@ BIBTEX     ?= bibtex
 SH         ?= bash
 # Python interpreter
 PY         ?= python
-PYTHONTEX  ?= pythontex
 # Grep program version
 GREP       ?= grep
 # Find utility
@@ -55,7 +53,6 @@ FIND       ?= find
 # sed program version
 SED        ?= $(if $(OSX),gsed,sed)
 AWK        ?= $(if $(OSX),gawk,awk)
-SPELLER    ?= aspell
 # For creating tags
 CTAGS      ?= ctags
 # To get complete paths
@@ -64,18 +61,15 @@ XARGS      ?= xargs
 TR         ?= tr
 GIT        ?= git
 WHICH      ?= which
+
+# If the main messages should be also muted
+QQUIET     ?=
+DEBUG      ?= @
 # For coloring
 TPUT       ?= $(shell $(WHICH) tput 2> /dev/null)
 # If messages should have color
 WITH_COLOR ?= 1
-# If the main messages should be also muted
-QQUIET     ?=
-DEBUG      ?= @
-CHECK_SPELL?=
-SPELL_LANG ?= en
-SPELL_DIR  ?= .spell
-# Eps to pdf converter
-EPS2PDF    ?= epstopdf
+
 
 ifndef QQUIET
 
@@ -93,6 +87,7 @@ else
 ARROW           := @ > /dev/null echo
 ECHO            := @ > /dev/null echo
 endif #QQUIET
+
 
 # Remove comments from some file, this variables is intended to be put
 # in a shell call for processing of TeX files
@@ -273,6 +268,7 @@ $(BUILD_DIR)/%: $(PACKAGES_DIR)/%
 	$(DEBUG)cp $^ $@
 
 
+
 # =================
 # Force compilation
 # =================
@@ -286,6 +282,7 @@ force: ## Force creation of BUILD_DOCUMENT
 BROWSER ?= firefox
 view-html: $(BUILD_DOCUMENT)
 	$(DEBUG)($(BROWSER) $(BUILD_DOCUMENT) &)&
+
 
 
 # =======================
@@ -309,6 +306,9 @@ $(BIBITEM_FILES): $(BIBTEX_FILES)
 	$(DEBUG)$(MAKE) --no-print-directory force
 
 
+
+PYTHONTEX  ?= pythontex
+
 #FIXME: find a way of not having to compile the main document again
 %.pytxcode: %.tex
 	$(ARROW) "Compiling latex for pythontex"
@@ -316,6 +316,10 @@ $(BIBITEM_FILES): $(BIBTEX_FILES)
 	$(ARROW) "Creating pythontex"
 	$(PYTHONTEX) $<
 
+
+
+# Eps to pdf converter
+EPS2PDF ?= epstopdf
 
 $(FIGS_SUFFIXES): %.asy
 	$(ARROW) Compiling $<
@@ -361,6 +365,7 @@ endif
 $(AUX_FILE):
 	$(ARROW) Creating $@
 	$(DEBUG)$(PDFLATEX) $(BUILD_DIR_FLAG) $(MAIN_SRC) $(FD_OUTPUT)
+
 
 
 
@@ -415,6 +420,7 @@ mupdf /usr/bin/mupdf: ## Refresh mupdf
 
 
 
+
 $(TOC_FILE): $(TOC_DEP)
 	$(ARROW) Creating $(TOC_FILE)
 	$(DEBUG)mkdir -p $(BUILD_DIR)
@@ -438,6 +444,7 @@ $(FIGS_DEP): $(TEXFILES)
 	$(DEBUG)$(GREP) --no-filename -E '\\include(graphic|pdf).' $(TEXFILES)  \
 	| $(removeTexComments) \
 	| $(SED) -n 's/.*{\([^{}]\+\)}.*/\1 \\/p' >> $@
+
 
 
 # File to be cleaned
@@ -467,6 +474,7 @@ clean: ## Remove build and temporary files
 	$(DEBUG)rm -rf $(CLEAN_FILES)
 
 
+
 todo: $(TEXFILES) ## Print the todos from the main document
 	$(ARROW) Parsing \\TODO{} in $(MAIN_SRC)
 	$(DEBUG)$(SED) -n "/\\TODO{/,/}/\
@@ -476,6 +484,7 @@ todo: $(TEXFILES) ## Print the todos from the main document
 		s/[}]/===/g; \
 		p\
 	}" $(TEXFILES)
+
 
 
 #PANDOC CONVERSIONS
@@ -518,6 +527,7 @@ html: $(MAIN_SRC)
 	$(PANDOC) --mathjax -s -f latex -t html5 $(MAIN_SRC) -o $(BUILD_DOCUMENT)
 
 
+
 # ===========================
 # Presenter console generator
 # ===========================
@@ -553,6 +563,7 @@ $(PDFPC_FILE): $(TEXFILES)
 	' | tee -a $@
 
 
+
 RELEASES_DIR=releases
 RELEASES_FMT=tar
 releases: $(BUILD_DOCUMENT) ## Create all releases (according to tags)
@@ -563,6 +574,7 @@ releases: $(BUILD_DOCUMENT) ## Create all releases (according to tags)
 		$(GIT) archive --format=$(RELEASES_FMT) \
 		--prefix=$$tag/ $$tag > $(RELEASES_DIR)/$$tag.$(RELEASES_FMT); \
 	done
+
 
 
 # ============
@@ -617,6 +629,7 @@ dist-clean: CLEAN_FILES=$(DIST_DIR) ## Clean distribution files
 dist-clean: clean
 
 
+
 DIFF ?=HEAD HEAD~1
 NEW_COMMIT = $(word 1,$(DIFF))
 OLD_COMMIT = $(word 2,$(DIFF))
@@ -658,6 +671,12 @@ diff: ## Create a latexdiff using git versions
 	git checkout HEAD $(MAIN_SRC)
 
 
+
+SPELLER ?= aspell
+SPELL_DIR ?= .spell
+SPELL_LANG ?= en
+CHECK_SPELL ?=
+
 # ==============
 # Check spelling
 # ==============
@@ -679,6 +698,10 @@ spelling: $(TEXFILES) ## Check spelling of latex sources
 	done
 
 
+
+# For checking tex syntax
+TEX_LINTER ?= chktex
+
 # ============
 # Check syntax
 # ============
@@ -690,10 +713,12 @@ lint: $(TEXFILES) ## Check syntax of latex sources (TEX_LINTER)
 	$(TEX_LINTER) $(TEXFILES)
 
 
+
 watch: ## Build if changes
 	(echo $(TEXFILES) $(BIBTEX_FILES) | $(TR) " " "\n" | entr make &)&
 unwatch: ## Cancel Watching
 	killall entr
+
 
 
 # ===============================
@@ -710,6 +735,7 @@ update: ## Update the makefile from the repository
 GH_REPO_FILE ?= https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile
 
 
+
 # ====================================
 # Ctags generation for latex documents
 # ====================================
@@ -721,6 +747,7 @@ tags: $(TEXFILES) ## Create TeX exhuberant ctags
 	$(CTAGS) --language-force=tex -R *
 
 
+
 # This is used for printing defined variables from Some other scripts. For
 # instance if you want to know the value of the PDF_VIEWER defined in the
 # Makefile, then you would do
@@ -729,6 +756,7 @@ tags: $(TEXFILES) ## Create TeX exhuberant ctags
 FORCE:
 print-%:
 	$(DEBUG)echo '$*=$($*)'
+
 
 
 # ================
@@ -757,6 +785,7 @@ help: ## Prints help for targets with comments
 
 
 
+
 FORCE:
 help-%:
 	$(DEBUG)sed -n "/[#] [=]\+/,/^$*: / { /"$*":/{q}; p; } " $(MAKEFILE_LIST) \
@@ -766,4 +795,6 @@ help-%:
 		| sed -n "p; 1s/./=/gp; 1a\ "
 
 
+
 # vim: cc=80
+

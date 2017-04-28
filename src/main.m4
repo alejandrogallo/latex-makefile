@@ -25,8 +25,6 @@ include(os.m4)
 LATEX      ?= pdflatex
 # For creating differences
 LATEXDIFF  ?= latexdiff
-# For checking tex syntax
-TEX_LINTER ?= chktex
 PDFLATEX   ?= pdflatex
 # For asymptote figures
 ASYMPTOTE  ?= asy
@@ -39,7 +37,6 @@ BIBTEX     ?= bibtex
 SH         ?= bash
 # Python interpreter
 PY         ?= python
-PYTHONTEX  ?= pythontex
 # Grep program version
 GREP       ?= grep
 # Find utility
@@ -47,7 +44,6 @@ FIND       ?= find
 # sed program version
 SED        ?= $(if $(OSX),gsed,sed)
 AWK        ?= $(if $(OSX),gawk,awk)
-SPELLER    ?= aspell
 # For creating tags
 CTAGS      ?= ctags
 # To get complete paths
@@ -56,35 +52,8 @@ XARGS      ?= xargs
 TR         ?= tr
 GIT        ?= git
 WHICH      ?= which
-# For coloring
-TPUT       ?= $(shell $(WHICH) tput 2> /dev/null)
-# If messages should have color
-WITH_COLOR ?= 1
-# If the main messages should be also muted
-QQUIET     ?=
-DEBUG      ?= @
-CHECK_SPELL?=
-SPELL_LANG ?= en
-SPELL_DIR  ?= .spell
-# Eps to pdf converter
-EPS2PDF    ?= epstopdf
 
-ifndef QQUIET
-
-ifeq ($(strip $(WITH_COLOR)),1)
-COLOR_B         ?= $(if $(TPUT),$(shell $(TPUT) setaf 5),"\033[0;35m")
-COLOR_E         ?= $(if $(TPUT),$(shell $(TPUT) sgr0),"\033[0m")
-ARROW           ?= @echo "$(COLOR_B)===>$(COLOR_E)"
-else
-ARROW           ?= @echo "===>"
-endif #WITH_COLOR
-
-ECHO            ?= @echo
-
-else
-ARROW           := @ > /dev/null echo
-ECHO            := @ > /dev/null echo
-endif #QQUIET
+include(log.m4)
 
 # Remove comments from some file, this variables is intended to be put
 # in a shell call for processing of TeX files
