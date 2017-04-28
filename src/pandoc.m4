@@ -1,6 +1,8 @@
 #PANDOC CONVERSIONS
 ###################
 
+PANDOC ?= pandoc
+
 # FIXME: It doesn't work out of the box
 #
 # ======================

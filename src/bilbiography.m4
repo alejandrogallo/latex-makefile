@@ -1,3 +1,21 @@
+
+define discoverBibtexFiles
+$(shell \
+	$(GREP) -E '\\bibliography\s*{' $(1) 2> /dev/null  \
+		| $(removeTexComments) \
+		| $(SED) 's/.*\\bibliography//' \
+		| $(SED) 's/\.bib//g' \
+		| $(TR) "," "\n" \
+		| $(TR) -d "{}" \
+		| $(SED) 's/\s*$$/.bib /' \
+		| $(SORT) \
+		| $(UNIQ) \
+)
+endef
+
+# For converting document formats
+BIBTEX ?= bibtex
+
 # =======================
 # Bibliography generation
 # =======================

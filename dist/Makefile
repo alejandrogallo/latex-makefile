@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.5.8-14-ga5d3fd2
-MAKEFILE_DATE = 28-04-2017 14:45
+MAKEFILE_VERSION = v1.5.8-18-ge803bf4
+MAKEFILE_DATE = 28-04-2017 15:05
 
 ## <<HELP
 #
@@ -26,22 +26,6 @@ OSX   := 1
 endif
 
 
-
-# PARAMETERS, OVERRIDE THESE
-############################
-
-# Shell utilities
-LATEX      ?= pdflatex
-# For creating differences
-LATEXDIFF  ?= latexdiff
-PDFLATEX   ?= pdflatex
-# For asymptote figures
-ASYMPTOTE  ?= asy
-# Gnuplot interpreter
-GNUPLOT    ?= gnuplot
-# For converting document formats
-PANDOC     ?= pandoc
-BIBTEX     ?= bibtex
 # Shell used
 SH         ?= bash
 # Python interpreter
@@ -61,7 +45,24 @@ XARGS      ?= xargs
 TR         ?= tr
 GIT        ?= git
 WHICH      ?= which
+SORT       ?= sort
+UNIQ       ?= uniq
 
+
+# Shell utilities
+LATEX      ?= pdflatex
+# For creating differences
+LATEXDIFF  ?= latexdiff
+PDFLATEX   ?= pdflatex
+
+# If secondary programs output is shown
+QUIET ?= 0
+
+ifneq ($(strip $(QUIET)),0)
+	FD_OUTPUT = 2>&1 > /dev/null
+else
+	FD_OUTPUT =
+endif
 
 # Print commands like [CMD]
 define print-cmd-name
@@ -108,12 +109,12 @@ WITH_COLOR ?= 1
 ifndef QQUIET
 
 ifeq ($(strip $(WITH_COLOR)),1)
-COLOR_R         ?= $(if $(TPUT),$(shell $(TPUT) setaf 1),"\033[0;35m")
-COLOR_G         ?= $(if $(TPUT),$(shell $(TPUT) setaf 2),"\033[0;35m")
-COLOR_Y         ?= $(if $(TPUT),$(shell $(TPUT) setaf 3),"\033[0;35m")
-COLOR_DB        ?= $(if $(TPUT),$(shell $(TPUT) setaf 4),"\033[0;35m")
+COLOR_R         ?= $(if $(TPUT),$(shell $(TPUT) setaf 1),"\033[0;31m")
+COLOR_G         ?= $(if $(TPUT),$(shell $(TPUT) setaf 2),"\033[0;32m")
+COLOR_Y         ?= $(if $(TPUT),$(shell $(TPUT) setaf 3),"\033[0;33m")
+COLOR_DB        ?= $(if $(TPUT),$(shell $(TPUT) setaf 4),"\033[0;34m")
 COLOR_L         ?= $(if $(TPUT),$(shell $(TPUT) setaf 5),"\033[0;35m")
-COLOR_LB        ?= $(if $(TPUT),$(shell $(TPUT) setaf 6),"\033[0;35m")
+COLOR_LB        ?= $(if $(TPUT),$(shell $(TPUT) setaf 6),"\033[0;36m")
 COLOR_E         ?= $(if $(TPUT),$(shell $(TPUT) sgr0),"\033[0m")
 ARROW           ?= @echo "$(COLOR_L)===>$(COLOR_E)"
 else
@@ -142,19 +143,6 @@ $(shell \
 )
 endef
 
-define discoverBibtexFiles
-$(shell \
-	$(GREP) -E '\\bibliography\s*{' $(1) 2> /dev/null  \
-		| $(removeTexComments) \
-		| $(SED) 's/.*\\bibliography//' \
-		| $(SED) 's/\.bib//g' \
-		| $(TR) "," "\n" \
-		| $(TR) -d "{}" \
-		| $(SED) 's/\s*$$/.bib /' \
-		| sort \
-		| uniq \
-)
-endef
 
 define recursiveDiscoverIncludes
 $(shell \
@@ -184,8 +172,6 @@ endef
 MAIN_SRC        ?= $(call discoverMain)
 # Format to build to
 FMT             ?= pdf
-# Folder to keep makefile dependencies
-DEPS_DIR        ?= .deps
 # If `pdf` should be previewed after building
 VIEW            ?= 1
 # General dependencies for BUILD_DOCUMENT
@@ -200,43 +186,12 @@ INCLUDES        ?= $(call recursiveDiscoverIncludes,$(MAIN_SRC),$(INCLUDES_REC))
 TEXFILES        ?= $(MAIN_SRC) $(INCLUDES)
 # Bibtex files in the current directory
 BIBTEX_FILES     ?= $(call discoverBibtexFiles,$(TEXFILES))
-# If pythontex is being used
-WITH_PYTHONTEX  ?=
-# If secondary programs output is shown
-QUIET           ?= 0
 # Source directory
 PREFIX          ?= $(PWD)
-# Folder to build the project
-BUILD_DIR       ?= .
-# Build dir flag for latex.
-# If `BUILD_DIR = .` then `BUILD_DIR_FLAG` is not defined,
-# else `BUILD_DIR = -output-directory $(BUILD_DIR)`
-BUILD_DIR_FLAG  ?= $(if \
-                   $(filter-out \
-                   .,$(strip $(BUILD_DIR))),-output-directory $(BUILD_DIR))
-# Distribution directory
-DIST_DIR        ?= $(PREFIX)/dist
-# Tex libraries directory
-PACKAGES_DIR    ?= libtex
-# Which files are tex libraries
-PACKAGES_FILES  ?= $(wildcard \
-$(PACKAGES_DIR)/*.sty \
-$(PACKAGES_DIR)/*.rtx \
-$(PACKAGES_DIR)/*.cls \
-$(PACKAGES_DIR)/*.bst \
-$(PACKAGES_DIR)/*.tex \
-$(PACKAGES_DIR)/*.clo \
-)
-
 
 .DEFAULT_GOAL   := all
 
 
-ifneq ($(strip $(QUIET)),0)
-	FD_OUTPUT = 2>&1 > /dev/null
-else
-	FD_OUTPUT =
-endif
 
 ifneq ($(strip $(MAIN_SRC)),) # Do this only if MAIN_SRC is defined
 
@@ -253,11 +208,6 @@ PURGE_SUFFIXES       = %.aux %.bbl %.blg %.fdb_latexmk %.fls %.log %.out \
                        %.ilg %.toc %.nav %.snm
 SUPPORTED_SUFFIXES   = %.pdf %.div %.ps %.eps %.1 %.html
 
-# These files  are to keep  track of the  dependencies for latex  or pdf
-# includes, table of contents generation or figure recognition
-#
-TOC_DEP        = $(strip $(DEPS_DIR))/toc.d
-FIGS_DEP       = $(strip $(DEPS_DIR))/figs.d
 
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),help)
@@ -291,21 +241,45 @@ revealjs: FMT=html  ## Create a revealjs presentation
 man: FMT=1 ## Create man file
 $(FMT): $(BUILD_DOCUMENT)
 
-deps: $(FIGS_DEP) ## Parse dependencies for the main texfile
-
 all: $(FMT) $(if $(VIEW),view-$(FMT)) ## (Default) Create BUILD_DOCUMENT
 
 $(BUILD_DOCUMENT): $(DEPENDENCIES)
+
+# Folder to build the project
+BUILD_DIR       ?= .
+
+# Build dir flag for latex.
+# If `BUILD_DIR = .` then `BUILD_DIR_FLAG` is not defined,
+# else `BUILD_DIR = -output-directory $(BUILD_DIR)`
+BUILD_DIR_FLAG  ?= $(if \
+                   $(filter-out \
+                   .,$(strip $(BUILD_DIR))),-output-directory $(BUILD_DIR))
 
 $(BUILD_DIR):
 	$(ARROW) Creating the $@ directory
 	$(DEBUG)mkdir -p $@ $(FD_OUTPUT)
 
+
+
+
+
+# Tex libraries directory
+PACKAGES_DIR    ?= libtex
+
+# Which files are tex libraries
+PACKAGES_FILES  ?= $(wildcard \
+$(PACKAGES_DIR)/*.sty \
+$(PACKAGES_DIR)/*.rtx \
+$(PACKAGES_DIR)/*.cls \
+$(PACKAGES_DIR)/*.bst \
+$(PACKAGES_DIR)/*.tex \
+$(PACKAGES_DIR)/*.clo \
+)
+
 $(BUILD_DIR)/%: $(PACKAGES_DIR)/%
 	$(ARROW) Copying TeX libraries: $@
 	$(DEBUG)mkdir -p $(BUILD_DIR)
 	$(DEBUG)cp $^ $@
-
 
 
 # =================
@@ -323,6 +297,24 @@ view-html: $(BUILD_DOCUMENT)
 	$(DEBUG)($(BROWSER) $(BUILD_DOCUMENT) &)&
 
 
+
+
+define discoverBibtexFiles
+$(shell \
+	$(GREP) -E '\\bibliography\s*{' $(1) 2> /dev/null  \
+		| $(removeTexComments) \
+		| $(SED) 's/.*\\bibliography//' \
+		| $(SED) 's/\.bib//g' \
+		| $(TR) "," "\n" \
+		| $(TR) -d "{}" \
+		| $(SED) 's/\s*$$/.bib /' \
+		| $(SORT) \
+		| $(UNIQ) \
+)
+endef
+
+# For converting document formats
+BIBTEX ?= bibtex
 
 # =======================
 # Bibliography generation
@@ -346,6 +338,9 @@ $(BIBITEM_FILES): $(BIBTEX_FILES)
 
 
 
+# If pythontex is being used
+WITH_PYTHONTEX  ?=
+
 PYTHONTEX  ?= pythontex
 
 #FIXME: find a way of not having to compile the main document again
@@ -359,6 +354,10 @@ PYTHONTEX  ?= pythontex
 
 # Eps to pdf converter
 EPS2PDF ?= epstopdf
+# For asymptote figures
+ASYMPTOTE ?= asy
+# Gnuplot interpreter
+GNUPLOT ?= gnuplot
 
 $(FIGS_SUFFIXES): %.asy
 	$(ARROW) $(call print-cmd-name,$(ASYMPTOTE)) $@
@@ -462,6 +461,15 @@ mupdf /usr/bin/mupdf: ## Refresh mupdf
 
 
 
+# These files  are to keep  track of the  dependencies for latex  or pdf
+# includes, table of contents generation or figure recognition
+#
+TOC_DEP        = $(strip $(DEPS_DIR))/toc.d
+FIGS_DEP       = $(strip $(DEPS_DIR))/figs.d
+
+# Folder to keep makefile dependencies
+DEPS_DIR ?= .deps
+
 $(TOC_FILE): $(TOC_DEP)
 	$(ARROW) $(call print-cmd-name,$(PDFLATEX)) $@
 	$(DEBUG)mkdir -p $(BUILD_DIR)
@@ -485,6 +493,8 @@ $(FIGS_DEP): $(TEXFILES)
 	$(DEBUG)$(GREP) --no-filename -E '\\include(graphic|pdf).' $(TEXFILES)  \
 	| $(removeTexComments) \
 	| $(SED) -n 's/.*{\([^{}]\+\)}.*/\1 \\/p' >> $@
+
+deps: $(FIGS_DEP) ## Parse dependencies for the main texfile
 
 
 
@@ -539,6 +549,8 @@ todo: $(TEXFILES) ## Print the todos from the main document
 
 #PANDOC CONVERSIONS
 ###################
+
+PANDOC ?= pandoc
 
 # FIXME: It doesn't work out of the box
 #
@@ -626,6 +638,9 @@ releases: $(BUILD_DOCUMENT) ## Create all releases (according to tags)
 	done
 
 
+
+# Distribution directory
+DIST_DIR ?= $(PREFIX)/dist
 
 # ============
 # Distribution
@@ -851,7 +866,7 @@ help: ## Prints help for targets with comments
 
 FORCE:
 help-%:
-	$(DEBUG)sed -n "/[#] [=]\+/,/^$*: / { /"$*":/{q}; p; } " $(MAKEFILE_LIST) \
+	$(DEBUG)$(SED) -n "/[#] [=]\+/,/^$*: / { /"$*":/{q}; p; } " $(MAKEFILE_LIST) \
 		| tac \
 		| sed -n "1,/===/ {/===/n; s/^# //p}" \
 		| tac \

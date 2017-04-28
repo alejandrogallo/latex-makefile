@@ -1,5 +1,9 @@
 # Eps to pdf converter
 EPS2PDF ?= epstopdf
+# For asymptote figures
+ASYMPTOTE ?= asy
+# Gnuplot interpreter
+GNUPLOT ?= gnuplot
 
 $(FIGS_SUFFIXES): %.asy
 	$(ARROW) $(call print-cmd-name,$(ASYMPTOTE)) $@

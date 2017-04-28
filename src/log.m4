@@ -1,3 +1,11 @@
+# If secondary programs output is shown
+QUIET ?= 0
+
+ifneq ($(strip $(QUIET)),0)
+	FD_OUTPUT = 2>&1 > /dev/null
+else
+	FD_OUTPUT =
+endif
 
 # Print commands like [CMD]
 define print-cmd-name

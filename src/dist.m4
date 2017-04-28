@@ -1,3 +1,6 @@
+# Distribution directory
+DIST_DIR ?= $(PREFIX)/dist
+
 # ============
 # Distribution
 # ============

@@ -17,41 +17,13 @@ MAKEFILE_DATE = syscmd(`date +"%d-%m-%Y %H:%M"')dnl
 -include config.mk
 
 include(os.m4)
-
-# PARAMETERS, OVERRIDE THESE
-############################
+include(shell-utils.m4)
 
 # Shell utilities
 LATEX      ?= pdflatex
 # For creating differences
 LATEXDIFF  ?= latexdiff
 PDFLATEX   ?= pdflatex
-# For asymptote figures
-ASYMPTOTE  ?= asy
-# Gnuplot interpreter
-GNUPLOT    ?= gnuplot
-# For converting document formats
-PANDOC     ?= pandoc
-BIBTEX     ?= bibtex
-# Shell used
-SH         ?= bash
-# Python interpreter
-PY         ?= python
-# Grep program version
-GREP       ?= grep
-# Find utility
-FIND       ?= find
-# sed program version
-SED        ?= $(if $(OSX),gsed,sed)
-AWK        ?= $(if $(OSX),gawk,awk)
-# For creating tags
-CTAGS      ?= ctags
-# To get complete paths
-READLINK   ?= $(if $(OSX),greadlink,readlink)
-XARGS      ?= xargs
-TR         ?= tr
-GIT        ?= git
-WHICH      ?= which
 
 include(log.m4)
 
@@ -69,19 +41,6 @@ $(shell \
 )
 endef
 
-define discoverBibtexFiles
-$(shell \
-	$(GREP) -E '\\bibliography\s*{' $(1) 2> /dev/null  \
-		| $(removeTexComments) \
-		| $(SED) 's/.*\\bibliography//' \
-		| $(SED) 's/\.bib//g' \
-		| $(TR) "," "\n" \
-		| $(TR) -d "{}" \
-		| $(SED) 's/\s*$$/.bib /' \
-		| sort \
-		| uniq \
-)
-endef
 
 define recursiveDiscoverIncludes
 $(shell \
@@ -111,8 +70,6 @@ endef
 MAIN_SRC        ?= $(call discoverMain)
 # Format to build to
 FMT             ?= pdf
-# Folder to keep makefile dependencies
-DEPS_DIR        ?= .deps
 # If `pdf` should be previewed after building
 VIEW            ?= 1
 # General dependencies for BUILD_DOCUMENT
@@ -127,43 +84,12 @@ INCLUDES        ?= $(call recursiveDiscoverIncludes,$(MAIN_SRC),$(INCLUDES_REC))
 TEXFILES        ?= $(MAIN_SRC) $(INCLUDES)
 # Bibtex files in the current directory
 BIBTEX_FILES     ?= $(call discoverBibtexFiles,$(TEXFILES))
-# If pythontex is being used
-WITH_PYTHONTEX  ?=
-# If secondary programs output is shown
-QUIET           ?= 0
 # Source directory
 PREFIX          ?= $(PWD)
-# Folder to build the project
-BUILD_DIR       ?= .
-# Build dir flag for latex.
-# If `BUILD_DIR = .` then `BUILD_DIR_FLAG` is not defined,
-# else `BUILD_DIR = -output-directory $(BUILD_DIR)`
-BUILD_DIR_FLAG  ?= $(if \
-                   $(filter-out \
-                   .,$(strip $(BUILD_DIR))),-output-directory $(BUILD_DIR))
-# Distribution directory
-DIST_DIR        ?= $(PREFIX)/dist
-# Tex libraries directory
-PACKAGES_DIR    ?= libtex
-# Which files are tex libraries
-PACKAGES_FILES  ?= $(wildcard \
-$(PACKAGES_DIR)/*.sty \
-$(PACKAGES_DIR)/*.rtx \
-$(PACKAGES_DIR)/*.cls \
-$(PACKAGES_DIR)/*.bst \
-$(PACKAGES_DIR)/*.tex \
-$(PACKAGES_DIR)/*.clo \
-)
-
 
 .DEFAULT_GOAL   := all
 
 
-ifneq ($(strip $(QUIET)),0)
-	FD_OUTPUT = 2>&1 > /dev/null
-else
-	FD_OUTPUT =
-endif
 
 ifneq ($(strip $(MAIN_SRC)),) # Do this only if MAIN_SRC is defined
 
@@ -180,11 +106,6 @@ PURGE_SUFFIXES       = %.aux %.bbl %.blg %.fdb_latexmk %.fls %.log %.out \
                        %.ilg %.toc %.nav %.snm
 SUPPORTED_SUFFIXES   = %.pdf %.div %.ps %.eps %.1 %.html
 
-# These files  are to keep  track of the  dependencies for latex  or pdf
-# includes, table of contents generation or figure recognition
-#
-TOC_DEP        = $(strip $(DEPS_DIR))/toc.d
-FIGS_DEP       = $(strip $(DEPS_DIR))/figs.d
 
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),help)
@@ -218,13 +139,13 @@ revealjs: FMT=html  ## Create a revealjs presentation
 man: FMT=1 ## Create man file
 $(FMT): $(BUILD_DOCUMENT)
 
-deps: $(FIGS_DEP) ## Parse dependencies for the main texfile
-
 all: $(FMT) $(if $(VIEW),view-$(FMT)) ## (Default) Create BUILD_DOCUMENT
 
 $(BUILD_DOCUMENT): $(DEPENDENCIES)
 
 include(build-dir.m4)
+
+include(libraries.m4)
 
 # =================
 # Force compilation

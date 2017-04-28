@@ -1,3 +1,12 @@
+# These files  are to keep  track of the  dependencies for latex  or pdf
+# includes, table of contents generation or figure recognition
+#
+TOC_DEP        = $(strip $(DEPS_DIR))/toc.d
+FIGS_DEP       = $(strip $(DEPS_DIR))/figs.d
+
+# Folder to keep makefile dependencies
+DEPS_DIR ?= .deps
+
 $(TOC_FILE): $(TOC_DEP)
 	$(ARROW) $(call print-cmd-name,$(PDFLATEX)) $@
 	$(DEBUG)mkdir -p $(BUILD_DIR)
@@ -21,5 +30,7 @@ $(FIGS_DEP): $(TEXFILES)
 	$(DEBUG)$(GREP) --no-filename -E '\\`include'(graphic|pdf).' $(TEXFILES)  \
 	| $(removeTexComments) \
 	| $(SED) -n 's/.*{\([^{}]\+\)}.*/\1 \\/p' >> $@
+
+deps: $(FIGS_DEP) ## Parse dependencies for the main texfile
 
 dnl vim: noexpandtab

@@ -1,3 +1,6 @@
+# If pythontex is being used
+WITH_PYTHONTEX  ?=
+
 PYTHONTEX  ?= pythontex
 
 #FIXME: find a way of not having to compile the main document again
