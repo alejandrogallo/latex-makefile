@@ -1,7 +1,7 @@
 
 FORCE:
 help-%:
-	$(DEBUG)sed -n "/[#] [=]\+/,/^$*: / { /"$*":/{q}; p; } " $(MAKEFILE_LIST) \
+	$(DEBUG)$(SED) -n "/[#] [=]\+/,/^$*: / { /"$*":/{q}; p; } " $(MAKEFILE_LIST) \
 		| tac \
 		| sed -n "1,/===/ {/===/n; s/^# //p}" \
 		| tac \
