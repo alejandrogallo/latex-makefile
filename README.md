@@ -33,13 +33,6 @@ variables for the project, like the verbosity `QUIET=1` and many more.
     omitted and a `see` is put in its place.  If there is no default value then
     the keyword `empty` appears.
     
-  * `LATEX`(`pdflatex`): Shell utilities
-  * `LATEXDIFF`(`latexdiff`): For creating differences
-  * `PDFLATEX`(`pdflatex`): 
-  * `ASYMPTOTE`(`asy`): For asymptote figures
-  * `GNUPLOT`(`gnuplot`): Gnuplot interpreter
-  * `PANDOC`(`pandoc`): For converting document formats
-  * `BIBTEX`(`bibtex`): 
   * `SH`(`bash`): Shell used
   * `PY`(`python`): Python interpreter
   * `GREP`(`grep`): Grep program version
@@ -52,18 +45,28 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `TR`(`tr`): 
   * `GIT`(`git`): 
   * `WHICH`(`which`): 
+  * `SORT`(`sort`): 
+  * `UNIQ`(`uniq`): 
+  * `LATEX`(`pdflatex`): Shell utilities
+  * `LATEXDIFF`(`latexdiff`): For creating differences
+  * `PDFLATEX`(`pdflatex`): 
+  * `QUIET`(`0`): If secondary programs output is shown
   * `QQUIET`(`empty`): If the main messages should be also muted
   * `DEBUG`(`@`): 
   * `TPUT`(`see`): For coloring
   * `WITH_COLOR`(`1`): If messages should have color
-  * `COLOR_B`(`see`): 
-  * `COLOR_E`(`see`): 
+  * `COLOR_R`(`see`): Red
+  * `COLOR_G`(`see`): Green
+  * `COLOR_Y`(`see`): Yellow
+  * `COLOR_DB`(`see`): Dark blue
+  * `COLOR_L`(`see`): Lila
+  * `COLOR_LB`(`see`): Light blue
+  * `COLOR_E`(`see`): Empty color
   * `ARROW`(`@echo "see`): 
   * `ARROW`(`@echo "===>"`): 
   * `ECHO`(`@echo`): 
   * `MAIN_SRC`(`see`): Main texfile in the current directory
   * `FMT`(`pdf`): Format to build to
-  * `DEPS_DIR`(`.deps`): Folder to keep makefile dependencies
   * `VIEW`(`1`): If `pdf` should be previewed after building
   * `DEPENDENCIES`(`empty`): General dependencies for BUILD_DOCUMENT
   * `FIGURES`(`empty`): Figures included in all texfiles
@@ -71,19 +74,25 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `INCLUDES`(`see`): Texfiles included in the main tex file
   * `TEXFILES`(`see`): All `texfiles` in the project
   * `BIBTEX_FILES`(`see`): Bibtex files in the current directory
-  * `WITH_PYTHONTEX`(`empty`): If pythontex is being used
-  * `QUIET`(`0`): If secondary programs output is shown
   * `PREFIX`(`see`): Source directory
   * `BUILD_DIR`(`.`): Folder to build the project
   * `BUILD_DIR_FLAG`(`see`): Build dir flag for latex. If `BUILD_DIR = .` then `BUILD_DIR_FLAG` is not defined, else `BUILD_DIR = -output-directory $(BUILD_DIR)`
-  * `DIST_DIR`(`see`): Distribution directory
   * `PACKAGES_DIR`(`libtex`): Tex libraries directory
   * `PACKAGES_FILES`(`see`): Which files are tex libraries
   * `BROWSER`(`firefox`): 
+  * `BIBTEX`(`bibtex`): For converting document formats
+  * `WITH_PYTHONTEX`(`empty`): If pythontex is being used
   * `PYTHONTEX`(`pythontex`): 
+  * `ASYMPTOTE`(`asy`): For asymptote figures
+  * `GNUPLOT`(`gnuplot`): Gnuplot interpreter
   * `PDF_VIEWER`(`see`): Recognise pdf viewer automagically
+  * `DEPS_DIR`(`.deps`): Folder to keep makefile dependencies
+  * `RM`(`rm`): Remove command
+  * `RM_FLAGS`(`-rf`): 
   * `CLEAN_FILES`(`\`): File to be cleaned
+  * `PANDOC`(`pandoc`): 
   * `REVEALJS_SRC`(`https://github.com/hakimel/reveal.js/`): 
+  * `DIST_DIR`(`see`): Distribution directory
   * `DIFF`(`HEAD HEAD~1`): 
   * `DIFF_BUILD_DIR_MAIN`(`diffs`): 
   * `DIFF_BUILD_DIR`(`see`): 
@@ -139,6 +148,10 @@ make open-pdf
 If the opened document is being viewed with `mupdf` this target uses the
 mupdf signal API to refresh the document.
 
+These files  are to keep  track of the  dependencies for latex  or pdf
+includes, table of contents generation or figure recognition
+
+Folder to keep makefile dependencies
 ```bash 
 make $(TOC_FILE)
 ```
@@ -265,6 +278,16 @@ compatible editors such as emacs or (n)vi(m).
 
 ```bash 
 make tags
+```
+### Print a variable used by the Makefile ###
+
+
+For debugging purposes it is useful to print out some variables that the
+makefile is using, for that just type `make print` and you will be prompted
+to insert the name of the variable that you want to know.
+
+```bash 
+make FORCE
 ```
 ### Print quick help ###
 

@@ -52,12 +52,19 @@ WITH_COLOR ?= 1
 ifndef QQUIET
 
 ifeq ($(strip $(WITH_COLOR)),1)
+# Red
 COLOR_R         ?= $(if $(TPUT),$(shell $(TPUT) setaf 1),"\033[0;31m")
+# Green
 COLOR_G         ?= $(if $(TPUT),$(shell $(TPUT) setaf 2),"\033[0;32m")
+# Yellow
 COLOR_Y         ?= $(if $(TPUT),$(shell $(TPUT) setaf 3),"\033[0;33m")
+# Dark blue
 COLOR_DB        ?= $(if $(TPUT),$(shell $(TPUT) setaf 4),"\033[0;34m")
+# Lila
 COLOR_L         ?= $(if $(TPUT),$(shell $(TPUT) setaf 5),"\033[0;35m")
+# Light blue
 COLOR_LB        ?= $(if $(TPUT),$(shell $(TPUT) setaf 6),"\033[0;36m")
+# Empty color
 COLOR_E         ?= $(if $(TPUT),$(shell $(TPUT) sgr0),"\033[0m")
 ARROW           ?= @echo "$(COLOR_L)===>$(COLOR_E)"
 else
