@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.5.8-12-g26049c3
-MAKEFILE_DATE = 28-04-2017 11:28
+MAKEFILE_VERSION = v1.5.8-14-ga5d3fd2
+MAKEFILE_DATE = 28-04-2017 14:45
 
 ## <<HELP
 #
@@ -62,6 +62,40 @@ TR         ?= tr
 GIT        ?= git
 WHICH      ?= which
 
+
+# Print commands like [CMD]
+define print-cmd-name
+"[$(COLOR_LB) \
+$(shell \
+	if [[ "$(1)" =~ g++ ]]; then \
+		echo -n GXX; \
+	elif [[ "$(1)" =~ gcc ]]; then \
+		echo -n GCC; \
+	elif [[ "$(1)" =~ icc ]]; then \
+		echo -n ICC; \
+	elif [[ "$(1)" =~ cc ]]; then \
+		echo -n CC; \
+	elif [[ "$(1)" =~ python2 ]]; then \
+		echo -n PY2; \
+	elif [[ "$(1)" =~ python2 ]]; then \
+		echo -n PY2; \
+	elif [[ "$(1)" =~ python3 ]]; then \
+		echo -n PY3; \
+	elif [[ "$(1)" =~ pdflatex ]]; then \
+		echo -n pdfTeX; \
+	elif [[ "$(1)" =~ bash ]]; then \
+		echo -n BSH; \
+	elif [[ "$(1)" =~ asymptote ]]; then \
+		echo -n ASY; \
+	elif [[ "$(1)" =~ gnuplot ]]; then \
+		echo -n GPT; \
+	else \
+		echo -n "$(1)" | tr a-z A-Z ; \
+	fi
+)\
+$(COLOR_E)]"
+endef
+
 # If the main messages should be also muted
 QQUIET     ?=
 DEBUG      ?= @
@@ -74,9 +108,14 @@ WITH_COLOR ?= 1
 ifndef QQUIET
 
 ifeq ($(strip $(WITH_COLOR)),1)
-COLOR_B         ?= $(if $(TPUT),$(shell $(TPUT) setaf 5),"\033[0;35m")
+COLOR_R         ?= $(if $(TPUT),$(shell $(TPUT) setaf 1),"\033[0;35m")
+COLOR_G         ?= $(if $(TPUT),$(shell $(TPUT) setaf 2),"\033[0;35m")
+COLOR_Y         ?= $(if $(TPUT),$(shell $(TPUT) setaf 3),"\033[0;35m")
+COLOR_DB        ?= $(if $(TPUT),$(shell $(TPUT) setaf 4),"\033[0;35m")
+COLOR_L         ?= $(if $(TPUT),$(shell $(TPUT) setaf 5),"\033[0;35m")
+COLOR_LB        ?= $(if $(TPUT),$(shell $(TPUT) setaf 6),"\033[0;35m")
 COLOR_E         ?= $(if $(TPUT),$(shell $(TPUT) sgr0),"\033[0m")
-ARROW           ?= @echo "$(COLOR_B)===>$(COLOR_E)"
+ARROW           ?= @echo "$(COLOR_L)===>$(COLOR_E)"
 else
 ARROW           ?= @echo "===>"
 endif #WITH_COLOR
@@ -322,24 +361,26 @@ PYTHONTEX  ?= pythontex
 EPS2PDF ?= epstopdf
 
 $(FIGS_SUFFIXES): %.asy
-	$(ARROW) Compiling $<
+	$(ARROW) $(call print-cmd-name,$(ASYMPTOTE)) $@
 	$(DEBUG)cd $(dir $<) && $(ASYMPTOTE) -f \
 		$(shell echo $(suffix $@) | $(TR) -d "\.") $(notdir $< ) $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.gnuplot
+	$(ARROW) $(call print-cmd-name,$(GNUPLOT)) $@
 	$(ARROW) Compiling $<
 	$(DEBUG)cd $(dir $< ) && $(GNUPLOT) $(notdir $< ) $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.sh
-	$(ARROW) Compiling $<
+	$(ARROW) $(call print-cmd-name,$(SH)) $@
 	$(DEBUG)cd $(dir $< ) && $(SH) $(notdir $< ) $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.py
+	$(ARROW) $(call print-cmd-name,$(PY)) $@
 	$(ARROW) Compiling $<
 	$(DEBUG)cd $(dir $< ) && $(PY) $(notdir $< ) $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.tex
-	$(ARROW) Compiling $< into $@
+	$(ARROW) $(call print-cmd-name,$(PDFLATEX)) $@
 	$(DEBUG)mkdir -p $(dir $<)/$(BUILD_DIR)
 	$(DEBUG)cd $(dir $<) && $(PDFLATEX) \
 		$(BUILD_DIR_FLAG) $(notdir $*.tex ) $(FD_OUTPUT)
@@ -349,7 +390,7 @@ ifneq ($(strip $(BUILD_DIR)),.)
 endif
 
 %.pdf: %.eps
-	$(ARROW) Converting $< into $@
+	$(ARROW) $(call print-cmd-name,$(EPS2PDF)) $@
 	$(DEBUG)cd $(dir $< ) && $(EPS2PDF) $(notdir $< ) $(FD_OUTPUT)
 
 
@@ -422,7 +463,7 @@ mupdf /usr/bin/mupdf: ## Refresh mupdf
 
 
 $(TOC_FILE): $(TOC_DEP)
-	$(ARROW) Creating $(TOC_FILE)
+	$(ARROW) $(call print-cmd-name,$(PDFLATEX)) $@
 	$(DEBUG)mkdir -p $(BUILD_DIR)
 	$(DEBUG)cd $(dir $(MAIN_SRC) ) && $(PDFLATEX) \
 		$(BUILD_DIR_FLAG) $(notdir $(MAIN_SRC) ) $(FD_OUTPUT)
@@ -447,6 +488,11 @@ $(FIGS_DEP): $(TEXFILES)
 
 
 
+
+# Remove command
+RM ?= rm
+RM_FLAGS ?= -rf
+
 # File to be cleaned
 CLEAN_FILES ?= \
 $(wildcard $(PACKAGES_FILES_BUILD)) \
@@ -470,8 +516,12 @@ $(if $(filter-out .,$(strip $(BUILD_DIR))),$(wildcard $(BUILD_DIR))) \
 #
 clean: ## Remove build and temporary files
 	$(ARROW) Cleaning up...
-	$(DEBUG){ for file in $(CLEAN_FILES); do echo "  *  $$file"; done }
-	$(DEBUG)rm -rf $(CLEAN_FILES)
+	$(DEBUG){\
+		for file in $(CLEAN_FILES); do \
+			$(RM) $(RM_FLAGS) $$file &&      \
+			echo -e $(call print-cmd-name,RM)  "$$file"; \
+		done \
+	}
 
 
 
@@ -513,7 +563,7 @@ REVEALJS_SRC ?= https://github.com/hakimel/reveal.js/
 # This creates a man page using `pandoc`.
 #
 man: $(MAIN_SRC)
-	$(ARROW) Creating man pages...
+	$(ARROW) $(call print-cmd-name,$(PANDOC)) $(BUILD_DOCUMENT)
 	$(PANDOC) -s -f latex -t man $(MAIN_SRC) -o $(BUILD_DOCUMENT)
 
 # =============
@@ -523,7 +573,7 @@ man: $(MAIN_SRC)
 # This creates an html page using `pandoc`.
 #
 html: $(MAIN_SRC)
-	$(ARROW) Compiling html document...
+	$(ARROW) $(call print-cmd-name,$(PANDOC)) $(BUILD_DOCUMENT)
 	$(PANDOC) --mathjax -s -f latex -t html5 $(MAIN_SRC) -o $(BUILD_DOCUMENT)
 
 
@@ -756,6 +806,19 @@ tags: $(TEXFILES) ## Create TeX exhuberant ctags
 FORCE:
 print-%:
 	$(DEBUG)echo '$*=$($*)'
+
+# =====================================
+# Print a variable used by the Makefile
+# =====================================
+#
+# For debugging purposes it is useful to print out some variables that the
+# makefile is using, for that just type `make print` and you will be prompted
+# to insert the name of the variable that you want to know.
+#
+FORCE:
+print: ## Print a variable
+	$(DEBUG)read -p "Variable to print: " && \
+		$(MAKE) --no-print-directory print-$$REPLY
 
 
 
