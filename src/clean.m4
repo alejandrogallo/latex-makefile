@@ -1,3 +1,17 @@
+# File to be cleaned
+CLEAN_FILES ?= \
+$(wildcard $(PACKAGES_FILES_BUILD)) \
+$(wildcard $(PYTHONTEX_FILE)) \
+$(wildcard $(BUILD_DOCUMENT)) \
+$(wildcard $(subst %,*,$(PURGE_SUFFIXES))) \
+$(wildcard $(subst %,$(patsubst %.tex,%,$(MAIN_SRC)),$(SUPPORTED_SUFFIXES))) \
+$(wildcard $(DEPS_DIR)) \
+$(wildcard $(PDFPC_FILE)) \
+$(wildcard $(DIST_DIR)) \
+$(wildcard $(DIFF_BUILD_DIR_MAIN)) \
+$(wildcard $(DIFF_SRC_NAME)) \
+$(if $(filter-out .,$(strip $(BUILD_DIR))),$(wildcard $(BUILD_DIR))) \
+
 # =============
 # Main cleaning
 # =============

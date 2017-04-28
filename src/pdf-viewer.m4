@@ -1,3 +1,18 @@
+
+# Recognise pdf viewer automagically
+PDF_VIEWER      ?= $(or \
+$(shell $(WHICH) zathura 2> /dev/null),\
+$(shell $(WHICH) mupdf 2> /dev/null),\
+$(shell $(WHICH) mupdf-x11 2> /dev/null),\
+$(shell $(WHICH) mupdf-gl 2> /dev/null),\
+$(shell $(WHICH) evince 2> /dev/null),\
+$(shell $(WHICH) okular 2> /dev/null),\
+$(shell $(WHICH) xdg-open 2> /dev/null),\
+$(shell $(WHICH) gnome-open 2> /dev/null),\
+$(shell $(WHICH) kde-open 2> /dev/null),\
+$(shell $(WHICH) open 2> /dev/null),\
+)
+
 # =============
 # View document
 # =============

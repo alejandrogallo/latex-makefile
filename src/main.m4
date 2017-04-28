@@ -148,8 +148,6 @@ DEPS_DIR        ?= .deps
 VIEW            ?= 1
 # General dependencies for BUILD_DOCUMENT
 DEPENDENCIES    ?=
-# File to be cleaned
-CLEAN_FILES     ?=
 # Figures included in all texfiles
 FIGURES         ?=
 # Depth for discovering automatically included texfiles
@@ -187,16 +185,7 @@ $(PACKAGES_DIR)/*.bst \
 $(PACKAGES_DIR)/*.tex \
 $(PACKAGES_DIR)/*.clo \
 )
-# Recognise pdf viewer automagically
-PDF_VIEWER      ?= $(or \
-$(shell $(WHICH) zathura 2> /dev/null),\
-$(shell $(WHICH) mupdf 2> /dev/null),\
-$(shell $(WHICH) mupdf-x11 2> /dev/null),\
-$(shell $(WHICH) evince 2> /dev/null),\
-$(shell $(WHICH) okular 2> /dev/null),\
-$(shell $(WHICH) xdg-open 2> /dev/null),\
-$(shell $(WHICH) open 2> /dev/null),\
-)
+
 
 .DEFAULT_GOAL   := all
 
@@ -252,23 +241,6 @@ $(if $(wildcard $(BIBTEX_FILES)),$(BIBITEM_FILES)) \
 $(if $(WITH_PYTHONTEX),$(PYTHONTEX_FILE)) \
 $(if $(CHECK_SPELL),spelling) \
 
-CLEAN_FILES += \
-$(wildcard $(PACKAGES_FILES_BUILD)) \
-$(wildcard $(PYTHONTEX_FILE)) \
-$(wildcard $(BUILD_DOCUMENT)) \
-$(wildcard $(subst %,*,$(PURGE_SUFFIXES))) \
-$(wildcard $(subst %,$(patsubst %.tex,%,$(MAIN_SRC)),$(SUPPORTED_SUFFIXES))) \
-$(wildcard $(DEPS_DIR)) \
-$(wildcard $(PDFPC_FILE)) \
-$(wildcard $(DIST_DIR)) \
-$(wildcard $(DIFF_BUILD_DIR_MAIN)) \
-$(wildcard $(DIFF_SRC_NAME)) \
-$(if $(filter-out .,$(strip $(BUILD_DIR))),$(wildcard $(BUILD_DIR))) \
-
-
-
-
-
 .PHONY: view-pdf open-pdf $(PDF_VIEWER) todo help test force dist releases
 
 pdf: FMT=pdf ## Create pdf file
@@ -283,9 +255,6 @@ all: $(FMT) $(if $(VIEW),view-$(FMT)) ## (Default) Create BUILD_DOCUMENT
 
 $(BUILD_DOCUMENT): $(DEPENDENCIES)
 
-view-html: $(BUILD_DOCUMENT)
-	(firefox $(BUILD_DOCUMENT) &)&
-
 include(build-dir.m4)
 
 # =================
@@ -298,28 +267,15 @@ include(build-dir.m4)
 force: ## Force creation of BUILD_DOCUMENT
 	$(DEBUG)$(MAKE) --no-print-directory -W $(MAIN_SRC) $(BUILD_DOCUMENT)
 
+include(html.m4)
+
 include(bilbiography.m4)
 
-$(AUX_FILE):
-	$(ARROW) Creating $@
-	$(DEBUG)$(PDFLATEX) $(BUILD_DIR_FLAG) $(MAIN_SRC) $(FD_OUTPUT)
-
-#FIXME: find a way of not having to compile the main document again
-%.pytxcode: %.tex
-	$(ARROW) "Compiling latex for pythontex"
-	$(PDFLATEX) $<
-	$(ARROW) "Creating pythontex"
-	$(PYTHONTEX) $<
+include(pythontex.m4)
 
 include(figure-targets.m4)
 
-%.tex: %.sh
-	$(ARROW) Creating $@ from $<
-	$(DEBUG)cd $(dir $<) && $(SH) $(notdir $<) $(FD_OUTPUT)
-
-%.tex: %.py
-	$(ARROW) Creating $@ from $<
-	$(DEBUG)cd $(dir $<) && $(PY) $(notdir $<) $(FD_OUTPUT)
+include(document-targets.m4)
 
 include(pdf-viewer.m4)
 
