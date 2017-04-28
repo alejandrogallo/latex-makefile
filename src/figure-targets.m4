@@ -26,5 +26,7 @@ ifneq ($(strip $(BUILD_DIR)),.)
 endif
 
 %.pdf: %.eps
-  $(ARROW) Converting $< into $@
-  $(DEBUG)cd $(dir $< ) && $(EPS2PDF) $(notdir $< ) $(FD_OUTPUT)
+	$(ARROW) Converting $< into $@
+	$(DEBUG)cd $(dir $< ) && $(EPS2PDF) $(notdir $< ) $(FD_OUTPUT)
+
+dnl vim: noexpandtab
