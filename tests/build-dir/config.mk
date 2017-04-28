@@ -1,3 +1,3 @@
 BUILD_DIR=build
-QQUIET=1
-VIEW=
+#QQUIET=1
+#VIEW=

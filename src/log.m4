@@ -33,6 +33,8 @@ $(shell \
 		echo -n ASY; \
 	elif [[ "$(1)" =~ gnuplot ]]; then \
 		echo -n GPT; \
+	elif [[ "$(1)" =~ mupdf ]]; then \
+		echo -n muPDF; \
 	else \
 		echo -n "$(1)" | tr a-z A-Z ; \
 	fi

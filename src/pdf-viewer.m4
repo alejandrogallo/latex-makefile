@@ -28,6 +28,7 @@ view-pdf: $(PDF_VIEWER) open-pdf ## Refresh and open pdf
 # Open a viewer if there is none open viewing `$(BUILD_DOCUMENT)`
 #
 open-pdf: $(DEPENDENCIES) $(BUILD_DOCUMENT) ## Open pdf build document
+	$(ECHO) $(call print-cmd-name,$(PDF_VIEWER)) $(BUILD_DOCUMENT)
 	-$(DEBUG)ps aux | $(GREP) -v $(GREP) \
 	| $(GREP) "$(PDF_VIEWER)" \
 	| $(GREP) -q "$(BUILD_DOCUMENT)" \

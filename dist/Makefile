@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.5.8-19-g6ef8d10
-MAKEFILE_DATE = 28-04-2017 15:10
+MAKEFILE_VERSION = v1.5.8-20-g1bf9741
+MAKEFILE_DATE = 28-04-2017 15:50
 
 ## <<HELP
 #
@@ -90,6 +90,8 @@ $(shell \
 		echo -n ASY; \
 	elif [[ "$(1)" =~ gnuplot ]]; then \
 		echo -n GPT; \
+	elif [[ "$(1)" =~ mupdf ]]; then \
+		echo -n muPDF; \
 	else \
 		echo -n "$(1)" | tr a-z A-Z ; \
 	fi
@@ -339,6 +341,7 @@ $(BIBITEM_FILES): $(BIBTEX_FILES)
 			cp -u $$bibfile $(BUILD_DIR)/$$(dirname $$bibfile); \
 		done \
 		}
+	$(ECHO) $(call print-cmd-name,$(BIBTEX)) $@
 	$(DEBUG)cd $(BUILD_DIR); $(BIBTEX) $(patsubst %.tex,%,$(MAIN_SRC)) $(FD_OUTPUT)
 	$(ARROW) Compiling again $(BUILD_DOCUMENT) to update refs
 	$(DEBUG)$(MAKE) --no-print-directory force
@@ -367,26 +370,24 @@ ASYMPTOTE ?= asy
 GNUPLOT ?= gnuplot
 
 $(FIGS_SUFFIXES): %.asy
-	$(ARROW) $(call print-cmd-name,$(ASYMPTOTE)) $@
+	$(ECHO) $(call print-cmd-name,$(ASYMPTOTE)) $@
 	$(DEBUG)cd $(dir $<) && $(ASYMPTOTE) -f \
 		$(shell echo $(suffix $@) | $(TR) -d "\.") $(notdir $< ) $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.gnuplot
-	$(ARROW) $(call print-cmd-name,$(GNUPLOT)) $@
-	$(ARROW) Compiling $<
+	$(ECHO) $(call print-cmd-name,$(GNUPLOT)) $@
 	$(DEBUG)cd $(dir $< ) && $(GNUPLOT) $(notdir $< ) $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.sh
-	$(ARROW) $(call print-cmd-name,$(SH)) $@
+	$(ECHO) $(call print-cmd-name,$(SH)) $@
 	$(DEBUG)cd $(dir $< ) && $(SH) $(notdir $< ) $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.py
-	$(ARROW) $(call print-cmd-name,$(PY)) $@
-	$(ARROW) Compiling $<
+	$(ECHO) $(call print-cmd-name,$(PY)) $@
 	$(DEBUG)cd $(dir $< ) && $(PY) $(notdir $< ) $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.tex
-	$(ARROW) $(call print-cmd-name,$(PDFLATEX)) $@
+	$(ECHO) $(call print-cmd-name,$(PDFLATEX)) $@
 	$(DEBUG)mkdir -p $(dir $<)/$(BUILD_DIR)
 	$(DEBUG)cd $(dir $<) && $(PDFLATEX) \
 		$(BUILD_DIR_FLAG) $(notdir $*.tex ) $(FD_OUTPUT)
@@ -396,7 +397,7 @@ ifneq ($(strip $(BUILD_DIR)),.)
 endif
 
 %.pdf: %.eps
-	$(ARROW) $(call print-cmd-name,$(EPS2PDF)) $@
+	$(ECHO) $(call print-cmd-name,$(EPS2PDF)) $@
 	$(DEBUG)cd $(dir $< ) && $(EPS2PDF) $(notdir $< ) $(FD_OUTPUT)
 
 
@@ -445,6 +446,7 @@ view-pdf: $(PDF_VIEWER) open-pdf ## Refresh and open pdf
 # Open a viewer if there is none open viewing `$(BUILD_DOCUMENT)`
 #
 open-pdf: $(DEPENDENCIES) $(BUILD_DOCUMENT) ## Open pdf build document
+	$(ECHO) $(call print-cmd-name,$(PDF_VIEWER)) $(BUILD_DOCUMENT)
 	-$(DEBUG)ps aux | $(GREP) -v $(GREP) \
 	| $(GREP) "$(PDF_VIEWER)" \
 	| $(GREP) -q "$(BUILD_DOCUMENT)" \

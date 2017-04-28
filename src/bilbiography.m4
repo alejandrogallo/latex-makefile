@@ -32,6 +32,7 @@ $(BIBITEM_FILES): $(BIBTEX_FILES)
 			cp -u $$bibfile $(BUILD_DIR)/$$(dirname $$bibfile); \
 		done \
 		}
+	$(ECHO) $(call print-cmd-name,$(BIBTEX)) $@
 	$(DEBUG)cd $(BUILD_DIR); $(BIBTEX) $(patsubst %.tex,%,$(MAIN_SRC)) $(FD_OUTPUT)
 	$(ARROW) Compiling again $(BUILD_DOCUMENT) to update refs
 	$(DEBUG)$(MAKE) --no-print-directory force

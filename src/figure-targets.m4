@@ -6,26 +6,24 @@ ASYMPTOTE ?= asy
 GNUPLOT ?= gnuplot
 
 $(FIGS_SUFFIXES): %.asy
-	$(ARROW) $(call print-cmd-name,$(ASYMPTOTE)) $@
+	$(ECHO) $(call print-cmd-name,$(ASYMPTOTE)) $@
 	$(DEBUG)cd $(dir $<) && $(ASYMPTOTE) -f \
 		$(shell echo $(suffix $@) | $(TR) -d "\.") $(notdir $< ) $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.gnuplot
-	$(ARROW) $(call print-cmd-name,$(GNUPLOT)) $@
-	$(ARROW) Compiling $<
+	$(ECHO) $(call print-cmd-name,$(GNUPLOT)) $@
 	$(DEBUG)cd $(dir $< ) && $(GNUPLOT) $(notdir $< ) $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.sh
-	$(ARROW) $(call print-cmd-name,$(SH)) $@
+	$(ECHO) $(call print-cmd-name,$(SH)) $@
 	$(DEBUG)cd $(dir $< ) && $(SH) $(notdir $< ) $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.py
-	$(ARROW) $(call print-cmd-name,$(PY)) $@
-	$(ARROW) Compiling $<
+	$(ECHO) $(call print-cmd-name,$(PY)) $@
 	$(DEBUG)cd $(dir $< ) && $(PY) $(notdir $< ) $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.tex
-	$(ARROW) $(call print-cmd-name,$(PDFLATEX)) $@
+	$(ECHO) $(call print-cmd-name,$(PDFLATEX)) $@
 	$(DEBUG)mkdir -p $(dir $<)/$(BUILD_DIR)
 	$(DEBUG)cd $(dir $<) && $(PDFLATEX) \
 		$(BUILD_DIR_FLAG) $(notdir $*.tex ) $(FD_OUTPUT)
@@ -35,7 +33,7 @@ ifneq ($(strip $(BUILD_DIR)),.)
 endif
 
 %.pdf: %.eps
-	$(ARROW) $(call print-cmd-name,$(EPS2PDF)) $@
+	$(ECHO) $(call print-cmd-name,$(EPS2PDF)) $@
 	$(DEBUG)cd $(dir $< ) && $(EPS2PDF) $(notdir $< ) $(FD_OUTPUT)
 
 dnl vim: noexpandtab
