@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.5.8-2-g812907b
-MAKEFILE_DATE = 27-04-2017 10:58
+MAKEFILE_VERSION = v1.5.8-3-g303da89
+MAKEFILE_DATE = 28-04-2017 11:01
 
 ## <<HELP
 #
@@ -303,6 +303,7 @@ $(BUILD_DIR)/%: $(PACKAGES_DIR)/%
 	$(DEBUG)mkdir -p $(BUILD_DIR)
 	$(DEBUG)cp $^ $@
 
+
 # =================
 # Force compilation
 # =================
@@ -333,6 +334,7 @@ $(BIBITEM_FILES): $(BIBTEX_FILES)
 	$(ARROW) Compiling again $(BUILD_DOCUMENT) to update refs
 	$(DEBUG)$(MAKE) --no-print-directory force
 
+
 $(AUX_FILE):
 	$(ARROW) Creating $@
 	$(DEBUG)$(PDFLATEX) $(BUILD_DIR_FLAG) $(MAIN_SRC) $(FD_OUTPUT)
@@ -357,21 +359,9 @@ $(FIGS_SUFFIXES): %.sh
 	$(ARROW) Compiling $<
 	$(DEBUG)cd $(dir $< ) && $(SH) $(notdir $< ) $(FD_OUTPUT)
 
-%.pdf: %.eps
-	$(ARROW) Converting $< into $@
-	$(DEBUG)cd $(dir $< ) && $(EPS2PDF) $(notdir $< ) $(FD_OUTPUT)
-
-%.tex: %.sh
-	$(ARROW) Creating $@ from $<
-	$(DEBUG)cd $(dir $<) && $(SH) $(notdir $<) $(FD_OUTPUT)
-
 $(FIGS_SUFFIXES): %.py
 	$(ARROW) Compiling $<
 	$(DEBUG)cd $(dir $< ) && $(PY) $(notdir $< ) $(FD_OUTPUT)
-
-%.tex: %.py
-	$(ARROW) Creating $@ from $<
-	$(DEBUG)cd $(dir $<) && $(PY) $(notdir $<) $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.tex
 	$(ARROW) Compiling $< into $@
@@ -382,6 +372,20 @@ ifneq ($(strip $(BUILD_DIR)),.)
 	-$(DEBUG)test ! "$@ = *.aux" || cp \
 		$(PWD)/$(dir $<)/$(BUILD_DIR)/$(notdir $@) $(PWD)/$(dir $<)/$(notdir $@)
 endif
+
+%.pdf: %.eps
+	$(ARROW) Converting $< into $@
+	$(DEBUG)cd $(dir $< ) && $(EPS2PDF) $(notdir $< ) $(FD_OUTPUT)
+
+
+
+%.tex: %.sh
+	$(ARROW) Creating $@ from $<
+	$(DEBUG)cd $(dir $<) && $(SH) $(notdir $<) $(FD_OUTPUT)
+
+%.tex: %.py
+	$(ARROW) Creating $@ from $<
+	$(DEBUG)cd $(dir $<) && $(PY) $(notdir $<) $(FD_OUTPUT)
 
 # =============
 # View document

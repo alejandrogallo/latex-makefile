@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = syscmd(git describe --tags)dnl
-MAKEFILE_DATE = syscmd(date +"%d-%m-%Y %H:%M")dnl
+MAKEFILE_VERSION = syscmd(`git describe --tags')dnl
+MAKEFILE_DATE = syscmd(`date +"%d-%m-%Y %H:%M"')dnl
 
 ## <<HELP
 #
@@ -16,15 +16,7 @@ MAKEFILE_DATE = syscmd(date +"%d-%m-%Y %H:%M")dnl
 # Local configuration
 -include config.mk
 
-# Recognise OS
-ifeq ($(shell uname),Linux)
-LINUX := 1
-OSX   :=
-else
-LINUX :=
-OSX   := 1
-endif
-
+include(os.m4)
 
 # PARAMETERS, OVERRIDE THESE
 ############################
@@ -294,14 +286,7 @@ $(BUILD_DOCUMENT): $(DEPENDENCIES)
 view-html: $(BUILD_DOCUMENT)
 	(firefox $(BUILD_DOCUMENT) &)&
 
-$(BUILD_DIR):
-	$(ARROW) Creating the $@ directory
-	$(DEBUG)mkdir -p $@ $(FD_OUTPUT)
-
-$(BUILD_DIR)/%: $(PACKAGES_DIR)/%
-	$(ARROW) Copying TeX libraries: $@
-	$(DEBUG)mkdir -p $(BUILD_DIR)
-	$(DEBUG)cp $^ $@
+include(build-dir.m4)
 
 # =================
 # Force compilation
@@ -313,25 +298,7 @@ $(BUILD_DIR)/%: $(PACKAGES_DIR)/%
 force: ## Force creation of BUILD_DOCUMENT
 	$(DEBUG)$(MAKE) --no-print-directory -W $(MAIN_SRC) $(BUILD_DOCUMENT)
 
-# =======================
-# Bibliography generation
-# =======================
-#
-# This generates a `bbl` file from a  `bib` file For documents without a `bib`
-# file, this  will also be  targeted, bit  the '-' before  the `$(BIBTEX)`
-# ensures that the whole building doesn't fail because of it
-#
-$(BIBITEM_FILES): $(BIBTEX_FILES)
-	$(ARROW) "Compiling the bibliography"
-	-$(DEBUG)test $(BUILD_DIR) = . || { \
-		for bibfile in $(BIBTEX_FILES); do \
-			mkdir -p $(BUILD_DIR)/$$(dirname $$bibfile); \
-			cp -u $$bibfile $(BUILD_DIR)/$$(dirname $$bibfile); \
-		done \
-		}
-	$(DEBUG)cd $(BUILD_DIR); $(BIBTEX) $(patsubst %.tex,%,$(MAIN_SRC)) $(FD_OUTPUT)
-	$(ARROW) Compiling again $(BUILD_DOCUMENT) to update refs
-	$(DEBUG)$(MAKE) --no-print-directory force
+include(bilbiography.m4)
 
 $(AUX_FILE):
 	$(ARROW) Creating $@
@@ -344,77 +311,48 @@ $(AUX_FILE):
 	$(ARROW) "Creating pythontex"
 	$(PYTHONTEX) $<
 
-$(FIGS_SUFFIXES): %.asy
-	$(ARROW) Compiling $<
-	$(DEBUG)cd $(dir $<) && $(ASYMPTOTE) -f \
-		$(shell echo $(suffix $@) | $(TR) -d "\.") $(notdir $< ) $(FD_OUTPUT)
-
-$(FIGS_SUFFIXES): %.gnuplot
-	$(ARROW) Compiling $<
-	$(DEBUG)cd $(dir $< ) && $(GNUPLOT) $(notdir $< ) $(FD_OUTPUT)
-
-$(FIGS_SUFFIXES): %.sh
-	$(ARROW) Compiling $<
-	$(DEBUG)cd $(dir $< ) && $(SH) $(notdir $< ) $(FD_OUTPUT)
-
-%.pdf: %.eps
-	$(ARROW) Converting $< into $@
-	$(DEBUG)cd $(dir $< ) && $(EPS2PDF) $(notdir $< ) $(FD_OUTPUT)
+include(figure-targets.m4)
 
 %.tex: %.sh
 	$(ARROW) Creating $@ from $<
 	$(DEBUG)cd $(dir $<) && $(SH) $(notdir $<) $(FD_OUTPUT)
 
-$(FIGS_SUFFIXES): %.py
-	$(ARROW) Compiling $<
-	$(DEBUG)cd $(dir $< ) && $(PY) $(notdir $< ) $(FD_OUTPUT)
-
 %.tex: %.py
 	$(ARROW) Creating $@ from $<
 	$(DEBUG)cd $(dir $<) && $(PY) $(notdir $<) $(FD_OUTPUT)
 
-$(FIGS_SUFFIXES): %.tex
-	$(ARROW) Compiling $< into $@
-	$(DEBUG)mkdir -p $(dir $<)/$(BUILD_DIR)
-	$(DEBUG)cd $(dir $<) && $(PDFLATEX) \
-		$(BUILD_DIR_FLAG) $(notdir $*.tex ) $(FD_OUTPUT)
-ifneq ($(strip $(BUILD_DIR)),.)
-	-$(DEBUG)test ! "$@ = *.aux" || cp \
-		$(PWD)/$(dir $<)/$(BUILD_DIR)/$(notdir $@) $(PWD)/$(dir $<)/$(notdir $@)
-endif
+include(pdf-viewer.m4)
 
-include(pdf-viewer.mk)
+include(deps.m4)
 
-include(deps.mk)
+include(clean.m4)
 
-include(clean.mk)
+include(todo.m4)
 
-include(todo.mk)
+include(pandoc.m4)
 
-include(pandoc.mk)
+include(pdfpc.m4)
 
-include(pdfpc.mk)
+include(release.m4)
 
-include(release.mk)
+include(dist.m4)
 
-include(dist.mk)
+include(diff.m4)
 
-include(diff.mk)
+include(spelling.m4)
 
-include(spelling.mk)
+include(lint.m4)
 
-include(lint.mk)
+include(watch.m4)
 
-include(watch.mk)
+include(update.m4)
 
-include(update.mk)
+include(tags.m4)
 
-include(tags.mk)
+include(print-variable.m4)
 
-include(print-variable.mk)
+include(help.m4)
 
-include(help.mk)
-
-include(help-target.mk)
+include(help-target.m4)
 
 # vim: cc=80
