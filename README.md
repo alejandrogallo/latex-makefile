@@ -72,7 +72,6 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `DEPS_DIR`(`.deps`): Folder to keep makefile dependencies
   * `VIEW`(`1`): If `pdf` should be previewed after building
   * `DEPENDENCIES`(`empty`): General dependencies for BUILD_DOCUMENT
-  * `CLEAN_FILES`(`empty`): File to be cleaned
   * `FIGURES`(`empty`): Figures included in all texfiles
   * `INCLUDES_REC`(`3`): Depth for discovering automatically included texfiles
   * `INCLUDES`(`see`): Texfiles included in the main tex file
@@ -86,7 +85,9 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `DIST_DIR`(`see`): Distribution directory
   * `PACKAGES_DIR`(`libtex`): Tex libraries directory
   * `PACKAGES_FILES`(`see`): Which files are tex libraries
+  * `BROWSER`(`firefox`): 
   * `PDF_VIEWER`(`see`): Recognise pdf viewer automagically
+  * `CLEAN_FILES`(`\`): File to be cleaned
   * `REVEALJS_SRC`(`https://github.com/hakimel/reveal.js/`): 
   * `DIFF`(`HEAD HEAD~1`): 
   * `DIFF_BUILD_DIR_MAIN`(`diffs`): 

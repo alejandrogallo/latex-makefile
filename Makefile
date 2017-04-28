@@ -29,10 +29,6 @@ clean:
 	rm -rf dist build
 	make -C tests clean
 
-
-
-
-
 test: $(MAIN_BIN)
 	make -C tests/
 
