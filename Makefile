@@ -23,7 +23,7 @@ $(MAIN_BIN): $(SOURCES)
 doc: $(README) $(MAIN_BIN)
 $(README): $(SOURCES) README.md.in
 	cat README.md.in > README.md
-	./tools/doc.py >> README.md
+	./tools/doc.py $(MAIN_BIN) >> README.md
 
 clean:
 	rm -rf dist build
