@@ -1,0 +1,1 @@
+whoami > author.tex
