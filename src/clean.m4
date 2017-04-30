@@ -1,4 +1,6 @@
-
+include_once(log.m4)dnl
+include_once(shell-utils.m4)dnl
+dnl
 # Remove command
 RM ?= rm
 RM_FLAGS ?= -rf
@@ -29,7 +31,7 @@ CLEAN_FILES ?= $(DEFAULT_CLEAN_FILES)
 #
 clean: ## Remove build and temporary files
 	$(ARROW) Cleaning up...
-	$(DEBUG) {\
+	$(DBG_FLAG) {\
 		for file in $(CLEAN_FILES); do \
 			test -e $$file && { \
 				$(RM) $(RM_FLAGS) $$file &&      \

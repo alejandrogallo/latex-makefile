@@ -1,3 +1,6 @@
+include_once(log.m4)dnl
+include_once(shell-utils.m4)dnl
+dnl
 # ====================================
 # Ctags generation for latex documents
 # ====================================

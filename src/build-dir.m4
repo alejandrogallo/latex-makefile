@@ -1,3 +1,6 @@
+include_once(log.m4)dnl
+include_once(shell-utils.m4)dnl
+dnl
 # Folder to build the project
 BUILD_DIR ?= .
 
@@ -10,7 +13,7 @@ BUILD_DIR_FLAG  ?= $(if \
 
 $(BUILD_DIR):
 	$(ARROW) Creating the $@ directory
-	$(DEBUG)mkdir -p $@ $(FD_OUTPUT)
+	$(DBG_FLAG)mkdir -p $@ $(FD_OUTPUT)
 
 
 dnl vim: noexpandtab

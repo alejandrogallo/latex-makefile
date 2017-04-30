@@ -1,5 +1,6 @@
-include_once(shell-utils.m4)
-
+include_once(log.m4)dnl
+include_once(shell-utils.m4)dnl
+dnl
 # Function to try to discover automatically the main latex document
 define discoverMain
 $(shell \

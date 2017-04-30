@@ -18,6 +18,7 @@ MAKEFILE_DATE = syscmd(`date +"%d-%m-%Y %H:%M"')dnl
 
 include_once(os.m4)
 include_once(shell-utils.m4)
+include_once(latex.m4)
 
 # Folder to build the project
 BUILD_DIR ?= .
@@ -29,44 +30,6 @@ LATEXDIFF ?= latexdiff
 PDFLATEX ?= pdflatex
 
 include_once(log.m4)
-
-# Remove comments from some file, this variables is intended to be put
-# in a shell call for processing of TeX files
-removeTexComments=$(SED) "s/[^\\]%.*//g; s/^%.*//g"
-
-# Function to try to discover automatically the main latex document
-define discoverMain
-$(shell \
-	$(GREP) -H '\\begin{document}' *.tex 2>/dev/null \
-	| $(removeTexComments) \
-	| head -1 \
-	| $(AWK) -F ":" '{print $$1}' \
-)
-endef
-
-define recursiveDiscoverIncludes
-$(shell \
-	files=$(1);\
-	for i in $$(seq 1 $(2)); do \
-		files="$$(\
-			$(SED) -n '/\in\(clude\|put\)\s*[{]/p' $$files 2>/dev/null \
-					| $(removeTexComments) \
-					| $(SED) 's/\.tex//g' \
-					| $(SED) 's/.*{\(.*\)}.*/\1.tex /' \
-		)"; \
-		test -n "$$files" || break; \
-		echo $$files; \
-	done \
-)
-endef
-
-define hasToc
-$(shell\
-	$(GREP) '\\tableofcontents' $(1) \
-	| $(removeTexComments) \
-	| $(SED) "s/ //g" \
-)
-endef
 
 # Main texfile in the current directory
 MAIN_SRC ?= $(call discoverMain)
@@ -107,11 +70,6 @@ PURGE_SUFFIXES       = %.aux %.bbl %.blg %.fdb_latexmk %.fls %.log %.out \
                        %.ilg %.toc %.nav %.snm
 SUPPORTED_SUFFIXES   = %.pdf %.div %.ps %.eps %.1 %.html
 
-
-
-# Main dependencies for BUILD_DOCUMENT
-######################################
-#
 include_once(deps.m4)
 include_once(bibliography.m4)
 
@@ -150,7 +108,7 @@ $(BUILD_DOCUMENT): $(DEPENDENCIES)
 # sometimes to force compilation this target comes in handy.
 #
 force: ## Force creation of BUILD_DOCUMENT
-	$(DEBUG)$(MAKE) --no-print-directory -W $(MAIN_SRC) $(BUILD_DOCUMENT)
+	$(DBG_FLAG)$(MAKE) --no-print-directory -W $(MAIN_SRC) $(BUILD_DOCUMENT)
 
 include_once(build-dir.m4)
 

@@ -1,3 +1,6 @@
+include_once(log.m4)dnl
+include_once(shell-utils.m4)dnl
+dnl
 DIFF ?=HEAD HEAD~1
 NEW_COMMIT = $(word 1,$(DIFF))
 OLD_COMMIT = $(word 2,$(DIFF))
@@ -22,7 +25,7 @@ DIFF_SRC_NAME  ?= diff.tex
 # DIFF_BUILD_DIR. *Warning*: It only works for single document tex projects.
 diff: ## Create a latexdiff using git versions
 	$(ARROW) Creating diff between $(NEW_COMMIT) and $(OLD_COMMIT)
-	$(DEBUG)mkdir -p $(DIFF_BUILD_DIR)
+	$(DBG_FLAG)mkdir -p $(DIFF_BUILD_DIR)
 	git checkout $(NEW_COMMIT) $(MAIN_SRC)
 	cp $(MAIN_SRC) $(DIFF_BUILD_DIR)/$(strip $(MAIN_SRC)).$(NEW_COMMIT)
 	git checkout $(OLD_COMMIT) $(MAIN_SRC)

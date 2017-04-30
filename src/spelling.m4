@@ -1,3 +1,6 @@
+include_once(log.m4)dnl
+include_once(shell-utils.m4)dnl
+dnl
 SPELLER ?= aspell
 SPELL_DIR ?= .spell
 SPELL_LANG ?= en
@@ -17,8 +20,8 @@ CHECK_SPELL ?=
 #
 spelling: $(TEXFILES) ## Check spelling of latex sources
 	$(ARROW) Checking the spelling in $(SPELL_LANG)
-	$(DEBUG)mkdir -p $(SPELL_DIR)
-	$(DEBUG)for file in $?; do \
+	$(DBG_FLAG)mkdir -p $(SPELL_DIR)
+	$(DBG_FLAG)for file in $?; do \
 		$(SPELLER) --home-dir=$(SPELL_DIR) \
 		-l $(SPELL_LANG) -t -c $$file; \
 	done

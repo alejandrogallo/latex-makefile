@@ -1,4 +1,6 @@
 include_once(log.m4)dnl
+include_once(shell-utils.m4)dnl
+dnl
 # These files  are to keep  track of the  dependencies for latex  or pdf
 # includes, table of contents generation or figure recognition
 #
@@ -19,27 +21,27 @@ FIGURES ?=
 
 $(TOC_FILE): $(TOC_DEP)
 	$(ECHO) $(call print-cmd-name,$(PDFLATEX)) $@
-	$(DEBUG)mkdir -p $(BUILD_DIR)
-	$(DEBUG)cd $(dir $(MAIN_SRC) ) && $(PDFLATEX) \
+	$(DBG_FLAG)mkdir -p $(BUILD_DIR)
+	$(DBG_FLAG)cd $(dir $(MAIN_SRC) ) && $(PDFLATEX) \
 		$(BUILD_DIR_FLAG) $(notdir $(MAIN_SRC) ) $(FD_OUTPUT)
 
 $(TOC_DEP): $(TEXFILES)
 	$(ARROW) Writing table of contents into $(TOC_DEP)
-	$(DEBUG)mkdir -p $(dir $@)
-	$(DEBUG)$(GREP) -E \
+	$(DBG_FLAG)mkdir -p $(dir $@)
+	$(DBG_FLAG)$(GREP) -E \
 		'\\(section|subsection|subsubsection|chapter|part|subsubsubsection).' \
 		$(TEXFILES)  \
 		| $(removeTexComments) \
 		| $(SED) 's/.*{\(.*\)}.*/\1/' > $@.control
-	$(DEBUG)test -f "$@" && \
+	$(DBG_FLAG)test -f "$@" && \
 		{ test diff $@ $@.control 2>&1 > /dev/null && mv $@.control $@; } || \
 		mv $@.control $@
 
 $(FIGS_DEP): $(TEXFILES)
 	$(ARROW) Writing graphics dependencies into $(FIGS_DEP)
-	$(DEBUG)mkdir -p $(dir $@)
-	$(DEBUG)echo FIGURES = \\ > $@
-	$(DEBUG)$(GREP) --no-filename -E '\\`include'(graphic|pdf).' $(TEXFILES)  \
+	$(DBG_FLAG)mkdir -p $(dir $@)
+	$(DBG_FLAG)echo FIGURES = \\ > $@
+	$(DBG_FLAG)$(GREP) --no-filename -E '\\`include'(graphic|pdf).' $(TEXFILES)  \
 	| $(removeTexComments) \
 	| $(SED) -n 's/.*{\([^{}]\+\)}.*/\1 \\/p' >> $@
 

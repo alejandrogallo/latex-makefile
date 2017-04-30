@@ -1,4 +1,6 @@
-
+include_once(log.m4)dnl
+include_once(shell-utils.m4)dnl
+dnl
 # Tex libraries directory
 PACKAGES_DIR    ?= libtex
 
@@ -14,5 +16,5 @@ $(PACKAGES_DIR)/*.clo \
 
 $(BUILD_DIR)/%: $(PACKAGES_DIR)/%
 	$(ARROW) Copying TeX libraries: $@
-	$(DEBUG)mkdir -p $(BUILD_DIR)
-	$(DEBUG)cp $^ $@
+	$(DBG_FLAG)mkdir -p $(BUILD_DIR)
+	$(DBG_FLAG)cp $^ $@

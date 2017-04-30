@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.5.7-37-g9a2466b
-MAKEFILE_DATE = 30-04-2017 16:09
+MAKEFILE_VERSION = v1.5.7-39-gf9bce70
+MAKEFILE_DATE = 30-04-2017 16:28
 
 ## <<HELP
 #
@@ -30,6 +30,7 @@ endif
 
 
 # File: shell-utils.m4
+
 # Shell used
 SH         ?= bash
 # Python interpreter
@@ -54,17 +55,9 @@ UNIQ       ?= uniq
 
 
 
-
-# Folder to build the project
-BUILD_DIR ?= .
-# Shell utilities
-LATEX ?= pdflatex
-# For creating differences
-LATEXDIFF ?= latexdiff
-# Main pdflatex engine
-PDFLATEX ?= pdflatex
-
+# File: latex.m4
 # File: log.m4
+
 # If secondary programs output is shown
 QUIET ?= 0
 
@@ -147,11 +140,6 @@ endif #QQUIET
 
 
 
-
-# Remove comments from some file, this variables is intended to be put
-# in a shell call for processing of TeX files
-removeTexComments=$(SED) "s/[^\\]%.*//g; s/^%.*//g"
-
 # Function to try to discover automatically the main latex document
 define discoverMain
 $(shell \
@@ -161,6 +149,10 @@ $(shell \
 	| $(AWK) -F ":" '{print $$1}' \
 )
 endef
+
+# Remove comments from some file, this variables is intended to be put
+# in a shell call for processing of TeX files
+removeTexComments=$(SED) "s/[^\\]%.*//g; s/^%.*//g"
 
 define recursiveDiscoverIncludes
 $(shell \
@@ -185,6 +177,21 @@ $(shell\
 	| $(SED) "s/ //g" \
 )
 endef
+
+
+
+
+# Folder to build the project
+BUILD_DIR ?= .
+# Shell utilities
+LATEX ?= pdflatex
+# For creating differences
+LATEXDIFF ?= latexdiff
+# Main pdflatex engine
+PDFLATEX ?= pdflatex
+
+
+
 
 # Main texfile in the current directory
 MAIN_SRC ?= $(call discoverMain)
@@ -225,12 +232,8 @@ PURGE_SUFFIXES       = %.aux %.bbl %.blg %.fdb_latexmk %.fls %.log %.out \
                        %.ilg %.toc %.nav %.snm
 SUPPORTED_SUFFIXES   = %.pdf %.div %.ps %.eps %.1 %.html
 
-
-
-# Main dependencies for BUILD_DOCUMENT
-######################################
-#
 # File: deps.m4
+
 
 # These files  are to keep  track of the  dependencies for latex  or pdf
 # includes, table of contents generation or figure recognition
@@ -283,6 +286,8 @@ deps: $(FIGS_DEP) ## Parse dependencies for the main texfile
 
 
 # File: bibliography.m4
+
+
 define discoverBibtexFiles
 $(shell \
 	$(GREP) -E '\\bibliography\s*{' $(1) 2> /dev/null  \
@@ -362,6 +367,8 @@ force: ## Force creation of BUILD_DOCUMENT
 	$(DEBUG)$(MAKE) --no-print-directory -W $(MAIN_SRC) $(BUILD_DOCUMENT)
 
 # File: build-dir.m4
+
+
 # Folder to build the project
 BUILD_DIR ?= .
 
@@ -382,6 +389,7 @@ $(BUILD_DIR):
 
 
 # File: libraries.m4
+
 
 # Tex libraries directory
 PACKAGES_DIR    ?= libtex
@@ -406,6 +414,7 @@ $(BUILD_DIR)/%: $(PACKAGES_DIR)/%
 
 # File: html.m4
 
+
 BROWSER ?= firefox
 view-html: $(BUILD_DOCUMENT)
 	$(DEBUG)($(BROWSER) $(BUILD_DOCUMENT) &)&
@@ -415,6 +424,8 @@ view-html: $(BUILD_DOCUMENT)
 
 
 # File: pythontex.m4
+
+
 # If pythontex is being used
 WITH_PYTHONTEX  ?=
 
@@ -477,6 +488,8 @@ endif
 
 
 # File: document-targets.m4
+
+
 %.tex: %.sh
 	$(ARROW) Creating $@ from $<
 	$(DEBUG)cd $(dir $<) && $(SH) $(notdir $<) $(FD_OUTPUT)
@@ -494,6 +507,7 @@ $(AUX_FILE):
 
 
 # File: pdf-viewer.m4
+
 
 # Recognise pdf viewer automagically
 PDF_VIEWER ?= $(or \
@@ -554,6 +568,7 @@ mupdf /usr/bin/mupdf: ## Refresh mupdf
 
 # File: clean.m4
 
+
 # Remove command
 RM ?= rm
 RM_FLAGS ?= -rf
@@ -598,6 +613,8 @@ clean: ## Remove build and temporary files
 
 
 # File: todo.m4
+
+
 todo: $(TEXFILES) ## Print the todos from the main document
 	$(ARROW) Parsing \\TODO{} in $(MAIN_SRC)
 	$(DEBUG)$(SED) -n "/\\TODO{/,/}/\
@@ -613,6 +630,8 @@ todo: $(TEXFILES) ## Print the todos from the main document
 
 
 # File: pandoc.m4
+
+
 #PANDOC CONVERSIONS
 ###################
 
@@ -659,6 +678,8 @@ html: $(MAIN_SRC)
 
 
 # File: pdfpc.m4
+
+
 # ===========================
 # Presenter console generator
 # ===========================
@@ -698,6 +719,8 @@ $(PDFPC_FILE): $(TEXFILES)
 
 
 # File: release.m4
+
+
 RELEASES_DIR=releases
 RELEASES_FMT=tar
 releases: $(BUILD_DOCUMENT) ## Create all releases (according to tags)
@@ -714,6 +737,8 @@ releases: $(BUILD_DOCUMENT) ## Create all releases (according to tags)
 
 
 # File: dist.m4
+
+
 # Distribution directory
 DIST_DIR ?= $(PREFIX)/dist
 
@@ -773,6 +798,8 @@ dist-clean: clean
 
 
 # File: diff.m4
+
+
 DIFF ?=HEAD HEAD~1
 NEW_COMMIT = $(word 1,$(DIFF))
 OLD_COMMIT = $(word 2,$(DIFF))
@@ -818,6 +845,8 @@ diff: ## Create a latexdiff using git versions
 
 
 # File: spelling.m4
+
+
 SPELLER ?= aspell
 SPELL_DIR ?= .spell
 SPELL_LANG ?= en
@@ -848,6 +877,8 @@ spelling: $(TEXFILES) ## Check spelling of latex sources
 
 
 # File: lint.m4
+
+
 # For checking tex syntax
 TEX_LINTER ?= chktex
 
@@ -866,8 +897,11 @@ lint: $(TEXFILES) ## Check syntax of latex sources (TEX_LINTER)
 
 
 # File: watch.m4
+
+
 watch: ## Build if changes
-	(echo $(TEXFILES) $(BIBTEX_FILES) | $(TR) " " "\n" | entr make &)&
+	$(DEBUG)(echo $(TEXFILES) $(BIBTEX_FILES) | $(TR) " " "\n" | entr make &)&
+
 unwatch: ## Cancel Watching
 	killall entr
 
@@ -876,6 +910,8 @@ unwatch: ## Cancel Watching
 
 
 # File: update.m4
+
+
 # ===============================
 # Update the makefile from source
 # ===============================
@@ -894,6 +930,8 @@ GH_REPO_FILE ?= https://raw.githubusercontent.com/alejandrogallo/latex-makefile/
 
 
 # File: tags.m4
+
+
 # ====================================
 # Ctags generation for latex documents
 # ====================================
@@ -909,6 +947,8 @@ tags: $(TEXFILES) ## Create TeX exhuberant ctags
 
 
 # File: print-variable.m4
+
+
 # This is used for printing defined variables from Some other scripts. For
 # instance if you want to know the value of the PDF_VIEWER defined in the
 # Makefile, then you would do
@@ -936,6 +976,8 @@ print: ## Print a variable
 
 
 # File: help.m4
+
+
 # ================
 # Print quick help
 # ================
@@ -965,6 +1007,7 @@ help: ## Prints help for targets with comments
 
 
 # File: help-target.m4
+
 
 FORCE:
 help-%:

@@ -1,4 +1,6 @@
-
+include_once(log.m4)dnl
+include_once(shell-utils.m4)dnl
+dnl
 # Recognise pdf viewer automagically
 PDF_VIEWER ?= $(or \
 $(shell $(WHICH) zathura 2> /dev/null),\
@@ -29,7 +31,7 @@ view-pdf: $(PDF_VIEWER) open-pdf ## Refresh and open pdf
 #
 open-pdf: $(BUILD_DOCUMENT) ## Open pdf build document
 	$(ECHO) $(call print-cmd-name,$(PDF_VIEWER)) $(BUILD_DOCUMENT)
-	-$(DEBUG)ps aux | $(GREP) -v $(GREP) \
+	-$(DBG_FLAG)ps aux | $(GREP) -v $(GREP) \
 	| $(GREP) "$(PDF_VIEWER)" \
 	| $(GREP) -q "$(BUILD_DOCUMENT)" \
 	||  $(PDF_VIEWER) "$(BUILD_DOCUMENT)" 2>&1 > /dev/null &
@@ -42,7 +44,7 @@ open-pdf: $(BUILD_DOCUMENT) ## Open pdf build document
 # mupdf signal API to refresh the document.
 #
 mupdf /usr/bin/mupdf: ## Refresh mupdf
-	-$(DEBUG)ps aux \
+	-$(DBG_FLAG)ps aux \
 	| $(GREP) -v $(GREP) \
 	| $(GREP) "$(PDF_VIEWER)" \
 	| $(GREP) "$(BUILD_DOCUMENT)" \

@@ -1,6 +1,9 @@
+include_once(log.m4)dnl
+include_once(shell-utils.m4)dnl
+dnl
 todo: $(TEXFILES) ## Print the todos from the main document
 	$(ARROW) Parsing \\TODO{} in $(MAIN_SRC)
-	$(DEBUG)$(SED) -n "/\\TODO{/,/}/\
+	$(DBG_FLAG)$(SED) -n "/\\TODO{/,/}/\
 	{\
 		s/.TODO/===/; \
 		s/[{]//g; \

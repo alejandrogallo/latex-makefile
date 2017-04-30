@@ -1,10 +1,13 @@
+include_once(log.m4)dnl
+include_once(shell-utils.m4)dnl
+dnl
 # ================
 # Print quick help
 # ================
 #
 # It prints a quick help in the terminal
 help: ## Prints help for targets with comments
-	$(DEBUG)$(or $(AWK),awk) ' \
+	$(DBG_FLAG)$(or $(AWK),awk) ' \
 		BEGIN {FS = ":.*?## "}; \
 		/^## *<<HELP/,/^## *HELP/ { \
 			help=$$1; \

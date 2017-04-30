@@ -1,3 +1,6 @@
+include_once(log.m4)dnl
+include_once(shell-utils.m4)dnl
+dnl
 define discoverBibtexFiles
 $(shell \
 	$(GREP) -E '\\bibliography\s*{' $(1) 2> /dev/null  \
@@ -25,15 +28,15 @@ BIBTEX ?= bibtex
 #
 $(BIBITEM_FILES): $(BIBTEX_FILES)
 	$(ARROW) "Compiling the bibliography"
-	-$(DEBUG)test $(BUILD_DIR) = . || { \
+	-$(DBG_FLAG)test $(BUILD_DIR) = . || { \
 		for bibfile in $(BIBTEX_FILES); do \
 			mkdir -p $(BUILD_DIR)/$$(dirname $$bibfile); \
 			cp -u $$bibfile $(BUILD_DIR)/$$(dirname $$bibfile); \
 		done \
 		}
 	$(ECHO) $(call print-cmd-name,$(BIBTEX)) $@
-	$(DEBUG)cd $(BUILD_DIR); $(BIBTEX) $(patsubst %.tex,%,$(MAIN_SRC)) $(FD_OUTPUT)
+	$(DBG_FLAG)cd $(BUILD_DIR); $(BIBTEX) $(patsubst %.tex,%,$(MAIN_SRC)) $(FD_OUTPUT)
 	$(ARROW) Compiling again $(BUILD_DOCUMENT) to update refs
-	$(DEBUG)$(MAKE) --no-print-directory force
+	$(DBG_FLAG)$(MAKE) --no-print-directory force
 
 dnl vim: noexpandtab

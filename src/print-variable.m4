@@ -1,3 +1,6 @@
+include_once(log.m4)dnl
+include_once(shell-utils.m4)dnl
+dnl
 # This is used for printing defined variables from Some other scripts. For
 # instance if you want to know the value of the PDF_VIEWER defined in the
 # Makefile, then you would do
@@ -5,7 +8,7 @@
 # and this would output PDF_VIEWER=mupdf for instance.
 FORCE:
 print-%:
-	$(DEBUG)echo '$*=$($*)'
+	$(DBG_FLAG)echo '$*=$($*)'
 
 # =====================================
 # Print a variable used by the Makefile
@@ -17,7 +20,7 @@ print-%:
 #
 FORCE:
 print: ## Print a variable
-	$(DEBUG)read -p "Variable to print: " variable && \
+	$(DBG_FLAG)read -p "Variable to print: " variable && \
 		$(MAKE) --no-print-directory print-$$variable
 
 dnl vim: noexpandtab

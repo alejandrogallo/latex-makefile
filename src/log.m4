@@ -1,10 +1,29 @@
+include_once(shell-utils.m4)dnl
+dnl
+dnl
+dnl
 # If secondary programs output is shown
 QUIET ?= 0
+# If the log messages should be also muted
+QQUIET     ?=
+# If the commands issued should be printed write `DEBUG=1` if you want to see
+# all commands.
+DEBUG      ?=
+# For coloring
+TPUT       ?= $(shell $(WHICH) tput 2> /dev/null)
+# If messages should have color
+WITH_COLOR ?= 1
 
 ifneq ($(strip $(QUIET)),0)
 	FD_OUTPUT = 2>&1 > /dev/null
 else
 	FD_OUTPUT =
+endif
+
+ifdef DEBUG
+	DBG_FLAG = @
+else
+	DBG_FLAG =
 endif
 
 # Print commands like [CMD]
@@ -39,15 +58,6 @@ $(shell \
 )\
 $(COLOR_E)]"
 endef
-
-# If the main messages should be also muted
-QQUIET     ?=
-DEBUG      ?= @
-# For coloring
-TPUT       ?= $(shell $(WHICH) tput 2> /dev/null)
-# If messages should have color
-WITH_COLOR ?= 1
-
 
 ifndef QQUIET
 

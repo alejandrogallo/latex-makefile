@@ -33,7 +33,7 @@ variables for the project, like the verbosity `QUIET=1` and many more.
     omitted and a `see` is put in its place.  If there is no default value then
     the keyword `empty` appears.
     
-  * `SH`(`bash`): File: shell-utils.m4 Shell used
+  * `SH`(`bash`): Shell used
   * `PY`(`python`): Python interpreter
   * `GREP`(`grep`): Grep program version
   * `FIND`(`find`): Find utility
@@ -47,11 +47,7 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `WHICH`(`which`): 
   * `SORT`(`sort`): 
   * `UNIQ`(`uniq`): 
-  * `BUILD_DIR`(`.`): Folder to build the project
-  * `LATEX`(`pdflatex`): Shell utilities
-  * `LATEXDIFF`(`latexdiff`): For creating differences
-  * `PDFLATEX`(`pdflatex`): Main pdflatex engine
-  * `QUIET`(`0`): File: log.m4 If secondary programs output is shown
+  * `QUIET`(`0`): If secondary programs output is shown
   * `QQUIET`(`empty`): If the main messages should be also muted
   * `DEBUG`(`@`): 
   * `TPUT`(`see`): For coloring
@@ -66,6 +62,10 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `ARROW`(`@echo "see`): 
   * `ARROW`(`@echo "===>"`): 
   * `ECHO`(`@echo`): 
+  * `BUILD_DIR`(`.`): Folder to build the project
+  * `LATEX`(`pdflatex`): Shell utilities
+  * `LATEXDIFF`(`latexdiff`): For creating differences
+  * `PDFLATEX`(`pdflatex`): Main pdflatex engine
   * `MAIN_SRC`(`see`): Main texfile in the current directory
   * `FMT`(`pdf`): Format to build to
   * `VIEW`(`1`): If `BUILD_DOCUMENT` should be previewed after building
@@ -80,12 +80,12 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `FIGURES`(`empty`): Figures included in all texfiles
   * `BIBTEX`(`bibtex`): For converting document formats
   * `DEPENDENCIES`(`\`): The second expansion is important so that some variables like `FIGURES` get first parsed in some dependency file and then included into the main Makefile General dependencies for `BUILD_DOCUMENT`
-  * `BUILD_DIR`(`.`): File: build-dir.m4 Folder to build the project
+  * `BUILD_DIR`(`.`): Folder to build the project
   * `BUILD_DIR_FLAG`(`see`): Build dir flag for latex. If `BUILD_DIR = .` then `BUILD_DIR_FLAG` is not defined, else `BUILD_DIR = -output-directory $(BUILD_DIR)`
   * `PACKAGES_DIR`(`libtex`): Tex libraries directory
   * `PACKAGES_FILES`(`see`): Which files are tex libraries
   * `BROWSER`(`firefox`): 
-  * `WITH_PYTHONTEX`(`empty`): File: pythontex.m4 If pythontex is being used
+  * `WITH_PYTHONTEX`(`empty`): If pythontex is being used
   * `PYTHONTEX`(`pythontex`): 
   * `ASYMPTOTE`(`asy`): For asymptote figures
   * `GNUPLOT`(`gnuplot`): Gnuplot interpreter
@@ -95,16 +95,16 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `CLEAN_FILES`(`see`): Files to be cleaned
   * `PANDOC`(`pandoc`): 
   * `REVEALJS_SRC`(`https://github.com/hakimel/reveal.js/`): 
-  * `DIST_DIR`(`see`): File: dist.m4 Distribution directory
-  * `DIFF`(`HEAD HEAD~1`): File: diff.m4
+  * `DIST_DIR`(`see`): Distribution directory
+  * `DIFF`(`HEAD HEAD~1`): 
   * `DIFF_BUILD_DIR_MAIN`(`diffs`): 
   * `DIFF_BUILD_DIR`(`see`): 
   * `DIFF_SRC_NAME`(`diff.tex`): 
-  * `SPELLER`(`aspell`): File: spelling.m4
+  * `SPELLER`(`aspell`): 
   * `SPELL_DIR`(`.spell`): 
   * `SPELL_LANG`(`en`): 
   * `CHECK_SPELL`(`empty`): 
-  * `TEX_LINTER`(`chktex`): File: lint.m4 For checking tex syntax
+  * `TEX_LINTER`(`chktex`): For checking tex syntax
   * `GH_REPO_FILE`(`https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile`): 
 
 
