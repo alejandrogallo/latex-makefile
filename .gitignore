@@ -6,6 +6,7 @@ deps
 build
 diff.tex
 .vim-run
+*.swp
 .tex_dbg
 
 ## Core latex/pdflatex auxiliary files:

@@ -301,3 +301,6 @@ It prints a quick help in the terminal
 ```bash 
 make help
 ```
+<!--
+vim-run: pandoc -s -t html -o %.html %
+-->
