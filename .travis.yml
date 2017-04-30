@@ -9,3 +9,5 @@ before_install:
   - sudo apt-get install -y latexdiff
   - sudo apt-get install -y asymptote
   - sudo apt-get install -y gnuplot
+  - sudo apt-get install -y git
+  - sudo apt-get install -y python3
