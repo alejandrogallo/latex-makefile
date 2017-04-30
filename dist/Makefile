@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.5.7-46-g1942631
-MAKEFILE_DATE = 30-04-2017 17:19
+MAKEFILE_VERSION = v1.5.7-47-ge8589bf
+MAKEFILE_DATE = 30-04-2017 18:47
 
 ## <<HELP
 #
@@ -39,6 +39,8 @@ SHELL      ?= $(SH)
 PY         ?= python
 # Alias for `PY'
 PYTHON     ?= $(PY)
+# Perl command
+PERL       ?= perl
 # Grep program version
 GREP       ?= grep
 # Find utility
@@ -88,10 +90,17 @@ else
 endif
 
 ifdef DEBUG
-	DBG_FLAG =
+DBG_FLAG =
+DBG_FILE ?= .tex_dbg
+$(shell date | $(SED) "p; s/./=/g" > $(DBG_FILE))
 else
-	DBG_FLAG = @
+DBG_FLAG = @
+DBG_FILE =
 endif
+
+define log-debug
+>> $(or $(DBG_FILE),/dev/null) echo
+endef
 
 # Print commands like [CMD]
 define print-cmd-name
@@ -167,6 +176,7 @@ endif #QQUIET
 
 
 
+
 # Function to try to discover automatically the main latex document
 define discoverMain
 $(shell \
@@ -181,16 +191,24 @@ endef
 # in a shell call for processing of TeX files
 removeTexComments=$(SED) "s/[^\\]%.*//g; s/^%.*//g"
 
+TEX_INCLUDES_REGEX = \in\(clude\|put\)\s*[{]\s*
 define recursiveDiscoverIncludes
 $(shell \
 	files=$(1);\
 	for i in $$(seq 1 $(2)); do \
 		files="$$(\
-			$(SED) -n '/\in\(clude\|put\)\s*[{]/p' $$files 2>/dev/null \
+			cat $$files 2> /dev/null\
 					| $(removeTexComments) \
+					| $(SED) 's/$(TEX_INCLUDES_REGEX)/\n&/g' \
+					| $(SED) -n '/$(TEX_INCLUDES_REGEX)/p' \
+					| $(SED) 's/$(TEX_INCLUDES_REGEX)//' \
 					| $(SED) 's/\.tex//g' \
-					| $(SED) 's/.*{\(.*\)}.*/\1.tex /' \
+					| $(SED) 's/}.*//g' \
+					| $(SED) 's/\s*$$//g' \
+					| $(SED) 's/\(.*\)/\1.tex /' \
 		)"; \
+		$(log-debug) $$i th iteration includes; \
+		$(log-debug) $$files; \
 		test -n "$$files" || break; \
 		echo $$files; \
 	done \
@@ -208,6 +226,7 @@ endef
 $(AUX_FILE):
 	$(ECHO) $(call print-cmd-name,$(PDFLATEX)) $@
 	$(DBG_FLAG)$(PDFLATEX) $(BUILD_DIR_FLAG) $(MAIN_SRC) $(FD_OUTPUT)
+
 
 
 
@@ -527,6 +546,10 @@ endif
 	$(ECHO) $(call print-cmd-name,$(PY)) $@
 	$(DBG_FLAG)cd $(dir $<) && $(PY) $(notdir $<) $(FD_OUTPUT)
 
+%.tex: %.pl
+	$(ECHO) $(call print-cmd-name,$(PERL)) $@
+	$(DBG_FLAG)cd $(dir $<) && $(PERL) $(notdir $<) $(FD_OUTPUT)
+
 
 
 
@@ -606,6 +629,7 @@ $(wildcard $(BUILD_DOCUMENT)) \
 $(wildcard $(subst %,*,$(PURGE_SUFFIXES))) \
 $(wildcard $(subst %,$(patsubst %.tex,%,$(MAIN_SRC)),$(SUPPORTED_SUFFIXES))) \
 $(wildcard $(DEPS_DIR)) \
+$(wildcard $(DBG_FILE)) \
 $(wildcard $(PDFPC_FILE)) \
 $(wildcard $(DIST_DIR)) \
 $(wildcard $(DIFF_BUILD_DIR_MAIN)) \

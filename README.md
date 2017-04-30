@@ -37,6 +37,7 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `SHELL`(`see`): Alias for `SHELL'
   * `PY`(`python`): Python interpreter
   * `PYTHON`(`see`): Alias for `PY'
+  * `PERL`(`perl`): Perl command
   * `GREP`(`grep`): Grep program version
   * `FIND`(`find`): Find utility
   * `SED`(`see`): `sed` program version
@@ -54,6 +55,7 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `DEBUG`(`empty`): If the commands issued should be printed write `DEBUG=1` if you want to see all commands.
   * `TPUT`(`see`): For coloring
   * `WITH_COLOR`(`1`): If messages should have color
+  * `DBG_FILE`(`.tex_dbg`): 
   * `COLOR_R`(`see`): Red
   * `COLOR_G`(`see`): Green
   * `COLOR_Y`(`see`): Yellow

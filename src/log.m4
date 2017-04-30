@@ -21,10 +21,17 @@ else
 endif
 
 ifdef DEBUG
-	DBG_FLAG =
+DBG_FLAG =
+DBG_FILE ?= .tex_dbg
+$(shell date | $(SED) "p; s/./=/g" > $(DBG_FILE))
 else
-	DBG_FLAG = @
+DBG_FLAG = @
+DBG_FILE =
 endif
+
+define log-debug
+>> $(or $(DBG_FILE),/dev/null) echo
+endef
 
 # Print commands like [CMD]
 define print-cmd-name
@@ -97,3 +104,5 @@ else
 ARROW           := @ > /dev/null echo
 ECHO            := @ > /dev/null echo
 endif #QQUIET
+
+dnl vim: noexpandtab

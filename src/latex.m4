@@ -15,16 +15,24 @@ endef
 # in a shell call for processing of TeX files
 removeTexComments=$(SED) "s/[^\\]%.*//g; s/^%.*//g"
 
+TEX_INCLUDES_REGEX = \in\(clude\|put\)\s*[{]\s*
 define recursiveDiscoverIncludes
 $(shell \
 	files=$(1);\
 	for i in $$(seq 1 $(2)); do \
 		files="$$(\
-			$(SED) -n '/\in\(clude\|put\)\s*[{]/p' $$files 2>/dev/null \
+			cat $$files 2> /dev/null\
 					| $(removeTexComments) \
+					| $(SED) 's/$(TEX_INCLUDES_REGEX)/\n&/g' \
+					| $(SED) -n '/$(TEX_INCLUDES_REGEX)/p' \
+					| $(SED) 's/$(TEX_INCLUDES_REGEX)//' \
 					| $(SED) 's/\.tex//g' \
-					| $(SED) 's/.*{\(.*\)}.*/\1.tex /' \
+					| $(SED) 's/}.*//g' \
+					| $(SED) 's/\s*$$//g' \
+					| $(SED) 's/\(.*\)/\1.tex /' \
 		)"; \
+		$(log-debug) $$i th iteration includes; \
+		$(log-debug) $$files; \
 		test -n "$$files" || break; \
 		echo $$files; \
 	done \
@@ -42,3 +50,5 @@ endef
 $(AUX_FILE):
 	$(ECHO) $(call print-cmd-name,$(PDFLATEX)) $@
 	$(DBG_FLAG)$(PDFLATEX) $(BUILD_DIR_FLAG) $(MAIN_SRC) $(FD_OUTPUT)
+
+dnl vim: noexpandtab

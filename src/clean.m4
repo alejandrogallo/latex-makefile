@@ -13,6 +13,7 @@ $(wildcard $(BUILD_DOCUMENT)) \
 $(wildcard $(subst %,*,$(PURGE_SUFFIXES))) \
 $(wildcard $(subst %,$(patsubst %.tex,%,$(MAIN_SRC)),$(SUPPORTED_SUFFIXES))) \
 $(wildcard $(DEPS_DIR)) \
+$(wildcard $(DBG_FILE)) \
 $(wildcard $(PDFPC_FILE)) \
 $(wildcard $(DIST_DIR)) \
 $(wildcard $(DIFF_BUILD_DIR_MAIN)) \
