@@ -3,8 +3,8 @@
 RM ?= rm
 RM_FLAGS ?= -rf
 
-# File to be cleaned
-CLEAN_FILES ?= \
+# Default clean file to be cleaned
+DEFAULT_CLEAN_FILES = \
 $(wildcard $(PACKAGES_FILES_BUILD)) \
 $(wildcard $(PYTHONTEX_FILE)) \
 $(wildcard $(BUILD_DOCUMENT)) \
@@ -17,6 +17,9 @@ $(wildcard $(DIFF_BUILD_DIR_MAIN)) \
 $(wildcard $(DIFF_SRC_NAME)) \
 $(if $(filter-out .,$(strip $(BUILD_DIR))),$(wildcard $(BUILD_DIR))) \
 
+# Files to be cleaned
+CLEAN_FILES ?= $(DEFAULT_CLEAN_FILES)
+
 # =============
 # Main cleaning
 # =============
@@ -26,10 +29,12 @@ $(if $(filter-out .,$(strip $(BUILD_DIR))),$(wildcard $(BUILD_DIR))) \
 #
 clean: ## Remove build and temporary files
 	$(ARROW) Cleaning up...
-	$(DEBUG){\
+	$(DEBUG) {\
 		for file in $(CLEAN_FILES); do \
-			$(RM) $(RM_FLAGS) $$file &&      \
-			echo -e $(call print-cmd-name,RM)  "$$file"; \
+			test -e $$file && { \
+				$(RM) $(RM_FLAGS) $$file &&      \
+				echo $(call print-cmd-name,RM) "$$file";\
+		 } || : ; \
 		done \
 	}
 
