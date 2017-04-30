@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.5.7-40-g8594563
-MAKEFILE_DATE = 30-04-2017 16:45
+MAKEFILE_VERSION = v1.5.7-42-g71e2337
+MAKEFILE_DATE = 30-04-2017 16:48
 
 ## <<HELP
 #
@@ -88,9 +88,9 @@ else
 endif
 
 ifdef DEBUG
-	DBG_FLAG = @
-else
 	DBG_FLAG =
+else
+	DBG_FLAG = @
 endif
 
 # Print commands like [CMD]
@@ -347,8 +347,6 @@ $(BIBITEM_FILES): $(BIBTEX_FILES)
 
 
 
-# The second expansion is important so that some variables like `FIGURES` get
-# first parsed in some dependency file and then included into the main Makefile
 # General dependencies for `BUILD_DOCUMENT`
 DEPENDENCIES ?= \
 $(BUILD_DIR) \

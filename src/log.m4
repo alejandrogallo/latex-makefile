@@ -21,9 +21,9 @@ else
 endif
 
 ifdef DEBUG
-	DBG_FLAG = @
-else
 	DBG_FLAG =
+else
+	DBG_FLAG = @
 endif
 
 # Print commands like [CMD]

@@ -34,22 +34,24 @@ variables for the project, like the verbosity `QUIET=1` and many more.
     the keyword `empty` appears.
     
   * `SH`(`bash`): Shell used
+  * `SHELL`(`see`): Alias for `SHELL'
   * `PY`(`python`): Python interpreter
+  * `PYTHON`(`see`): Alias for `PY'
   * `GREP`(`grep`): Grep program version
   * `FIND`(`find`): Find utility
-  * `SED`(`see`): sed program version
-  * `AWK`(`see`): 
+  * `SED`(`see`): `sed` program version
+  * `AWK`(`see`): `awk` program to use
   * `CTAGS`(`ctags`): For creating tags
   * `READLINK`(`see`): To get complete paths
-  * `XARGS`(`xargs`): 
-  * `TR`(`tr`): 
-  * `GIT`(`git`): 
-  * `WHICH`(`which`): 
-  * `SORT`(`sort`): 
-  * `UNIQ`(`uniq`): 
+  * `XARGS`(`xargs`): `xargs` program to use
+  * `TR`(`tr`): `tr` program to use
+  * `GIT`(`git`): `git` version to use
+  * `WHICH`(`which`): `which` program to use
+  * `SORT`(`sort`): `sort` program to use
+  * `UNIQ`(`uniq`): `uniq` program to use
   * `QUIET`(`0`): If secondary programs output is shown
-  * `QQUIET`(`empty`): If the main messages should be also muted
-  * `DEBUG`(`@`): 
+  * `QQUIET`(`empty`): If the log messages should be also muted
+  * `DEBUG`(`empty`): If the commands issued should be printed write `DEBUG=1` if you want to see all commands.
   * `TPUT`(`see`): For coloring
   * `WITH_COLOR`(`1`): If messages should have color
   * `COLOR_R`(`see`): Red
@@ -79,7 +81,7 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `DEPS_DIR`(`.deps`): Folder to keep makefile dependencies
   * `FIGURES`(`empty`): Figures included in all texfiles
   * `BIBTEX`(`bibtex`): For converting document formats
-  * `DEPENDENCIES`(`\`): The second expansion is important so that some variables like `FIGURES` get first parsed in some dependency file and then included into the main Makefile General dependencies for `BUILD_DOCUMENT`
+  * `DEPENDENCIES`(`\`): General dependencies for `BUILD_DOCUMENT`
   * `BUILD_DIR`(`.`): Folder to build the project
   * `BUILD_DIR_FLAG`(`see`): Build dir flag for latex. If `BUILD_DIR = .` then `BUILD_DIR_FLAG` is not defined, else `BUILD_DIR = -output-directory $(BUILD_DIR)`
   * `PACKAGES_DIR`(`libtex`): Tex libraries directory
