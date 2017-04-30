@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.5.7-44-gf3fa801
-MAKEFILE_DATE = 30-04-2017 17:02
+MAKEFILE_VERSION = v1.5.7-46-g1942631
+MAKEFILE_DATE = 30-04-2017 17:19
 
 ## <<HELP
 #
@@ -109,10 +109,14 @@ $(shell \
 		echo -n POV; \
 	elif test "$(1)" = perl; then \
 		echo -n PL; \
+	elif test "$(1)" = perl5; then \
+		echo -n PL5; \
 	elif test "$(1)" = ruby; then \
 		echo -n RB; \
 	elif test "$(1)" = ruby2; then \
 		echo -n RB2; \
+	elif test "$(1)" = python; then \
+		echo -n PY; \
 	elif test "$(1)" = python2; then \
 		echo -n PY2; \
 	elif test "$(1)" = python3; then \
@@ -120,7 +124,7 @@ $(shell \
 	elif test "$(1)" = pdflatex; then \
 		echo -n pdfTeX; \
 	elif test "$(1)" = bash; then \
-		echo -n BSH; \
+		echo -n BASH; \
 	elif test "$(1)" = gnuplot; then \
 		echo -n GPT; \
 	elif test "$(1)" = mupdf; then \
@@ -200,6 +204,10 @@ $(shell\
 	| $(SED) "s/ //g" \
 )
 endef
+
+$(AUX_FILE):
+	$(ECHO) $(call print-cmd-name,$(PDFLATEX)) $@
+	$(DBG_FLAG)$(PDFLATEX) $(BUILD_DIR_FLAG) $(MAIN_SRC) $(FD_OUTPUT)
 
 
 
@@ -512,16 +520,12 @@ endif
 
 
 %.tex: %.sh
-	$(ARROW) Creating $@ from $<
+	$(ECHO) $(call print-cmd-name,$(SH)) $@
 	$(DBG_FLAG)cd $(dir $<) && $(SH) $(notdir $<) $(FD_OUTPUT)
 
 %.tex: %.py
-	$(ARROW) Creating $@ from $<
+	$(ECHO) $(call print-cmd-name,$(PY)) $@
 	$(DBG_FLAG)cd $(dir $<) && $(PY) $(notdir $<) $(FD_OUTPUT)
-
-$(AUX_FILE):
-	$(ARROW) Creating $@
-	$(DBG_FLAG)$(PDFLATEX) $(BUILD_DIR_FLAG) $(MAIN_SRC) $(FD_OUTPUT)
 
 
 

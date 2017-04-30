@@ -38,3 +38,7 @@ $(shell\
 	| $(SED) "s/ //g" \
 )
 endef
+
+$(AUX_FILE):
+	$(ECHO) $(call print-cmd-name,$(PDFLATEX)) $@
+	$(DBG_FLAG)$(PDFLATEX) $(BUILD_DIR_FLAG) $(MAIN_SRC) $(FD_OUTPUT)

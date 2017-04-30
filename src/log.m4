@@ -48,6 +48,8 @@ $(shell \
 		echo -n RB; \
 	elif test "$(1)" = ruby2; then \
 		echo -n RB2; \
+	elif test "$(1)" = python; then \
+		echo -n PY; \
 	elif test "$(1)" = python2; then \
 		echo -n PY2; \
 	elif test "$(1)" = python3; then \
@@ -55,7 +57,7 @@ $(shell \
 	elif test "$(1)" = pdflatex; then \
 		echo -n pdfTeX; \
 	elif test "$(1)" = bash; then \
-		echo -n BSH; \
+		echo -n BASH; \
 	elif test "$(1)" = gnuplot; then \
 		echo -n GPT; \
 	elif test "$(1)" = mupdf; then \

@@ -8,6 +8,8 @@ SHELL      ?= $(SH)
 PY         ?= python
 # Alias for `PY'
 PYTHON     ?= $(PY)
+# Perl command
+PERL       ?= perl
 # Grep program version
 GREP       ?= grep
 # Find utility

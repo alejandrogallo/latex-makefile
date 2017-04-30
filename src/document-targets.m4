@@ -2,15 +2,15 @@ include_once(log.m4)dnl
 include_once(shell-utils.m4)dnl
 dnl
 %.tex: %.sh
-	$(ARROW) Creating $@ from $<
+	$(ECHO) $(call print-cmd-name,$(SH)) $@
 	$(DBG_FLAG)cd $(dir $<) && $(SH) $(notdir $<) $(FD_OUTPUT)
 
 %.tex: %.py
-	$(ARROW) Creating $@ from $<
+	$(ECHO) $(call print-cmd-name,$(PY)) $@
 	$(DBG_FLAG)cd $(dir $<) && $(PY) $(notdir $<) $(FD_OUTPUT)
 
-$(AUX_FILE):
-	$(ARROW) Creating $@
-	$(DBG_FLAG)$(PDFLATEX) $(BUILD_DIR_FLAG) $(MAIN_SRC) $(FD_OUTPUT)
+%.tex: %.pl
+	$(ECHO) $(call print-cmd-name,$(PERL)) $@
+	$(DBG_FLAG)cd $(dir $<) && $(PERL) $(notdir $<) $(FD_OUTPUT)
 
 dnl vim: noexpandtab
