@@ -1,7 +1,7 @@
 cp ../../dist/Makefile .
 
 TEST_DESCRIPTION="Test if includes are being parsed correctly"
-make_flags="--no-print-directory VIEW= QUIET=1 QQUIET=1"
+make_flags="--no-print-directory VIEW= QUIET=1 QQUIET=1 DEBUG="
 
 # For some reason make detects that we are somewhere else from the test script
 # sourcing and we have to add the --no-print-directory flag so that we can eval
