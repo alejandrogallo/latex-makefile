@@ -1,0 +1,4 @@
+make -C ../../
+cp ../../dist/Makefile .
+make clean QUIET=1
+make QUIET=1

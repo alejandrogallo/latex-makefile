@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.5.7-36-g5f5f36d
-MAKEFILE_DATE = 30-04-2017 12:33
+MAKEFILE_VERSION = v1.5.7-37-g9a2466b
+MAKEFILE_DATE = 30-04-2017 16:09
 
 ## <<HELP
 #
@@ -229,17 +229,111 @@ SUPPORTED_SUFFIXES   = %.pdf %.div %.ps %.eps %.1 %.html
 
 # Main dependencies for BUILD_DOCUMENT
 ######################################
+#
+# File: deps.m4
+
+# These files  are to keep  track of the  dependencies for latex  or pdf
+# includes, table of contents generation or figure recognition
+#
+TOC_DEP ?= $(strip $(DEPS_DIR))/toc.d
+FIGS_DEP ?= $(strip $(DEPS_DIR))/figs.d
+
+# Folder to keep makefile dependencies
+DEPS_DIR ?= .deps
+
+ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(MAKECMDGOALS),help)
+-include $(FIGS_DEP)
+endif
+endif
+
+# Figures included in all texfiles
+FIGURES ?=
+
+$(TOC_FILE): $(TOC_DEP)
+	$(ECHO) $(call print-cmd-name,$(PDFLATEX)) $@
+	$(DEBUG)mkdir -p $(BUILD_DIR)
+	$(DEBUG)cd $(dir $(MAIN_SRC) ) && $(PDFLATEX) \
+		$(BUILD_DIR_FLAG) $(notdir $(MAIN_SRC) ) $(FD_OUTPUT)
+
+$(TOC_DEP): $(TEXFILES)
+	$(ARROW) Writing table of contents into $(TOC_DEP)
+	$(DEBUG)mkdir -p $(dir $@)
+	$(DEBUG)$(GREP) -E \
+		'\\(section|subsection|subsubsection|chapter|part|subsubsubsection).' \
+		$(TEXFILES)  \
+		| $(removeTexComments) \
+		| $(SED) 's/.*{\(.*\)}.*/\1/' > $@.control
+	$(DEBUG)test -f "$@" && \
+		{ test diff $@ $@.control 2>&1 > /dev/null && mv $@.control $@; } || \
+		mv $@.control $@
+
+$(FIGS_DEP): $(TEXFILES)
+	$(ARROW) Writing graphics dependencies into $(FIGS_DEP)
+	$(DEBUG)mkdir -p $(dir $@)
+	$(DEBUG)echo FIGURES = \\ > $@
+	$(DEBUG)$(GREP) --no-filename -E '\\include(graphic|pdf).' $(TEXFILES)  \
+	| $(removeTexComments) \
+	| $(SED) -n 's/.*{\([^{}]\+\)}.*/\1 \\/p' >> $@
+
+figs: $(FIGURES) ## Make figures
+deps: $(FIGS_DEP) ## Parse dependencies for the main texfile
+
+
+
+
+# File: bibliography.m4
+define discoverBibtexFiles
+$(shell \
+	$(GREP) -E '\\bibliography\s*{' $(1) 2> /dev/null  \
+		| $(removeTexComments) \
+		| $(SED) 's/.*\\bibliography//' \
+		| $(SED) 's/\.bib//g' \
+		| $(TR) "," "\n" \
+		| $(TR) -d "{}" \
+		| $(SED) 's/\s*$$/.bib /' \
+		| $(SORT) \
+		| $(UNIQ) \
+)
+endef
+
+# For converting document formats
+BIBTEX ?= bibtex
+
+# =======================
+# Bibliography generation
+# =======================
+#
+# This generates a `bbl` file from a  `bib` file For documents without a `bib`
+# file, this  will also be  targeted, bit  the '-' before  the `$(BIBTEX)`
+# ensures that the whole building doesn't fail because of it
+#
+$(BIBITEM_FILES): $(BIBTEX_FILES)
+	$(ARROW) "Compiling the bibliography"
+	-$(DEBUG)test $(BUILD_DIR) = . || { \
+		for bibfile in $(BIBTEX_FILES); do \
+			mkdir -p $(BUILD_DIR)/$$(dirname $$bibfile); \
+			cp -u $$bibfile $(BUILD_DIR)/$$(dirname $$bibfile); \
+		done \
+		}
+	$(ECHO) $(call print-cmd-name,$(BIBTEX)) $@
+	$(DEBUG)cd $(BUILD_DIR); $(BIBTEX) $(patsubst %.tex,%,$(MAIN_SRC)) $(FD_OUTPUT)
+	$(ARROW) Compiling again $(BUILD_DOCUMENT) to update refs
+	$(DEBUG)$(MAKE) --no-print-directory force
+
+
+
+
 
 # The second expansion is important so that some variables like `FIGURES` get
 # first parsed in some dependency file and then included into the main Makefile
-.SECONDEXPANSION:
 # General dependencies for `BUILD_DOCUMENT`
 DEPENDENCIES ?= \
 $(BUILD_DIR) \
 $(MAIN_SRC) \
 $(INCLUDES) \
 $(PACKAGES_FILES_BUILD) \
-$$(FIGURES) \
+$(FIGURES) \
 $(if $(call hasToc,$(MAIN_SRC)),$(TOC_FILE),$(AUX_FILE)) \
 $(if $(wildcard $(BIBTEX_FILES)),$(BIBITEM_FILES)) \
 $(if $(WITH_PYTHONTEX),$(PYTHONTEX_FILE)) \
@@ -256,6 +350,16 @@ $(FMT): $(BUILD_DOCUMENT)
 all: $(FMT) $(if $(VIEW),view-$(FMT)) ## (Default) Create BUILD_DOCUMENT
 
 $(BUILD_DOCUMENT): $(DEPENDENCIES)
+
+# =================
+# Force compilation
+# =================
+#
+# This makefile only compiles the TeX document if it is strictly necessary, so
+# sometimes to force compilation this target comes in handy.
+#
+force: ## Force creation of BUILD_DOCUMENT
+	$(DEBUG)$(MAKE) --no-print-directory -W $(MAIN_SRC) $(BUILD_DOCUMENT)
 
 # File: build-dir.m4
 # Folder to build the project
@@ -300,64 +404,11 @@ $(BUILD_DIR)/%: $(PACKAGES_DIR)/%
 
 
 
-# =================
-# Force compilation
-# =================
-#
-# This makefile only compiles the TeX document if it is strictly necessary, so
-# sometimes to force compilation this target comes in handy.
-#
-force: ## Force creation of BUILD_DOCUMENT
-	$(DEBUG)$(MAKE) --no-print-directory -W $(MAIN_SRC) $(BUILD_DOCUMENT)
-
 # File: html.m4
 
 BROWSER ?= firefox
 view-html: $(BUILD_DOCUMENT)
 	$(DEBUG)($(BROWSER) $(BUILD_DOCUMENT) &)&
-
-
-
-
-
-# File: bibliography.m4
-define discoverBibtexFiles
-$(shell \
-	$(GREP) -E '\\bibliography\s*{' $(1) 2> /dev/null  \
-		| $(removeTexComments) \
-		| $(SED) 's/.*\\bibliography//' \
-		| $(SED) 's/\.bib//g' \
-		| $(TR) "," "\n" \
-		| $(TR) -d "{}" \
-		| $(SED) 's/\s*$$/.bib /' \
-		| $(SORT) \
-		| $(UNIQ) \
-)
-endef
-
-# For converting document formats
-BIBTEX ?= bibtex
-
-# =======================
-# Bibliography generation
-# =======================
-#
-# This generates a `bbl` file from a  `bib` file For documents without a `bib`
-# file, this  will also be  targeted, bit  the '-' before  the `$(BIBTEX)`
-# ensures that the whole building doesn't fail because of it
-#
-$(BIBITEM_FILES): $(BIBTEX_FILES)
-	$(ARROW) "Compiling the bibliography"
-	-$(DEBUG)test $(BUILD_DIR) = . || { \
-		for bibfile in $(BIBTEX_FILES); do \
-			mkdir -p $(BUILD_DIR)/$$(dirname $$bibfile); \
-			cp -u $$bibfile $(BUILD_DIR)/$$(dirname $$bibfile); \
-		done \
-		}
-	$(ECHO) $(call print-cmd-name,$(BIBTEX)) $@
-	$(DEBUG)cd $(BUILD_DIR); $(BIBTEX) $(patsubst %.tex,%,$(MAIN_SRC)) $(FD_OUTPUT)
-	$(ARROW) Compiling again $(BUILD_DOCUMENT) to update refs
-	$(DEBUG)$(MAKE) --no-print-directory force
 
 
 
@@ -496,59 +547,6 @@ mupdf /usr/bin/mupdf: ## Refresh mupdf
 
 
 
-
-
-
-
-
-# File: deps.m4
-
-# These files  are to keep  track of the  dependencies for latex  or pdf
-# includes, table of contents generation or figure recognition
-#
-TOC_DEP ?= $(strip $(DEPS_DIR))/toc.d
-FIGS_DEP ?= $(strip $(DEPS_DIR))/figs.d
-
-# Folder to keep makefile dependencies
-DEPS_DIR ?= .deps
-
-ifneq ($(MAKECMDGOALS),clean)
-ifneq ($(MAKECMDGOALS),help)
--include $(FIGS_DEP)
-endif
-endif
-
-# Figures included in all texfiles
-FIGURES ?=
-
-$(TOC_FILE): $(TOC_DEP)
-	$(ECHO) $(call print-cmd-name,$(PDFLATEX)) $@
-	$(DEBUG)mkdir -p $(BUILD_DIR)
-	$(DEBUG)cd $(dir $(MAIN_SRC) ) && $(PDFLATEX) \
-		$(BUILD_DIR_FLAG) $(notdir $(MAIN_SRC) ) $(FD_OUTPUT)
-
-$(TOC_DEP): $(TEXFILES)
-	$(ARROW) Writing table of contents into $(TOC_DEP)
-	$(DEBUG)mkdir -p $(dir $@)
-	$(DEBUG)$(GREP) -E \
-		'\\(section|subsection|subsubsection|chapter|part|subsubsubsection).' \
-		$(TEXFILES)  \
-		| $(removeTexComments) \
-		| $(SED) 's/.*{\(.*\)}.*/\1/' > $@.control
-	$(DEBUG)test -f "$@" && \
-		{ test diff $@ $@.control 2>&1 > /dev/null && mv $@.control $@; } || \
-		mv $@.control $@
-
-$(FIGS_DEP): $(TEXFILES)
-	$(ARROW) Writing graphics dependencies into $(FIGS_DEP)
-	$(DEBUG)mkdir -p $(dir $@)
-	$(DEBUG)echo FIGURES = \\ > $@
-	$(DEBUG)$(GREP) --no-filename -E '\\include(graphic|pdf).' $(TEXFILES)  \
-	| $(removeTexComments) \
-	| $(SED) -n 's/.*{\([^{}]\+\)}.*/\1 \\/p' >> $@
-
-figs: $(FIGURES) ## Make figures
-deps: $(FIGS_DEP) ## Parse dependencies for the main texfile
 
 
 

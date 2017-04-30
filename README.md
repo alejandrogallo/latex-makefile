@@ -74,22 +74,22 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `TEXFILES`(`see`): All `texfiles` in the project
   * `BIBTEX_FILES`(`see`): Bibtex files in the current directory
   * `PREFIX`(`see`): Source directory
-  * `DEPENDENCIES`(`\`): General dependencies for `BUILD_DOCUMENT`
+  * `TOC_DEP`(`see`): These files  are to keep  track of the  dependencies for latex  or pdf includes, table of contents generation or figure recognition 
+  * `FIGS_DEP`(`see`): 
+  * `DEPS_DIR`(`.deps`): Folder to keep makefile dependencies
+  * `FIGURES`(`empty`): Figures included in all texfiles
+  * `BIBTEX`(`bibtex`): For converting document formats
+  * `DEPENDENCIES`(`\`): The second expansion is important so that some variables like `FIGURES` get first parsed in some dependency file and then included into the main Makefile General dependencies for `BUILD_DOCUMENT`
   * `BUILD_DIR`(`.`): File: build-dir.m4 Folder to build the project
   * `BUILD_DIR_FLAG`(`see`): Build dir flag for latex. If `BUILD_DIR = .` then `BUILD_DIR_FLAG` is not defined, else `BUILD_DIR = -output-directory $(BUILD_DIR)`
   * `PACKAGES_DIR`(`libtex`): Tex libraries directory
   * `PACKAGES_FILES`(`see`): Which files are tex libraries
   * `BROWSER`(`firefox`): 
-  * `BIBTEX`(`bibtex`): For converting document formats
   * `WITH_PYTHONTEX`(`empty`): File: pythontex.m4 If pythontex is being used
   * `PYTHONTEX`(`pythontex`): 
   * `ASYMPTOTE`(`asy`): For asymptote figures
   * `GNUPLOT`(`gnuplot`): Gnuplot interpreter
   * `PDF_VIEWER`(`see`): Recognise pdf viewer automagically
-  * `TOC_DEP`(`see`): These files  are to keep  track of the  dependencies for latex  or pdf includes, table of contents generation or figure recognition 
-  * `FIGS_DEP`(`see`): 
-  * `DEPS_DIR`(`.deps`): Folder to keep makefile dependencies
-  * `FIGURES`(`empty`): Figures included in all texfiles
   * `RM`(`rm`): Remove command
   * `RM_FLAGS`(`-rf`): 
   * `CLEAN_FILES`(`see`): Files to be cleaned
@@ -110,15 +110,6 @@ variables for the project, like the verbosity `QUIET=1` and many more.
 
 
 ## Targets ##
-### Force compilation ###
-
-
-This makefile only compiles the TeX document if it is strictly necessary, so
-sometimes to force compilation this target comes in handy.
-
-```bash 
-make force
-```
 ### Bibliography generation ###
 
 
@@ -128,6 +119,15 @@ ensures that the whole building doesn't fail because of it
 
 ```bash 
 make $(BIBITEM_FILES)
+```
+### Force compilation ###
+
+
+This makefile only compiles the TeX document if it is strictly necessary, so
+sometimes to force compilation this target comes in handy.
+
+```bash 
+make force
 ```
 ### View document ###
 
@@ -151,16 +151,12 @@ make open-pdf
 If the opened document is being viewed with `mupdf` this target uses the
 mupdf signal API to refresh the document.
 
-File: deps.m4
-These files  are to keep  track of the  dependencies for latex  or pdf
-includes, table of contents generation or figure recognition
+File: clean.m4
+Remove command
+Default clean file to be cleaned
+Files to be cleaned
 
-Folder to keep makefile dependencies
-Figures included in all texfiles
-```bash 
-make $(TOC_FILE)
-```
-### Main cleaning ###
+Main cleaning
 
 
 This does a main cleaning of the produced auxiliary files.  Before using it

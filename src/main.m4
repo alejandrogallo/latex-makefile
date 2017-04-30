@@ -111,17 +111,20 @@ SUPPORTED_SUFFIXES   = %.pdf %.div %.ps %.eps %.1 %.html
 
 # Main dependencies for BUILD_DOCUMENT
 ######################################
+#
+include_once(deps.m4)
+include_once(bibliography.m4)
 
 # The second expansion is important so that some variables like `FIGURES` get
 # first parsed in some dependency file and then included into the main Makefile
-.SECONDEXPANSION:
+dnl .SECONDEXPANSION:
 # General dependencies for `BUILD_DOCUMENT`
 DEPENDENCIES ?= \
 $(BUILD_DIR) \
 $(MAIN_SRC) \
 $(INCLUDES) \
 $(PACKAGES_FILES_BUILD) \
-$$(FIGURES) \
+$(FIGURES) \
 $(if $(call hasToc,$(MAIN_SRC)),$(TOC_FILE),$(AUX_FILE)) \
 $(if $(wildcard $(BIBTEX_FILES)),$(BIBITEM_FILES)) \
 $(if $(WITH_PYTHONTEX),$(PYTHONTEX_FILE)) \
@@ -139,10 +142,6 @@ all: $(FMT) $(if $(VIEW),view-$(FMT)) ## (Default) Create BUILD_DOCUMENT
 
 $(BUILD_DOCUMENT): $(DEPENDENCIES)
 
-include_once(build-dir.m4)
-
-include_once(libraries.m4)
-
 # =================
 # Force compilation
 # =================
@@ -153,9 +152,11 @@ include_once(libraries.m4)
 force: ## Force creation of BUILD_DOCUMENT
 	$(DEBUG)$(MAKE) --no-print-directory -W $(MAIN_SRC) $(BUILD_DOCUMENT)
 
-include_once(html.m4)
+include_once(build-dir.m4)
 
-include_once(bibliography.m4)
+include_once(libraries.m4)
+
+include_once(html.m4)
 
 include_once(pythontex.m4)
 
@@ -164,8 +165,6 @@ include_once(figure-targets.m4)
 include_once(document-targets.m4)
 
 include_once(pdf-viewer.m4)
-
-include_once(deps.m4)
 
 include_once(clean.m4)
 
