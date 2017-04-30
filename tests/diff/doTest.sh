@@ -2,12 +2,13 @@ cp ../../dist/Makefile .
 #set -x
 
 TEST_DESCRIPTION="Check that latexdiff works with git commits"
+make_flags="--no-print-directory VIEW= QUIET=1 QQUIET=1"
 
-eval "$(make --no-print-directory print-MAIN_SRC)"
-eval "$(make --no-print-directory print-DIFF_BUILD_DIR)"
-eval "$(make --no-print-directory print-DIFF_SRC_NAME)"
-eval "$(make --no-print-directory MAIN_SRC=${DIFF_BUILD_DIR}/${DIFF_SRC_NAME} print-TOC_FILE)"
-eval "$(make --no-print-directory MAIN_SRC=${DIFF_BUILD_DIR}/${DIFF_SRC_NAME} print-TOC_DEP)"
+eval "$(make ${make_flags} print-MAIN_SRC)"
+eval "$(make ${make_flags} print-DIFF_BUILD_DIR)"
+eval "$(make ${make_flags} print-DIFF_SRC_NAME)"
+eval "$(make ${make_flags} MAIN_SRC=${DIFF_BUILD_DIR}/${DIFF_SRC_NAME} print-TOC_FILE)"
+eval "$(make ${make_flags} MAIN_SRC=${DIFF_BUILD_DIR}/${DIFF_SRC_NAME} print-TOC_DEP)"
 
 
 git init
@@ -28,7 +29,7 @@ cat ${MAIN_SRC}
 git commit -am "Second commit"
 git log | cat
 
-make --no-print-directory diff
+make ${make_flags} diff
 
 rm -rf .git
 git checkout ${MAIN_SRC}
