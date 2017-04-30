@@ -1,5 +1,5 @@
 # Folder to build the project
-BUILD_DIR       ?= .
+BUILD_DIR ?= .
 
 # Build dir flag for latex.
 # If `BUILD_DIR = .` then `BUILD_DIR_FLAG` is not defined,

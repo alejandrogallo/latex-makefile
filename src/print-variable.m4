@@ -17,7 +17,7 @@ print-%:
 #
 FORCE:
 print: ## Print a variable
-	$(DEBUG)read -p "Variable to print: " && \
-		$(MAKE) --no-print-directory print-$$REPLY
+	$(DEBUG)read -p "Variable to print: " variable && \
+		$(MAKE) --no-print-directory print-$$variable
 
 dnl vim: noexpandtab

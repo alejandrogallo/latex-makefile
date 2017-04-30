@@ -1,19 +1,29 @@
+set -x
 cp ../../dist/Makefile .
+set +x
 
 TEST_DESCRIPTION="Simplest build directory test"
+make_flags="--no-print-directory VIEW= QUIET=1 QQUIET=1"
 
-eval "$(make --no-print-directory print-MAIN_SRC)"
-eval "$(make --no-print-directory print-BUILD_DOCUMENT)"
-eval "$(make --no-print-directory print-BUILD_DIR)"
-eval "$(make --no-print-directory print-TOC_FILE)"
-eval "$(make --no-print-directory print-TOC_DEP)"
-eval "$(make --no-print-directory print-BIBITEM_FILES)"
+eval "$(make ${make_flags} print-MAIN_SRC)"
+eval "$(make ${make_flags} print-BUILD_DOCUMENT)"
+eval "$(make ${make_flags} print-BUILD_DIR)"
+eval "$(make ${make_flags} print-TOC_FILE)"
+eval "$(make ${make_flags} print-TOC_DEP)"
+eval "$(make ${make_flags} print-BIBITEM_FILES)"
 
-echo "${TOC_FILE}"
-echo "${TOC_DEP}"
+echo "MAIN_SRC       = $MAIN_SRC"
+echo "BUILD_DOCUMENT = $BUILD_DOCUMENT"
+echo "BUILD_DIR      = $BUILD_DIR"
+echo "TOC_FILE       = $TOC_FILE"
+echo "TOC_DEP        = $TOC_DEP"
+echo "BIBITEM_FILES  = $BIBITEM_FILES"
 
+echo "Making..."
+make ${make_flags}
 
-make --no-print-directory QUIET=1 VIEW=
+echo "Build dir"
+ls ${BUILD_DIR}
 
 main=$(basename ${MAIN_SRC} .tex)
 
@@ -51,4 +61,3 @@ fi
 
 echo TEST_RESULT = ${TEST_RESULT}
 
-#vim-run: bash %

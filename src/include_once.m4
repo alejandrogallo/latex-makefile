@@ -3,4 +3,4 @@ define(`include_once',
 `#' File: $1
 include($1)
 ')'
-)
+)dnl

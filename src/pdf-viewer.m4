@@ -1,6 +1,6 @@
 
 # Recognise pdf viewer automagically
-PDF_VIEWER      ?= $(or \
+PDF_VIEWER ?= $(or \
 $(shell $(WHICH) zathura 2> /dev/null),\
 $(shell $(WHICH) mupdf 2> /dev/null),\
 $(shell $(WHICH) mupdf-x11 2> /dev/null),\
@@ -27,7 +27,7 @@ view-pdf: $(PDF_VIEWER) open-pdf ## Refresh and open pdf
 #
 # Open a viewer if there is none open viewing `$(BUILD_DOCUMENT)`
 #
-open-pdf: $(DEPENDENCIES) $(BUILD_DOCUMENT) ## Open pdf build document
+open-pdf: $(BUILD_DOCUMENT) ## Open pdf build document
 	$(ECHO) $(call print-cmd-name,$(PDF_VIEWER)) $(BUILD_DOCUMENT)
 	-$(DEBUG)ps aux | $(GREP) -v $(GREP) \
 	| $(GREP) "$(PDF_VIEWER)" \
@@ -51,3 +51,4 @@ mupdf /usr/bin/mupdf: ## Refresh mupdf
 
 
 dnl vim: noexpandtab
+include_once(os.m4)

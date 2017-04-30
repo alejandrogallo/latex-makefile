@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.5.8-20-g1bf9741
-MAKEFILE_DATE = 28-04-2017 15:50
+MAKEFILE_VERSION = v1.5.7-33-gac38bb5
+MAKEFILE_DATE = 30-04-2017 12:21
 
 ## <<HELP
 #
@@ -16,6 +16,7 @@ MAKEFILE_DATE = 28-04-2017 15:50
 # Local configuration
 -include config.mk
 
+# File: os.m4
 # Recognise OS
 ifeq ($(shell uname),Linux)
 LINUX := 1
@@ -26,6 +27,9 @@ OSX   := 1
 endif
 
 
+
+
+# File: shell-utils.m4
 # Shell used
 SH         ?= bash
 # Python interpreter
@@ -49,12 +53,18 @@ SORT       ?= sort
 UNIQ       ?= uniq
 
 
-# Shell utilities
-LATEX      ?= pdflatex
-# For creating differences
-LATEXDIFF  ?= latexdiff
-PDFLATEX   ?= pdflatex
 
+
+# Folder to build the project
+BUILD_DIR ?= .
+# Shell utilities
+LATEX ?= pdflatex
+# For creating differences
+LATEXDIFF ?= latexdiff
+# Main pdflatex engine
+PDFLATEX ?= pdflatex
+
+# File: log.m4
 # If secondary programs output is shown
 QUIET ?= 0
 
@@ -68,29 +78,27 @@ endif
 define print-cmd-name
 "[$(COLOR_LB) \
 $(shell \
-	if [[ "$(1)" =~ g++ ]]; then \
+	if test $(1) = g++; then \
 		echo -n GXX; \
-	elif [[ "$(1)" =~ gcc ]]; then \
+	elif test $(1) = gcc; then \
 		echo -n GCC; \
-	elif [[ "$(1)" =~ icc ]]; then \
+	elif test $(1) = icc; then \
 		echo -n ICC; \
-	elif [[ "$(1)" =~ cc ]]; then \
+	elif test $(1) = cc; then \
 		echo -n CC; \
-	elif [[ "$(1)" =~ python2 ]]; then \
+	elif test $(1) = python2; then \
 		echo -n PY2; \
-	elif [[ "$(1)" =~ python2 ]]; then \
+	elif test $(1) = python2; then \
 		echo -n PY2; \
-	elif [[ "$(1)" =~ python3 ]]; then \
+	elif test $(1) = python3; then \
 		echo -n PY3; \
-	elif [[ "$(1)" =~ pdflatex ]]; then \
+	elif test $(1) = pdflatex; then \
 		echo -n pdfTeX; \
-	elif [[ "$(1)" =~ bash ]]; then \
+	elif test $(1) = bash; then \
 		echo -n BSH; \
-	elif [[ "$(1)" =~ asymptote ]]; then \
-		echo -n ASY; \
-	elif [[ "$(1)" =~ gnuplot ]]; then \
+	elif test $(1) = gnuplot; then \
 		echo -n GPT; \
-	elif [[ "$(1)" =~ mupdf ]]; then \
+	elif test $(1) = mupdf; then \
 		echo -n muPDF; \
 	else \
 		echo -n "$(1)" | tr a-z A-Z ; \
@@ -138,6 +146,8 @@ ECHO            := @ > /dev/null echo
 endif #QQUIET
 
 
+
+
 # Remove comments from some file, this variables is intended to be put
 # in a shell call for processing of TeX files
 removeTexComments=$(SED) "s/[^\\]%.*//g; s/^%.*//g"
@@ -151,7 +161,6 @@ $(shell \
 	| $(AWK) -F ":" '{print $$1}' \
 )
 endef
-
 
 define recursiveDiscoverIncludes
 $(shell \
@@ -178,27 +187,23 @@ $(shell\
 endef
 
 # Main texfile in the current directory
-MAIN_SRC        ?= $(call discoverMain)
+MAIN_SRC ?= $(call discoverMain)
 # Format to build to
-FMT             ?= pdf
-# If `pdf` should be previewed after building
-VIEW            ?= 1
-# General dependencies for BUILD_DOCUMENT
-DEPENDENCIES    ?=
-# Figures included in all texfiles
-FIGURES         ?=
+FMT ?= pdf
+# If `BUILD_DOCUMENT` should be previewed after building
+VIEW ?= 1
 # Depth for discovering automatically included texfiles
-INCLUDES_REC    ?= 3
+INCLUDES_REC ?= 3
 # Texfiles included in the main tex file
-INCLUDES        ?= $(call recursiveDiscoverIncludes,$(MAIN_SRC),$(INCLUDES_REC))
+INCLUDES ?= $(call recursiveDiscoverIncludes,$(MAIN_SRC),$(INCLUDES_REC))
 # All `texfiles` in the project
-TEXFILES        ?= $(MAIN_SRC) $(INCLUDES)
+TEXFILES ?= $(MAIN_SRC) $(INCLUDES)
 # Bibtex files in the current directory
-BIBTEX_FILES     ?= $(call discoverBibtexFiles,$(TEXFILES))
+BIBTEX_FILES ?= $(call discoverBibtexFiles,$(TEXFILES))
 # Source directory
-PREFIX          ?= $(PWD)
+PREFIX ?= $(PWD)
 
-.DEFAULT_GOAL   := all
+.DEFAULT_GOAL := all
 
 
 
@@ -211,6 +216,9 @@ AUX_FILE             = $(patsubst %.tex,$(BUILD_DIR)/%.aux,$(MAIN_SRC))
 PYTHONTEX_FILE       = $(patsubst %.tex,$(BUILD_DIR)/%.pytxcode,$(MAIN_SRC))
 PDFPC_FILE           = $(patsubst %.tex,%.pdfpc,$(MAIN_SRC))
 PACKAGES_FILES_BUILD = $(patsubst $(PACKAGES_DIR)/%,$(BUILD_DIR)/%,$(PACKAGES_FILES))
+
+endif #MAIN_SRC exists
+
 FIGS_SUFFIXES        = %.pdf %.eps %.png %.jpg %.jpeg %.gif %.dvi %.bmp %.svg \
                        %.ps
 PURGE_SUFFIXES       = %.aux %.bbl %.blg %.fdb_latexmk %.fls %.log %.out \
@@ -218,25 +226,20 @@ PURGE_SUFFIXES       = %.aux %.bbl %.blg %.fdb_latexmk %.fls %.log %.out \
 SUPPORTED_SUFFIXES   = %.pdf %.div %.ps %.eps %.1 %.html
 
 
-ifneq ($(MAKECMDGOALS),clean)
-ifneq ($(MAKECMDGOALS),help)
--include $(FIGS_DEP)
-endif
-endif
-
-endif #MAIN_SRC exists
-
-
 
 # Main dependencies for BUILD_DOCUMENT
 ######################################
 
-DEPENDENCIES += \
+# The second expansion is important so that some variables like `FIGURES` get
+# first parsed in some dependency file and then included into the main Makefile
+.SECONDEXPANSION:
+# General dependencies for `BUILD_DOCUMENT`
+DEPENDENCIES ?= \
 $(BUILD_DIR) \
 $(MAIN_SRC) \
 $(INCLUDES) \
 $(PACKAGES_FILES_BUILD) \
-$(FIGURES) \
+$$(FIGURES) \
 $(if $(call hasToc,$(MAIN_SRC)),$(TOC_FILE),$(AUX_FILE)) \
 $(if $(wildcard $(BIBTEX_FILES)),$(BIBITEM_FILES)) \
 $(if $(WITH_PYTHONTEX),$(PYTHONTEX_FILE)) \
@@ -254,8 +257,9 @@ all: $(FMT) $(if $(VIEW),view-$(FMT)) ## (Default) Create BUILD_DOCUMENT
 
 $(BUILD_DOCUMENT): $(DEPENDENCIES)
 
+# File: build-dir.m4
 # Folder to build the project
-BUILD_DIR       ?= .
+BUILD_DIR ?= .
 
 # Build dir flag for latex.
 # If `BUILD_DIR = .` then `BUILD_DIR_FLAG` is not defined,
@@ -271,6 +275,9 @@ $(BUILD_DIR):
 
 
 
+
+
+# File: libraries.m4
 
 # Tex libraries directory
 PACKAGES_DIR    ?= libtex
@@ -291,6 +298,8 @@ $(BUILD_DIR)/%: $(PACKAGES_DIR)/%
 	$(DEBUG)cp $^ $@
 
 
+
+
 # =================
 # Force compilation
 # =================
@@ -301,6 +310,8 @@ $(BUILD_DIR)/%: $(PACKAGES_DIR)/%
 force: ## Force creation of BUILD_DOCUMENT
 	$(DEBUG)$(MAKE) --no-print-directory -W $(MAIN_SRC) $(BUILD_DOCUMENT)
 
+# File: html.m4
+
 BROWSER ?= firefox
 view-html: $(BUILD_DOCUMENT)
 	$(DEBUG)($(BROWSER) $(BUILD_DOCUMENT) &)&
@@ -308,6 +319,8 @@ view-html: $(BUILD_DOCUMENT)
 
 
 
+
+# File: bibliography.m4
 define discoverBibtexFiles
 $(shell \
 	$(GREP) -E '\\bibliography\s*{' $(1) 2> /dev/null  \
@@ -348,6 +361,9 @@ $(BIBITEM_FILES): $(BIBTEX_FILES)
 
 
 
+
+
+# File: pythontex.m4
 # If pythontex is being used
 WITH_PYTHONTEX  ?=
 
@@ -360,6 +376,11 @@ PYTHONTEX  ?= pythontex
 	$(ARROW) "Creating pythontex"
 	$(PYTHONTEX) $<
 
+
+
+
+
+# File: figure-targets.m4
 
 
 # Eps to pdf converter
@@ -402,6 +423,9 @@ endif
 
 
 
+
+
+# File: document-targets.m4
 %.tex: %.sh
 	$(ARROW) Creating $@ from $<
 	$(DEBUG)cd $(dir $<) && $(SH) $(notdir $<) $(FD_OUTPUT)
@@ -417,8 +441,11 @@ $(AUX_FILE):
 
 
 
+
+# File: pdf-viewer.m4
+
 # Recognise pdf viewer automagically
-PDF_VIEWER      ?= $(or \
+PDF_VIEWER ?= $(or \
 $(shell $(WHICH) zathura 2> /dev/null),\
 $(shell $(WHICH) mupdf 2> /dev/null),\
 $(shell $(WHICH) mupdf-x11 2> /dev/null),\
@@ -445,7 +472,7 @@ view-pdf: $(PDF_VIEWER) open-pdf ## Refresh and open pdf
 #
 # Open a viewer if there is none open viewing `$(BUILD_DOCUMENT)`
 #
-open-pdf: $(DEPENDENCIES) $(BUILD_DOCUMENT) ## Open pdf build document
+open-pdf: $(BUILD_DOCUMENT) ## Open pdf build document
 	$(ECHO) $(call print-cmd-name,$(PDF_VIEWER)) $(BUILD_DOCUMENT)
 	-$(DEBUG)ps aux | $(GREP) -v $(GREP) \
 	| $(GREP) "$(PDF_VIEWER)" \
@@ -470,50 +497,71 @@ mupdf /usr/bin/mupdf: ## Refresh mupdf
 
 
 
+
+
+
+
+# File: deps.m4
+
 # These files  are to keep  track of the  dependencies for latex  or pdf
 # includes, table of contents generation or figure recognition
 #
-TOC_DEP        = $(strip $(DEPS_DIR))/toc.d
-FIGS_DEP       = $(strip $(DEPS_DIR))/figs.d
+TOC_DEP ?= $(strip $(DEPS_DIR))/toc.d
+FIGS_DEP ?= $(strip $(DEPS_DIR))/figs.d
 
 # Folder to keep makefile dependencies
 DEPS_DIR ?= .deps
 
+ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(MAKECMDGOALS),help)
+-include $(FIGS_DEP)
+endif
+endif
+
+# Figures included in all texfiles
+FIGURES ?=
+
 $(TOC_FILE): $(TOC_DEP)
-	$(ARROW) $(call print-cmd-name,$(PDFLATEX)) $@
+	$(ECHO) $(call print-cmd-name,$(PDFLATEX)) $@
 	$(DEBUG)mkdir -p $(BUILD_DIR)
 	$(DEBUG)cd $(dir $(MAIN_SRC) ) && $(PDFLATEX) \
 		$(BUILD_DIR_FLAG) $(notdir $(MAIN_SRC) ) $(FD_OUTPUT)
 
 $(TOC_DEP): $(TEXFILES)
-	$(ARROW) Parsing table of contents
+	$(ARROW) Writing table of contents into $(TOC_DEP)
 	$(DEBUG)mkdir -p $(dir $@)
 	$(DEBUG)$(GREP) -E \
 		'\\(section|subsection|subsubsection|chapter|part|subsubsubsection).' \
 		$(TEXFILES)  \
 		| $(removeTexComments) \
 		| $(SED) 's/.*{\(.*\)}.*/\1/' > $@.control
-	$(DEBUG)if ! diff $@ $@.control 2>&1 > /dev/null ; then mv $@.control $@; fi
+	$(DEBUG)test -f "$@" && \
+		{ test diff $@ $@.control 2>&1 > /dev/null && mv $@.control $@; } || \
+		mv $@.control $@
 
 $(FIGS_DEP): $(TEXFILES)
-	$(ARROW) Parsing the graphics dependencies
+	$(ARROW) Writing graphics dependencies into $(FIGS_DEP)
 	$(DEBUG)mkdir -p $(dir $@)
 	$(DEBUG)echo FIGURES = \\ > $@
 	$(DEBUG)$(GREP) --no-filename -E '\\include(graphic|pdf).' $(TEXFILES)  \
 	| $(removeTexComments) \
 	| $(SED) -n 's/.*{\([^{}]\+\)}.*/\1 \\/p' >> $@
 
+figs: $(FIGURES) ## Make figures
 deps: $(FIGS_DEP) ## Parse dependencies for the main texfile
 
 
 
 
+
+# File: clean.m4
+
 # Remove command
 RM ?= rm
 RM_FLAGS ?= -rf
 
-# File to be cleaned
-CLEAN_FILES ?= \
+# Default clean file to be cleaned
+DEFAULT_CLEAN_FILES = \
 $(wildcard $(PACKAGES_FILES_BUILD)) \
 $(wildcard $(PYTHONTEX_FILE)) \
 $(wildcard $(BUILD_DOCUMENT)) \
@@ -526,6 +574,9 @@ $(wildcard $(DIFF_BUILD_DIR_MAIN)) \
 $(wildcard $(DIFF_SRC_NAME)) \
 $(if $(filter-out .,$(strip $(BUILD_DIR))),$(wildcard $(BUILD_DIR))) \
 
+# Files to be cleaned
+CLEAN_FILES ?= $(DEFAULT_CLEAN_FILES)
+
 # =============
 # Main cleaning
 # =============
@@ -535,15 +586,20 @@ $(if $(filter-out .,$(strip $(BUILD_DIR))),$(wildcard $(BUILD_DIR))) \
 #
 clean: ## Remove build and temporary files
 	$(ARROW) Cleaning up...
-	$(DEBUG){\
+	$(DEBUG) {\
 		for file in $(CLEAN_FILES); do \
-			$(RM) $(RM_FLAGS) $$file &&      \
-			echo -e $(call print-cmd-name,RM)  "$$file"; \
+			test -e $$file && { \
+				$(RM) $(RM_FLAGS) $$file &&      \
+				echo $(call print-cmd-name,RM) "$$file";\
+		 } || : ; \
 		done \
 	}
 
 
 
+
+
+# File: todo.m4
 todo: $(TEXFILES) ## Print the todos from the main document
 	$(ARROW) Parsing \\TODO{} in $(MAIN_SRC)
 	$(DEBUG)$(SED) -n "/\\TODO{/,/}/\
@@ -556,6 +612,9 @@ todo: $(TEXFILES) ## Print the todos from the main document
 
 
 
+
+
+# File: pandoc.m4
 #PANDOC CONVERSIONS
 ###################
 
@@ -599,6 +658,9 @@ html: $(MAIN_SRC)
 
 
 
+
+
+# File: pdfpc.m4
 # ===========================
 # Presenter console generator
 # ===========================
@@ -635,6 +697,9 @@ $(PDFPC_FILE): $(TEXFILES)
 
 
 
+
+
+# File: release.m4
 RELEASES_DIR=releases
 RELEASES_FMT=tar
 releases: $(BUILD_DOCUMENT) ## Create all releases (according to tags)
@@ -648,6 +713,9 @@ releases: $(BUILD_DOCUMENT) ## Create all releases (according to tags)
 
 
 
+
+
+# File: dist.m4
 # Distribution directory
 DIST_DIR ?= $(PREFIX)/dist
 
@@ -704,6 +772,9 @@ dist-clean: clean
 
 
 
+
+
+# File: diff.m4
 DIFF ?=HEAD HEAD~1
 NEW_COMMIT = $(word 1,$(DIFF))
 OLD_COMMIT = $(word 2,$(DIFF))
@@ -746,6 +817,9 @@ diff: ## Create a latexdiff using git versions
 
 
 
+
+
+# File: spelling.m4
 SPELLER ?= aspell
 SPELL_DIR ?= .spell
 SPELL_LANG ?= en
@@ -773,6 +847,9 @@ spelling: $(TEXFILES) ## Check spelling of latex sources
 
 
 
+
+
+# File: lint.m4
 # For checking tex syntax
 TEX_LINTER ?= chktex
 
@@ -788,6 +865,9 @@ lint: $(TEXFILES) ## Check syntax of latex sources (TEX_LINTER)
 
 
 
+
+
+# File: watch.m4
 watch: ## Build if changes
 	(echo $(TEXFILES) $(BIBTEX_FILES) | $(TR) " " "\n" | entr make &)&
 unwatch: ## Cancel Watching
@@ -795,6 +875,9 @@ unwatch: ## Cancel Watching
 
 
 
+
+
+# File: update.m4
 # ===============================
 # Update the makefile from source
 # ===============================
@@ -810,6 +893,9 @@ GH_REPO_FILE ?= https://raw.githubusercontent.com/alejandrogallo/latex-makefile/
 
 
 
+
+
+# File: tags.m4
 # ====================================
 # Ctags generation for latex documents
 # ====================================
@@ -822,6 +908,9 @@ tags: $(TEXFILES) ## Create TeX exhuberant ctags
 
 
 
+
+
+# File: print-variable.m4
 # This is used for printing defined variables from Some other scripts. For
 # instance if you want to know the value of the PDF_VIEWER defined in the
 # Makefile, then you would do
@@ -841,11 +930,14 @@ print-%:
 #
 FORCE:
 print: ## Print a variable
-	$(DEBUG)read -p "Variable to print: " && \
-		$(MAKE) --no-print-directory print-$$REPLY
+	$(DEBUG)read -p "Variable to print: " variable && \
+		$(MAKE) --no-print-directory print-$$variable
 
 
 
+
+
+# File: help.m4
 # ================
 # Print quick help
 # ================
@@ -873,6 +965,9 @@ help: ## Prints help for targets with comments
 
 
 
+
+# File: help-target.m4
+
 FORCE:
 help-%:
 	$(DEBUG)$(SED) -n "/[#] [=]\+/,/^$*: / { /"$*":/{q}; p; } " $(MAKEFILE_LIST) \
@@ -880,6 +975,8 @@ help-%:
 		| sed -n "1,/===/ {/===/n; s/^# //p}" \
 		| tac \
 		| sed -n "p; 1s/./=/gp; 1a\ "
+
+
 
 
 

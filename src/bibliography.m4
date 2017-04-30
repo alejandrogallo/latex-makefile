@@ -1,4 +1,3 @@
-
 define discoverBibtexFiles
 $(shell \
 	$(GREP) -E '\\bibliography\s*{' $(1) 2> /dev/null  \

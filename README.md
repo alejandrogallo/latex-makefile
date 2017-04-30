@@ -152,6 +152,7 @@ These files  are to keep  track of the  dependencies for latex  or pdf
 includes, table of contents generation or figure recognition
 
 Folder to keep makefile dependencies
+Figures included in all texfiles
 ```bash 
 make $(TOC_FILE)
 ```

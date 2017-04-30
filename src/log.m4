@@ -11,29 +11,27 @@ endif
 define print-cmd-name
 "[$(COLOR_LB) \
 $(shell \
-	if [[ "$(1)" =~ g++ ]]; then \
+	if test $(1) = g++; then \
 		echo -n GXX; \
-	elif [[ "$(1)" =~ gcc ]]; then \
+	elif test $(1) = gcc; then \
 		echo -n GCC; \
-	elif [[ "$(1)" =~ icc ]]; then \
+	elif test $(1) = icc; then \
 		echo -n ICC; \
-	elif [[ "$(1)" =~ cc ]]; then \
+	elif test $(1) = cc; then \
 		echo -n CC; \
-	elif [[ "$(1)" =~ python2 ]]; then \
+	elif test $(1) = python2; then \
 		echo -n PY2; \
-	elif [[ "$(1)" =~ python2 ]]; then \
+	elif test $(1) = python2; then \
 		echo -n PY2; \
-	elif [[ "$(1)" =~ python3 ]]; then \
+	elif test $(1) = python3; then \
 		echo -n PY3; \
-	elif [[ "$(1)" =~ pdflatex ]]; then \
+	elif test $(1) = pdflatex; then \
 		echo -n pdfTeX; \
-	elif [[ "$(1)" =~ bash ]]; then \
+	elif test $(1) = bash; then \
 		echo -n BSH; \
-	elif [[ "$(1)" =~ asymptote ]]; then \
-		echo -n ASY; \
-	elif [[ "$(1)" =~ gnuplot ]]; then \
+	elif test $(1) = gnuplot; then \
 		echo -n GPT; \
-	elif [[ "$(1)" =~ mupdf ]]; then \
+	elif test $(1) = mupdf; then \
 		echo -n muPDF; \
 	else \
 		echo -n "$(1)" | tr a-z A-Z ; \
