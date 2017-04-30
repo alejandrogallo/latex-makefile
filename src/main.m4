@@ -73,9 +73,6 @@ SUPPORTED_SUFFIXES   = %.pdf %.div %.ps %.eps %.1 %.html
 include_once(deps.m4)
 include_once(bibliography.m4)
 
-# The second expansion is important so that some variables like `FIGURES` get
-# first parsed in some dependency file and then included into the main Makefile
-dnl .SECONDEXPANSION:
 # General dependencies for `BUILD_DOCUMENT`
 DEPENDENCIES ?= \
 $(BUILD_DIR) \
