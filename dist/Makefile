@@ -1,6 +1,6 @@
 
-MAKEFILE_VERSION = v1.5.7-39-gf9bce70
-MAKEFILE_DATE = 30-04-2017 16:28
+MAKEFILE_VERSION = v1.5.7-40-g8594563
+MAKEFILE_DATE = 30-04-2017 16:45
 
 ## <<HELP
 #
@@ -33,24 +33,35 @@ endif
 
 # Shell used
 SH         ?= bash
+# Alias for `SHELL'
+SHELL      ?= $(SH)
 # Python interpreter
 PY         ?= python
+# Alias for `PY'
+PYTHON     ?= $(PY)
 # Grep program version
 GREP       ?= grep
 # Find utility
 FIND       ?= find
-# sed program version
+# `sed` program version
 SED        ?= $(if $(OSX),gsed,sed)
+# `awk` program to use
 AWK        ?= $(if $(OSX),gawk,awk)
 # For creating tags
 CTAGS      ?= ctags
 # To get complete paths
 READLINK   ?= $(if $(OSX),greadlink,readlink)
+# `xargs` program to use
 XARGS      ?= xargs
+# `tr` program to use
 TR         ?= tr
+# `git` version to use
 GIT        ?= git
+# `which` program to use
 WHICH      ?= which
+# `sort` program to use
 SORT       ?= sort
+# `uniq` program to use
 UNIQ       ?= uniq
 
 
@@ -60,11 +71,26 @@ UNIQ       ?= uniq
 
 # If secondary programs output is shown
 QUIET ?= 0
+# If the log messages should be also muted
+QQUIET     ?=
+# If the commands issued should be printed write `DEBUG=1` if you want to see
+# all commands.
+DEBUG      ?=
+# For coloring
+TPUT       ?= $(shell $(WHICH) tput 2> /dev/null)
+# If messages should have color
+WITH_COLOR ?= 1
 
 ifneq ($(strip $(QUIET)),0)
 	FD_OUTPUT = 2>&1 > /dev/null
 else
 	FD_OUTPUT =
+endif
+
+ifdef DEBUG
+	DBG_FLAG = @
+else
+	DBG_FLAG =
 endif
 
 # Print commands like [CMD]
@@ -99,15 +125,6 @@ $(shell \
 )\
 $(COLOR_E)]"
 endef
-
-# If the main messages should be also muted
-QQUIET     ?=
-DEBUG      ?= @
-# For coloring
-TPUT       ?= $(shell $(WHICH) tput 2> /dev/null)
-# If messages should have color
-WITH_COLOR ?= 1
-
 
 ifndef QQUIET
 
@@ -255,27 +272,27 @@ FIGURES ?=
 
 $(TOC_FILE): $(TOC_DEP)
 	$(ECHO) $(call print-cmd-name,$(PDFLATEX)) $@
-	$(DEBUG)mkdir -p $(BUILD_DIR)
-	$(DEBUG)cd $(dir $(MAIN_SRC) ) && $(PDFLATEX) \
+	$(DBG_FLAG)mkdir -p $(BUILD_DIR)
+	$(DBG_FLAG)cd $(dir $(MAIN_SRC) ) && $(PDFLATEX) \
 		$(BUILD_DIR_FLAG) $(notdir $(MAIN_SRC) ) $(FD_OUTPUT)
 
 $(TOC_DEP): $(TEXFILES)
 	$(ARROW) Writing table of contents into $(TOC_DEP)
-	$(DEBUG)mkdir -p $(dir $@)
-	$(DEBUG)$(GREP) -E \
+	$(DBG_FLAG)mkdir -p $(dir $@)
+	$(DBG_FLAG)$(GREP) -E \
 		'\\(section|subsection|subsubsection|chapter|part|subsubsubsection).' \
 		$(TEXFILES)  \
 		| $(removeTexComments) \
 		| $(SED) 's/.*{\(.*\)}.*/\1/' > $@.control
-	$(DEBUG)test -f "$@" && \
+	$(DBG_FLAG)test -f "$@" && \
 		{ test diff $@ $@.control 2>&1 > /dev/null && mv $@.control $@; } || \
 		mv $@.control $@
 
 $(FIGS_DEP): $(TEXFILES)
 	$(ARROW) Writing graphics dependencies into $(FIGS_DEP)
-	$(DEBUG)mkdir -p $(dir $@)
-	$(DEBUG)echo FIGURES = \\ > $@
-	$(DEBUG)$(GREP) --no-filename -E '\\include(graphic|pdf).' $(TEXFILES)  \
+	$(DBG_FLAG)mkdir -p $(dir $@)
+	$(DBG_FLAG)echo FIGURES = \\ > $@
+	$(DBG_FLAG)$(GREP) --no-filename -E '\\include(graphic|pdf).' $(TEXFILES)  \
 	| $(removeTexComments) \
 	| $(SED) -n 's/.*{\([^{}]\+\)}.*/\1 \\/p' >> $@
 
@@ -315,16 +332,16 @@ BIBTEX ?= bibtex
 #
 $(BIBITEM_FILES): $(BIBTEX_FILES)
 	$(ARROW) "Compiling the bibliography"
-	-$(DEBUG)test $(BUILD_DIR) = . || { \
+	-$(DBG_FLAG)test $(BUILD_DIR) = . || { \
 		for bibfile in $(BIBTEX_FILES); do \
 			mkdir -p $(BUILD_DIR)/$$(dirname $$bibfile); \
 			cp -u $$bibfile $(BUILD_DIR)/$$(dirname $$bibfile); \
 		done \
 		}
 	$(ECHO) $(call print-cmd-name,$(BIBTEX)) $@
-	$(DEBUG)cd $(BUILD_DIR); $(BIBTEX) $(patsubst %.tex,%,$(MAIN_SRC)) $(FD_OUTPUT)
+	$(DBG_FLAG)cd $(BUILD_DIR); $(BIBTEX) $(patsubst %.tex,%,$(MAIN_SRC)) $(FD_OUTPUT)
 	$(ARROW) Compiling again $(BUILD_DOCUMENT) to update refs
-	$(DEBUG)$(MAKE) --no-print-directory force
+	$(DBG_FLAG)$(MAKE) --no-print-directory force
 
 
 
@@ -364,7 +381,7 @@ $(BUILD_DOCUMENT): $(DEPENDENCIES)
 # sometimes to force compilation this target comes in handy.
 #
 force: ## Force creation of BUILD_DOCUMENT
-	$(DEBUG)$(MAKE) --no-print-directory -W $(MAIN_SRC) $(BUILD_DOCUMENT)
+	$(DBG_FLAG)$(MAKE) --no-print-directory -W $(MAIN_SRC) $(BUILD_DOCUMENT)
 
 # File: build-dir.m4
 
@@ -381,7 +398,7 @@ BUILD_DIR_FLAG  ?= $(if \
 
 $(BUILD_DIR):
 	$(ARROW) Creating the $@ directory
-	$(DEBUG)mkdir -p $@ $(FD_OUTPUT)
+	$(DBG_FLAG)mkdir -p $@ $(FD_OUTPUT)
 
 
 
@@ -406,8 +423,8 @@ $(PACKAGES_DIR)/*.clo \
 
 $(BUILD_DIR)/%: $(PACKAGES_DIR)/%
 	$(ARROW) Copying TeX libraries: $@
-	$(DEBUG)mkdir -p $(BUILD_DIR)
-	$(DEBUG)cp $^ $@
+	$(DBG_FLAG)mkdir -p $(BUILD_DIR)
+	$(DBG_FLAG)cp $^ $@
 
 
 
@@ -417,7 +434,7 @@ $(BUILD_DIR)/%: $(PACKAGES_DIR)/%
 
 BROWSER ?= firefox
 view-html: $(BUILD_DOCUMENT)
-	$(DEBUG)($(BROWSER) $(BUILD_DOCUMENT) &)&
+	$(DBG_FLAG)($(BROWSER) $(BUILD_DOCUMENT) &)&
 
 
 
@@ -454,34 +471,34 @@ GNUPLOT ?= gnuplot
 
 $(FIGS_SUFFIXES): %.asy
 	$(ECHO) $(call print-cmd-name,$(ASYMPTOTE)) $@
-	$(DEBUG)cd $(dir $<) && $(ASYMPTOTE) -f \
+	$(DBG_FLAG)cd $(dir $<) && $(ASYMPTOTE) -f \
 		$(shell echo $(suffix $@) | $(TR) -d "\.") $(notdir $< ) $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.gnuplot
 	$(ECHO) $(call print-cmd-name,$(GNUPLOT)) $@
-	$(DEBUG)cd $(dir $< ) && $(GNUPLOT) $(notdir $< ) $(FD_OUTPUT)
+	$(DBG_FLAG)cd $(dir $< ) && $(GNUPLOT) $(notdir $< ) $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.sh
 	$(ECHO) $(call print-cmd-name,$(SH)) $@
-	$(DEBUG)cd $(dir $< ) && $(SH) $(notdir $< ) $(FD_OUTPUT)
+	$(DBG_FLAG)cd $(dir $< ) && $(SH) $(notdir $< ) $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.py
 	$(ECHO) $(call print-cmd-name,$(PY)) $@
-	$(DEBUG)cd $(dir $< ) && $(PY) $(notdir $< ) $(FD_OUTPUT)
+	$(DBG_FLAG)cd $(dir $< ) && $(PY) $(notdir $< ) $(FD_OUTPUT)
 
 $(FIGS_SUFFIXES): %.tex
 	$(ECHO) $(call print-cmd-name,$(PDFLATEX)) $@
-	$(DEBUG)mkdir -p $(dir $<)/$(BUILD_DIR)
-	$(DEBUG)cd $(dir $<) && $(PDFLATEX) \
+	$(DBG_FLAG)mkdir -p $(dir $<)/$(BUILD_DIR)
+	$(DBG_FLAG)cd $(dir $<) && $(PDFLATEX) \
 		$(BUILD_DIR_FLAG) $(notdir $*.tex ) $(FD_OUTPUT)
 ifneq ($(strip $(BUILD_DIR)),.)
-	-$(DEBUG)test ! "$@ = *.aux" || cp \
+	-$(DBG_FLAG)test ! "$@ = *.aux" || cp \
 		$(PWD)/$(dir $<)/$(BUILD_DIR)/$(notdir $@) $(PWD)/$(dir $<)/$(notdir $@)
 endif
 
 %.pdf: %.eps
 	$(ECHO) $(call print-cmd-name,$(EPS2PDF)) $@
-	$(DEBUG)cd $(dir $< ) && $(EPS2PDF) $(notdir $< ) $(FD_OUTPUT)
+	$(DBG_FLAG)cd $(dir $< ) && $(EPS2PDF) $(notdir $< ) $(FD_OUTPUT)
 
 
 
@@ -492,15 +509,15 @@ endif
 
 %.tex: %.sh
 	$(ARROW) Creating $@ from $<
-	$(DEBUG)cd $(dir $<) && $(SH) $(notdir $<) $(FD_OUTPUT)
+	$(DBG_FLAG)cd $(dir $<) && $(SH) $(notdir $<) $(FD_OUTPUT)
 
 %.tex: %.py
 	$(ARROW) Creating $@ from $<
-	$(DEBUG)cd $(dir $<) && $(PY) $(notdir $<) $(FD_OUTPUT)
+	$(DBG_FLAG)cd $(dir $<) && $(PY) $(notdir $<) $(FD_OUTPUT)
 
 $(AUX_FILE):
 	$(ARROW) Creating $@
-	$(DEBUG)$(PDFLATEX) $(BUILD_DIR_FLAG) $(MAIN_SRC) $(FD_OUTPUT)
+	$(DBG_FLAG)$(PDFLATEX) $(BUILD_DIR_FLAG) $(MAIN_SRC) $(FD_OUTPUT)
 
 
 
@@ -539,7 +556,7 @@ view-pdf: $(PDF_VIEWER) open-pdf ## Refresh and open pdf
 #
 open-pdf: $(BUILD_DOCUMENT) ## Open pdf build document
 	$(ECHO) $(call print-cmd-name,$(PDF_VIEWER)) $(BUILD_DOCUMENT)
-	-$(DEBUG)ps aux | $(GREP) -v $(GREP) \
+	-$(DBG_FLAG)ps aux | $(GREP) -v $(GREP) \
 	| $(GREP) "$(PDF_VIEWER)" \
 	| $(GREP) -q "$(BUILD_DOCUMENT)" \
 	||  $(PDF_VIEWER) "$(BUILD_DOCUMENT)" 2>&1 > /dev/null &
@@ -552,7 +569,7 @@ open-pdf: $(BUILD_DOCUMENT) ## Open pdf build document
 # mupdf signal API to refresh the document.
 #
 mupdf /usr/bin/mupdf: ## Refresh mupdf
-	-$(DEBUG)ps aux \
+	-$(DBG_FLAG)ps aux \
 	| $(GREP) -v $(GREP) \
 	| $(GREP) "$(PDF_VIEWER)" \
 	| $(GREP) "$(BUILD_DOCUMENT)" \
@@ -599,7 +616,7 @@ CLEAN_FILES ?= $(DEFAULT_CLEAN_FILES)
 #
 clean: ## Remove build and temporary files
 	$(ARROW) Cleaning up...
-	$(DEBUG) {\
+	$(DBG_FLAG) {\
 		for file in $(CLEAN_FILES); do \
 			test -e $$file && { \
 				$(RM) $(RM_FLAGS) $$file &&      \
@@ -617,7 +634,7 @@ clean: ## Remove build and temporary files
 
 todo: $(TEXFILES) ## Print the todos from the main document
 	$(ARROW) Parsing \\TODO{} in $(MAIN_SRC)
-	$(DEBUG)$(SED) -n "/\\TODO{/,/}/\
+	$(DBG_FLAG)$(SED) -n "/\\TODO{/,/}/\
 	{\
 		s/.TODO/===/; \
 		s/[{]//g; \
@@ -725,8 +742,8 @@ RELEASES_DIR=releases
 RELEASES_FMT=tar
 releases: $(BUILD_DOCUMENT) ## Create all releases (according to tags)
 	$(ARROW) Copying releases to $(RELEASES_DIR) folder in $(RELEASES_FMT) format
-	$(DEBUG)mkdir -p $(RELEASES_DIR)
-	$(DEBUG)for tag in $$($(GIT) tag); do\
+	$(DBG_FLAG)mkdir -p $(RELEASES_DIR)
+	$(DBG_FLAG)for tag in $$($(GIT) tag); do\
 		echo "Processing $$tag"; \
 		$(GIT) archive --format=$(RELEASES_FMT) \
 		--prefix=$$tag/ $$tag > $(RELEASES_DIR)/$$tag.$(RELEASES_FMT); \
@@ -753,33 +770,33 @@ DIST_DIR ?= $(PREFIX)/dist
 #
 dist: $(BUILD_DOCUMENT) ## Create a dist folder with the bare minimum to compile
 	$(ARROW) "Creating dist folder"
-	$(DEBUG)mkdir -p $(DIST_DIR)
+	$(DBG_FLAG)mkdir -p $(DIST_DIR)
 	$(ARROW) "Copying the Makefile"
-	$(DEBUG)cp Makefile $(DIST_DIR)/
+	$(DBG_FLAG)cp Makefile $(DIST_DIR)/
 	$(ARROW) "Copying the target document"
-	$(DEBUG)cp $(BUILD_DOCUMENT) $(DIST_DIR)/
+	$(DBG_FLAG)cp $(BUILD_DOCUMENT) $(DIST_DIR)/
 	$(ARROW) "Copying .bib files"
-	$(DEBUG)test -n "$(BIBTEX_FILES)" && {\
+	$(DBG_FLAG)test -n "$(BIBTEX_FILES)" && {\
 		for bibfile in $(BIBTEX_FILES); do \
 			mkdir -p $(DIST_DIR)/$$(dirname $$bibfile); \
 			cp -u $$bibfile $(DIST_DIR)/$$(dirname $$bibfile); \
 		done \
 		} || echo "No bibfiles"
 	$(ARROW) "Creating folder for dependencies"
-	$(DEBUG)echo $(DEPENDENCIES)\
+	$(DBG_FLAG)echo $(DEPENDENCIES)\
 		| $(XARGS) -n1 dirname\
 		| $(XARGS) -n1 -I FF mkdir -p $(DIST_DIR)/FF
 	$(ARROW) "Copying dependencies"
-	$(DEBUG)echo $(DEPENDENCIES)\
+	$(DBG_FLAG)echo $(DEPENDENCIES)\
 		| $(TR) " " "\n" \
 		| $(XARGS) -n1 -I FF cp -r FF $(DIST_DIR)/FF
 ifneq ($(strip $(PACKAGES_FILES)),)
 	$(ARROW) "Creating folder for latex libraries"
-	$(DEBUG)test -n "$(PACKAGES_FILES)" && echo $(PACKAGES_FILES)\
+	$(DBG_FLAG)test -n "$(PACKAGES_FILES)" && echo $(PACKAGES_FILES)\
 		| $(XARGS) -n1 dirname\
 		| $(XARGS) -n1 -I FF mkdir -p $(DIST_DIR)/FF
 	$(ARROW) "Copying latex libraries"
-	$(DEBUG)test -n "$(PACKAGES_FILES)" && echo $(PACKAGES_FILES)\
+	$(DBG_FLAG)test -n "$(PACKAGES_FILES)" && echo $(PACKAGES_FILES)\
 		| $(TR) " " "\n" \
 		| $(XARGS) -n1 -I FF cp FF $(DIST_DIR)/FF
 endif
@@ -824,7 +841,7 @@ DIFF_SRC_NAME  ?= diff.tex
 # DIFF_BUILD_DIR. *Warning*: It only works for single document tex projects.
 diff: ## Create a latexdiff using git versions
 	$(ARROW) Creating diff between $(NEW_COMMIT) and $(OLD_COMMIT)
-	$(DEBUG)mkdir -p $(DIFF_BUILD_DIR)
+	$(DBG_FLAG)mkdir -p $(DIFF_BUILD_DIR)
 	git checkout $(NEW_COMMIT) $(MAIN_SRC)
 	cp $(MAIN_SRC) $(DIFF_BUILD_DIR)/$(strip $(MAIN_SRC)).$(NEW_COMMIT)
 	git checkout $(OLD_COMMIT) $(MAIN_SRC)
@@ -866,8 +883,8 @@ CHECK_SPELL ?=
 #
 spelling: $(TEXFILES) ## Check spelling of latex sources
 	$(ARROW) Checking the spelling in $(SPELL_LANG)
-	$(DEBUG)mkdir -p $(SPELL_DIR)
-	$(DEBUG)for file in $?; do \
+	$(DBG_FLAG)mkdir -p $(SPELL_DIR)
+	$(DBG_FLAG)for file in $?; do \
 		$(SPELLER) --home-dir=$(SPELL_DIR) \
 		-l $(SPELL_LANG) -t -c $$file; \
 	done
@@ -900,7 +917,7 @@ lint: $(TEXFILES) ## Check syntax of latex sources (TEX_LINTER)
 
 
 watch: ## Build if changes
-	$(DEBUG)(echo $(TEXFILES) $(BIBTEX_FILES) | $(TR) " " "\n" | entr make &)&
+	$(DBG_FLAG)(echo $(TEXFILES) $(BIBTEX_FILES) | $(TR) " " "\n" | entr make &)&
 
 unwatch: ## Cancel Watching
 	killall entr
@@ -922,7 +939,7 @@ unwatch: ## Cancel Watching
 #
 update: ## Update the makefile from the repository
 	$(ARROW) "Getting makefile from $(GH_REPO_FILE)"
-	$(DEBUG)wget $(GH_REPO_FILE) -O Makefile
+	$(DBG_FLAG)wget $(GH_REPO_FILE) -O Makefile
 GH_REPO_FILE ?= https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile
 
 
@@ -956,7 +973,7 @@ tags: $(TEXFILES) ## Create TeX exhuberant ctags
 # and this would output PDF_VIEWER=mupdf for instance.
 FORCE:
 print-%:
-	$(DEBUG)echo '$*=$($*)'
+	$(DBG_FLAG)echo '$*=$($*)'
 
 # =====================================
 # Print a variable used by the Makefile
@@ -968,7 +985,7 @@ print-%:
 #
 FORCE:
 print: ## Print a variable
-	$(DEBUG)read -p "Variable to print: " variable && \
+	$(DBG_FLAG)read -p "Variable to print: " variable && \
 		$(MAKE) --no-print-directory print-$$variable
 
 
@@ -984,7 +1001,7 @@ print: ## Print a variable
 #
 # It prints a quick help in the terminal
 help: ## Prints help for targets with comments
-	$(DEBUG)$(or $(AWK),awk) ' \
+	$(DBG_FLAG)$(or $(AWK),awk) ' \
 		BEGIN {FS = ":.*?## "}; \
 		/^## *<<HELP/,/^## *HELP/ { \
 			help=$$1; \
@@ -1011,7 +1028,7 @@ help: ## Prints help for targets with comments
 
 FORCE:
 help-%:
-	$(DEBUG)$(SED) -n "/[#] [=]\+/,/^$*: / { /"$*":/{q}; p; } " $(MAKEFILE_LIST) \
+	$(DBG_FLAG)$(SED) -n "/[#] [=]\+/,/^$*: / { /"$*":/{q}; p; } " $(MAKEFILE_LIST) \
 		| tac \
 		| sed -n "1,/===/ {/===/n; s/^# //p}" \
 		| tac \
