@@ -1,12 +1,13 @@
 cp ../../dist/Makefile .
 
 TEST_DESCRIPTION="Test if includes are being parsed correctly"
+make_flags="--no-print-directory VIEW= QUIET=1 QQUIET=1"
 
 # For some reason make detects that we are somewhere else from the test script
 # sourcing and we have to add the --no-print-directory flag so that we can eval
 # without the leaving directory message for sub-builds in make
-eval "$(make QUIET=1 QQUIET=1 --no-print-directory print-TOC_FILE)"
-eval "$(make QUIET=1 QQUIET=1 --no-print-directory print-TOC_DEP)"
+eval "$(make ${make_flags} print-TOC_FILE)"
+eval "$(make ${make_flags} print-TOC_DEP)"
 TEXFILES=($(sed s/.*=// <<<"$(make QUIET=1 QQUIET=1 --no-print-directory print-TEXFILES)"))
 TEXFILES_GOOD=(
 file.tex
@@ -18,7 +19,7 @@ echo "${TOC_FILE}"
 echo "${TOC_DEP}"
 echo "${TEXFILES[@]}"
 
-make --no-print-directory QUIET=1 VIEW=
+make ${make_flags}
 
 if [[ ! -f "${TOC_DEP}" ]]; then
   echo "${TOC_DEP} file not found!"
