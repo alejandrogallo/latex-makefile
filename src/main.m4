@@ -1,4 +1,6 @@
 include(common-makefile/src/include_once.m4)
+define(_MAKEFILE_AUTHOR, Alejandro Gallo)dnl
+define(_MAKEFILE_URL, https://github.com/alejandrogallo/latex-makefile)dnl
 include_once(common-makefile/src/version.m4)
 
 ## <<HELP
@@ -140,8 +142,10 @@ include_once(lint.m4)
 
 include_once(watch.m4)
 
-MAKEFILE_UPDATE_URL = \
+define(
+_MAKEFILE_UPDATE_URL,
  https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile
+)dnl
 include_once(common-makefile/src/update.m4)
 
 include_once(tags.m4)

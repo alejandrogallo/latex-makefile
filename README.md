@@ -33,8 +33,8 @@ variables for the project, like the verbosity `QUIET=1` and many more.
     omitted and a `see` is put in its place.  If there is no default value then
     the keyword `empty` appears.
     
-  * `AUTHOR`(`Unknown`): 
-  * `URL`(`Unknown`): 
+  * `AUTHOR`(`Alejandro Gallo`): 
+  * `URL`(`https://github.com/alejandrogallo/latex-makefile`): 
   * `LICENSE`(`GPLv3`): 
   * `SH`(`bash`): Shell used
   * `SHELL`(`see`): Alias for `SHELL'

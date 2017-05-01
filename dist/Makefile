@@ -1,9 +1,9 @@
 
 # File: common-makefile/src/version.m4
-MAKEFILE_VERSION = v1.5.7-53-g0ccd2c2
-MAKEFILE_DATE = 01-05-2017 17:39
-AUTHOR ?= Unknown
-URL ?= Unknown
+MAKEFILE_VERSION = v1.5.7-54-gf4c9612
+MAKEFILE_DATE = 01-05-2017 17:53
+AUTHOR ?= Alejandro Gallo
+URL ?= https://github.com/alejandrogallo/latex-makefile
 LICENSE ?= GPLv3
 
 
@@ -980,12 +980,11 @@ unwatch: ## Cancel Watching
 
 
 
-MAKEFILE_UPDATE_URL = \
- https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile
 # File: common-makefile/src/update.m4
 
 
 MAKEFILE_UPDATE_URL ?= https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile
+
 
 # ===============================
 # Update the makefile from source
