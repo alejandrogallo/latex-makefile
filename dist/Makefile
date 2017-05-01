@@ -1,7 +1,7 @@
 
 # File: common-makefile/src/version.m4
-MAKEFILE_VERSION = v1.5.7-55-ge10c72a
-MAKEFILE_DATE = 01-05-2017 19:21
+MAKEFILE_VERSION = v1.6-2-g9a33883
+MAKEFILE_DATE = 01-05-2017 19:29
 MAKEFILE_AUTHOR = Alejandro Gallo
 MAKEFILE_URL = https://github.com/alejandrogallo/latex-makefile
 MAKEFILE_LICENSE = GPLv3
@@ -396,7 +396,8 @@ $(BIBITEM_FILES): $(BIBTEX_FILES)
 
 
 # General dependencies for `BUILD_DOCUMENT`
-DEPENDENCIES ?= \
+# Default dependencies for `BUILD_DOCUMENT`
+DEFAULT_DEPENDENCIES ?= \
 $(BUILD_DIR) \
 $(MAIN_SRC) \
 $(INCLUDES) \
@@ -406,6 +407,8 @@ $(if $(call hasToc,$(MAIN_SRC)),$(TOC_FILE),$(AUX_FILE)) \
 $(if $(wildcard $(BIBTEX_FILES)),$(BIBITEM_FILES)) \
 $(if $(WITH_PYTHONTEX),$(PYTHONTEX_FILE)) \
 $(if $(CHECK_SPELL),spelling) \
+
+DEPENDENCIES ?= $(DEFAULT_DEPENDENCIES)
 
 .PHONY: view-pdf open-pdf $(PDF_VIEWER) todo help test force dist releases
 
