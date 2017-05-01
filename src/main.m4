@@ -50,6 +50,8 @@ PREFIX ?= $(PWD)
 
 .DEFAULT_GOAL := all
 
+include_once(libraries.m4)
+
 include_once(latex.m4)
 
 PURGE_SUFFIXES       = %.aux %.bbl %.blg %.fdb_latexmk %.fls %.log %.out \
@@ -82,8 +84,6 @@ force: ## Force creation of BUILD_DOCUMENT
 	$(DBG_FLAG)$(MAKE) --no-print-directory -W $(MAIN_SRC) $(BUILD_DOCUMENT)
 
 include_once(build-dir.m4)
-
-include_once(libraries.m4)
 
 include_once(html.m4)
 

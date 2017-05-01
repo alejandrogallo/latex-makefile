@@ -1,7 +1,7 @@
 
 # File: common-makefile/src/version.m4
-MAKEFILE_VERSION = v1.6-5-g1d6428d
-MAKEFILE_DATE = 01-05-2017 19:40
+MAKEFILE_VERSION = v1.6-7-g60fd0d5
+MAKEFILE_DATE = 01-05-2017 20:04
 MAKEFILE_AUTHOR = Alejandro Gallo
 MAKEFILE_URL = https://github.com/alejandrogallo/latex-makefile
 MAKEFILE_LICENSE = GPLv3
@@ -220,6 +220,30 @@ BIBTEX_FILES ?= $(call discoverBibtexFiles,$(TEXFILES))
 PREFIX ?= $(PWD)
 
 .DEFAULT_GOAL := all
+
+# File: libraries.m4
+
+
+# Tex libraries directory
+PACKAGES_DIR ?= libtex
+
+# Which files are tex libraries
+PACKAGES_FILES  ?= $(wildcard \
+$(PACKAGES_DIR)/*.sty \
+$(PACKAGES_DIR)/*.rtx \
+$(PACKAGES_DIR)/*.cls \
+$(PACKAGES_DIR)/*.bst \
+$(PACKAGES_DIR)/*.tex \
+$(PACKAGES_DIR)/*.clo \
+)
+
+$(BUILD_DIR)/%: $(PACKAGES_DIR)/%
+	$(ECHO) $(call print-cmd-name,CP) $@
+	$(DBG_FLAG)mkdir -p $(BUILD_DIR)
+	$(DBG_FLAG)cp $^ $@
+
+
+
 
 # File: latex.m4
 
@@ -448,30 +472,6 @@ $(BUILD_DIR):
 	$(DBG_FLAG)mkdir -p $@ $(FD_OUTPUT)
 
 
-
-
-
-
-# File: libraries.m4
-
-
-# Tex libraries directory
-PACKAGES_DIR    ?= libtex
-
-# Which files are tex libraries
-PACKAGES_FILES  ?= $(wildcard \
-$(PACKAGES_DIR)/*.sty \
-$(PACKAGES_DIR)/*.rtx \
-$(PACKAGES_DIR)/*.cls \
-$(PACKAGES_DIR)/*.bst \
-$(PACKAGES_DIR)/*.tex \
-$(PACKAGES_DIR)/*.clo \
-)
-
-$(BUILD_DIR)/%: $(PACKAGES_DIR)/%
-	$(ECHO) $(call print-cmd-name,CP) $@
-	$(DBG_FLAG)mkdir -p $(BUILD_DIR)
-	$(DBG_FLAG)cp $^ $@
 
 
 

@@ -2,7 +2,7 @@ include_once(common-makefile/src/log.m4)dnl
 include_once(common-makefile/src/shell-utils.m4)dnl
 dnl
 # Tex libraries directory
-PACKAGES_DIR    ?= libtex
+PACKAGES_DIR ?= libtex
 
 # Which files are tex libraries
 PACKAGES_FILES  ?= $(wildcard \
