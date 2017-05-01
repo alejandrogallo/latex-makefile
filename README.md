@@ -33,9 +33,6 @@ variables for the project, like the verbosity `QUIET=1` and many more.
     omitted and a `see` is put in its place.  If there is no default value then
     the keyword `empty` appears.
     
-  * `AUTHOR`(`Alejandro Gallo`): 
-  * `URL`(`https://github.com/alejandrogallo/latex-makefile`): 
-  * `LICENSE`(`GPLv3`): 
   * `SH`(`bash`): Shell used
   * `SHELL`(`see`): Alias for `SHELL'
   * `PY`(`python`): Python interpreter
@@ -55,6 +52,8 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `UNIQ`(`uniq`): `uniq` program to use
   * `MAKE`(`see`): `Makefile` binary
   * `RM`(`rm`): `rm` command
+  * `CXX`(`g++`): For creating tags
+  * `CC`(`gcc`): For creating tags
   * `QUIET`(`0`): If secondary programs output is shown
   * `QQUIET`(`empty`): If the log messages should be also muted
   * `DEBUG`(`empty`): If the commands issued should be printed write `DEBUG=1` if you want to see all commands.
