@@ -16,6 +16,8 @@ echo "${TEXFILES[@]}"
 
 make ${make_flags}
 
+TEST_RESULT=0
+
 if [[ ! -f "${TOC_DEP}" ]]; then
   echo "${TOC_DEP} file not found!"
   TEST_RESULT=1
@@ -28,8 +30,6 @@ elif [[ ! -f "images/test.pdf" ]]; then
 elif [[ ! -f "file.pdf" ]]; then
   echo "file.pdf file not found!"
   TEST_RESULT=1
-else
-  TEST_RESULT=0
 fi
 
 for texfile in ${TEXFILES[@]} ; do
@@ -38,6 +38,5 @@ for texfile in ${TEXFILES[@]} ; do
     TEST_RESULT=1
   fi
 done
-
 
 #vim-run: bash %
