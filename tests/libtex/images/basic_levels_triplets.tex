@@ -1,0 +1,56 @@
+\documentclass{article}
+\usepackage{tikz}
+%%%<
+\usepackage{verbatim}
+\usepackage[active,tightpage]{preview}
+\PreviewEnvironment{center}
+\setlength\PreviewBorder{0pt}%
+%%%>
+
+
+\usetikzlibrary{calc,arrows,decorations.pathmorphing,intersections}
+\usepackage{sansmath}
+\begin{document}
+
+  \sansmath
+  \begin{preview}
+  \begin{tikzpicture}[
+    font=\sffamily,
+    level/.style={black,very thick},
+    %sublevel/.style={black,densely dashed},
+    %ionization/.style={black,dashed},
+    %transition/.style={black,->,>=stealth',shorten >=1pt},
+    %radiative/.style={transition,decorate,decoration={snake,amplitude=1.5}},
+    %indirectradiative/.style={radiative,densely dashed},
+    %nonradiative/.style={transition,dashed},
+    annotation/.style={red,thick,<->,shorten >=4pt,shorten <=4pt,>=stealth}
+  ]
+
+  \pgfmathsetmacro{\levelwidth}{4}
+
+  % Triplet levels
+  \coordinate (A2) at (0, -1);
+  \coordinate (E3) at (0, 6);
+  % Draw main levels
+  \draw[level] (E3) node[left=20pt] {$^3E$}
+       -- +(\levelwidth, 0);
+  \draw[level] (A2) node[left=20pt] {$^3A_2$}
+       -- +(\levelwidth, 0);
+
+  \draw[annotation] (A2) -- (E3);
+  \node[right=2pt] at ($0.5*(A2)+0.5*(E3)$) {Exp. 1.945 eV};
+
+
+
+
+
+
+
+
+
+  \end{tikzpicture}
+  \end{preview}
+
+\end{document}
+
+% vim:spell ft=tex spell!

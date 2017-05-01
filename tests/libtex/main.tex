@@ -1,0 +1,75 @@
+%   preamble {{{1  %
+%%%%%%%%%%%%%%%%%%%%
+
+%\documentclass[notes=show]{beamer}
+%\documentclass[notes=hide]{beamer}
+\documentclass[notes=hide,handout]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[]{tikz}
+
+\newcommand{\ket}[1]{\left| #1 \right>} % for Dirac bras
+\newcommand{\bra}[1]{\left< #1 \right|} % for Dirac kets
+\newcommand{\braket}[2]{\left< #1 \vphantom{#2} \right|\!\!
+  \left. #2 \vphantom{#1} \right>} % for Dirac brackets
+
+%  beamer theme {{{1  %
+%%%%%%%%%%%%%%%%%%%%%%%
+
+\usetheme{metropolis}           % Use metropolis theme
+\metroset{background=light}
+\setbeamertemplate{frame footer}{%
+\includegraphics[width=1cm, keepaspectratio]{images/max_planck.png}
+} %Metropolis defined
+\setbeamercolor{background canvas}{bg=white}
+
+
+
+\title[Something \ldots]{%
+  \vspace{1.5cm}
+  Some random presentation
+}
+\date{March 15, 2017}
+
+
+\author{Someone}
+\institute{%
+  Max-Planck Institute for Makefile research\\
+  Stuttgart, Germany\\
+}
+
+
+\begin{document}
+
+
+%  title {{{1  %
+%%%%%%%%%%%%%%%%
+
+\maketitle
+
+
+
+
+\input{slides/intro_nv_levels.tex}
+
+
+
+
+
+
+
+
+
+\plain{Thank you!}
+
+
+
+
+
+
+
+\end{document}
+
+
+% vim: spell fdm=marker :

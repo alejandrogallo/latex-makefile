@@ -1,0 +1,96 @@
+\documentclass{article}
+\usepackage{tikz}
+%%%<
+\usepackage{verbatim}
+\usepackage[active,tightpage]{preview}
+\PreviewEnvironment{center}
+\setlength\PreviewBorder{00pt}%
+%%%>
+
+
+\usetikzlibrary{calc,arrows,decorations.pathmorphing,intersections}
+\usepackage{sansmath}
+\begin{document}
+
+  \sansmath
+
+  \begin{preview}
+      \begin{tikzpicture}[
+    level/.style={black,very thick},
+    %sublevel/.style={black,densely dashed},
+    %ionization/.style={black,dashed},
+    %transition/.style={black,->,>=stealth',shorten >=1pt},
+    %radiative/.style={transition,decorate,decoration={snake,amplitude=1.5}},
+    %indirectradiative/.style={radiative,densely dashed},
+    %nonradiative/.style={transition,dashed},
+    spin/.style={red,line width=1.5mm,->,shorten >=4pt,>=stealth},
+    annotation/.style={red,thick,<->,shorten >=4pt,shorten <=4pt,>=stealth}
+  ]
+  \tikzstyle{every node}=[font=\Huge]
+
+  
+  %  Main defs {{{1  %
+  %%%%%%%%%%%%%%%%%%
+  
+
+  \pgfmathsetmacro{\bandGap}{5.5}
+  \pgfmathsetmacro{\bandHeight}{2}
+  \pgfmathsetmacro{\bandWidth}{9}
+  \pgfmathsetmacro{\levelwidth}{\bandWidth/2.5}
+  \pgfmathsetmacro{\levelSeparation}{2}
+  \pgfmathsetmacro{\arrowHeight}{1.3}
+
+  
+  %  Level A2 {{{1  %
+  %%%%%%%%%%%%%%%%%%%
+  
+
+  \coordinate (Origin) at (0, 0);
+  \coordinate (a1) at
+    ($(Origin)+(\bandWidth/2-\levelwidth/2 ,0.5*\bandHeight )$);
+  \coordinate (a2) at
+    ($(Origin)+(\bandWidth/2-\levelwidth/2 ,\bandHeight+1*\levelSeparation )$);
+  \coordinate (e1) at
+    ($(Origin)+(\bandWidth/3-2*\levelwidth/3 ,\bandHeight+2*\levelSeparation )$);
+  \coordinate (e2) at
+    ($(e1)+(\bandWidth/3+1*\levelwidth/3 ,0)$);
+
+  \fill [orange] (Origin)
+    rectangle +(\bandWidth,\bandHeight);
+  \fill [orange] ($(Origin)+(0,\bandHeight+\bandGap)$)
+    rectangle +(\bandWidth,\bandHeight)
+    node[black,pos=.5] { Conduction Band };
+
+  \draw[level] (a1)
+    node[left=1pt] { $ a_1(1) $ }
+    -- +(\levelwidth,0);
+  \draw[level] (a2)
+    node[left=1pt] { $ a_1(2) $ }
+    -- +(\levelwidth,0);
+  \draw[level] (e1) 
+    node[left=1pt] { $ e(1) $ }
+    -- +(\levelwidth,0);
+  \draw[level] (e2) -- +(\levelwidth,0)
+    node[right=1pt] { $ e(2) $ };
+
+
+  %\draw[spin] ($(a1)+(\levelwidth/3,-0.5*\arrowHeight)$) -- +(0,\arrowHeight);
+  %\draw[spin,<-] ($(a1)+(2*\levelwidth/3,-0.5*\arrowHeight)$) -- +(0,\arrowHeight);
+  %\draw[spin] ($(a2)+(\levelwidth/3,-0.5*\arrowHeight)$) -- +(0,\arrowHeight);
+  %\draw[spin,<-] ($(a2)+(2*\levelwidth/3,-0.5*\arrowHeight)$) -- +(0,\arrowHeight);
+  %\draw[spin] ($(e1)+(0.5*\levelwidth,-0.5*\arrowHeight)$) -- +(0,\arrowHeight);
+  %\draw[spin] ($(e2)+(0.5*\levelwidth,-0.5*\arrowHeight)$) -- +(0,\arrowHeight);
+  %\node[] at ($(Origin)+(1*\bandWidth,1.3*\bandHeight)$)
+    %{\huge $ ^3A_2 $ };
+
+
+
+
+ % 1}}} %
+    \end{tikzpicture}
+  \end{preview}
+
+
+\end{document}
+
+% vim:spell ft=tex spell!
