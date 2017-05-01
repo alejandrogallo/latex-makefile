@@ -47,8 +47,36 @@ $(shell\
 )
 endef
 
+ifneq ($(strip $(MAIN_SRC)),) # Do this only if MAIN_SRC is defined
+
+BUILD_DOCUMENT       = $(patsubst %.tex,%.$(FMT),$(MAIN_SRC))
+TOC_FILE             = $(patsubst %.tex,$(BUILD_DIR)/%.toc,$(MAIN_SRC))
+BIBITEM_FILES        = $(patsubst %.tex,$(BUILD_DIR)/%.bbl,$(MAIN_SRC))
+AUX_FILE             = $(patsubst %.tex,$(BUILD_DIR)/%.aux,$(MAIN_SRC))
+PYTHONTEX_FILE       = $(patsubst %.tex,$(BUILD_DIR)/%.pytxcode,$(MAIN_SRC))
+PDFPC_FILE           = $(patsubst %.tex,%.pdfpc,$(MAIN_SRC))
+PACKAGES_FILES_BUILD = $(patsubst $(PACKAGES_DIR)/%,$(BUILD_DIR)/%,$(PACKAGES_FILES))
+
+endif #MAIN_SRC exists
+
+
 $(AUX_FILE):
 	$(ECHO) $(call print-cmd-name,$(PDFLATEX)) $@
 	$(DBG_FLAG)$(PDFLATEX) $(BUILD_DIR_FLAG) $(MAIN_SRC) $(FD_OUTPUT)
+
+# Default dependencies for `BUILD_DOCUMENT`
+DEFAULT_DEPENDENCIES ?= \
+$(BUILD_DIR) \
+$(MAIN_SRC) \
+$(INCLUDES) \
+$(PACKAGES_FILES_BUILD) \
+$(FIGURES) \
+$(if $(call hasToc,$(MAIN_SRC)),$(TOC_FILE),$(AUX_FILE)) \
+$(if $(wildcard $(BIBTEX_FILES)),$(BIBITEM_FILES)) \
+$(if $(WITH_PYTHONTEX),$(PYTHONTEX_FILE)) \
+$(if $(CHECK_SPELL),spelling) \
+
+# General dependencies for `BUILD_DOCUMENT`
+DEPENDENCIES ?= $(DEFAULT_DEPENDENCIES)
 
 dnl vim: noexpandtab

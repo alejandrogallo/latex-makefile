@@ -1,6 +1,7 @@
 include_once(common-makefile/src/log.m4)dnl
 include_once(common-makefile/src/shell-utils.m4)dnl
 dnl
+FIGS_SUFFIXES = %.pdf %.eps %.png %.jpg %.jpeg %.gif %.dvi %.bmp %.svg %.ps
 # Eps to pdf converter
 EPS2PDF ?= epstopdf
 # For asymptote figures

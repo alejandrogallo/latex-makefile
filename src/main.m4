@@ -19,7 +19,6 @@ include_once(common-makefile/src/version.m4)
 
 include_once(common-makefile/src/os.m4)
 include_once(common-makefile/src/shell-utils.m4)
-include_once(latex.m4)
 
 # Folder to build the project
 BUILD_DIR ?= .
@@ -51,43 +50,14 @@ PREFIX ?= $(PWD)
 
 .DEFAULT_GOAL := all
 
+include_once(latex.m4)
 
-
-ifneq ($(strip $(MAIN_SRC)),) # Do this only if MAIN_SRC is defined
-
-BUILD_DOCUMENT       = $(patsubst %.tex,%.$(FMT),$(MAIN_SRC))
-TOC_FILE             = $(patsubst %.tex,$(BUILD_DIR)/%.toc,$(MAIN_SRC))
-BIBITEM_FILES        = $(patsubst %.tex,$(BUILD_DIR)/%.bbl,$(MAIN_SRC))
-AUX_FILE             = $(patsubst %.tex,$(BUILD_DIR)/%.aux,$(MAIN_SRC))
-PYTHONTEX_FILE       = $(patsubst %.tex,$(BUILD_DIR)/%.pytxcode,$(MAIN_SRC))
-PDFPC_FILE           = $(patsubst %.tex,%.pdfpc,$(MAIN_SRC))
-PACKAGES_FILES_BUILD = $(patsubst $(PACKAGES_DIR)/%,$(BUILD_DIR)/%,$(PACKAGES_FILES))
-
-endif #MAIN_SRC exists
-
-FIGS_SUFFIXES        = %.pdf %.eps %.png %.jpg %.jpeg %.gif %.dvi %.bmp %.svg \
-                       %.ps
 PURGE_SUFFIXES       = %.aux %.bbl %.blg %.fdb_latexmk %.fls %.log %.out \
                        %.ilg %.toc %.nav %.snm
 SUPPORTED_SUFFIXES   = %.pdf %.div %.ps %.eps %.1 %.html
 
 include_once(deps.m4)
 include_once(bibliography.m4)
-
-# General dependencies for `BUILD_DOCUMENT`
-# Default dependencies for `BUILD_DOCUMENT`
-DEFAULT_DEPENDENCIES ?= \
-$(BUILD_DIR) \
-$(MAIN_SRC) \
-$(INCLUDES) \
-$(PACKAGES_FILES_BUILD) \
-$(FIGURES) \
-$(if $(call hasToc,$(MAIN_SRC)),$(TOC_FILE),$(AUX_FILE)) \
-$(if $(wildcard $(BIBTEX_FILES)),$(BIBITEM_FILES)) \
-$(if $(WITH_PYTHONTEX),$(PYTHONTEX_FILE)) \
-$(if $(CHECK_SPELL),spelling) \
-
-DEPENDENCIES ?= $(DEFAULT_DEPENDENCIES)
 
 .PHONY: view-pdf open-pdf $(PDF_VIEWER) todo help test force dist releases
 

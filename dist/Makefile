@@ -1,7 +1,7 @@
 
 # File: common-makefile/src/version.m4
-MAKEFILE_VERSION = v1.6-2-g9a33883
-MAKEFILE_DATE = 01-05-2017 19:29
+MAKEFILE_VERSION = v1.6-3-g91aa56e
+MAKEFILE_DATE = 01-05-2017 19:33
 MAKEFILE_AUTHOR = Alejandro Gallo
 MAKEFILE_URL = https://github.com/alejandrogallo/latex-makefile
 MAKEFILE_LICENSE = GPLv3
@@ -83,7 +83,16 @@ CC ?= gcc
 
 
 
-# File: latex.m4
+
+# Folder to build the project
+BUILD_DIR ?= .
+# Shell utilities
+LATEX ?= pdflatex
+# For creating differences
+LATEXDIFF ?= latexdiff
+# Main pdflatex engine
+PDFLATEX ?= pdflatex
+
 # File: common-makefile/src/log.m4
 
 # If secondary programs output is shown
@@ -192,6 +201,29 @@ endif #QQUIET
 
 
 
+
+# Main texfile in the current directory
+MAIN_SRC ?= $(call discoverMain)
+# Format to build to
+FMT ?= pdf
+# If `BUILD_DOCUMENT` should be previewed after building
+VIEW ?= 1
+# Depth for discovering automatically included texfiles
+INCLUDES_REC ?= 3
+# Texfiles included in the main tex file
+INCLUDES ?= $(call recursiveDiscoverIncludes,$(MAIN_SRC),$(INCLUDES_REC))
+# All `texfiles` in the project
+TEXFILES ?= $(MAIN_SRC) $(INCLUDES)
+# Bibtex files in the current directory
+BIBTEX_FILES ?= $(call discoverBibtexFiles,$(TEXFILES))
+# Source directory
+PREFIX ?= $(PWD)
+
+.DEFAULT_GOAL := all
+
+# File: latex.m4
+
+
 # Function to try to discover automatically the main latex document
 define discoverMain
 $(shell \
@@ -238,47 +270,6 @@ $(shell\
 )
 endef
 
-$(AUX_FILE):
-	$(ECHO) $(call print-cmd-name,$(PDFLATEX)) $@
-	$(DBG_FLAG)$(PDFLATEX) $(BUILD_DIR_FLAG) $(MAIN_SRC) $(FD_OUTPUT)
-
-
-
-
-
-# Folder to build the project
-BUILD_DIR ?= .
-# Shell utilities
-LATEX ?= pdflatex
-# For creating differences
-LATEXDIFF ?= latexdiff
-# Main pdflatex engine
-PDFLATEX ?= pdflatex
-
-
-
-
-# Main texfile in the current directory
-MAIN_SRC ?= $(call discoverMain)
-# Format to build to
-FMT ?= pdf
-# If `BUILD_DOCUMENT` should be previewed after building
-VIEW ?= 1
-# Depth for discovering automatically included texfiles
-INCLUDES_REC ?= 3
-# Texfiles included in the main tex file
-INCLUDES ?= $(call recursiveDiscoverIncludes,$(MAIN_SRC),$(INCLUDES_REC))
-# All `texfiles` in the project
-TEXFILES ?= $(MAIN_SRC) $(INCLUDES)
-# Bibtex files in the current directory
-BIBTEX_FILES ?= $(call discoverBibtexFiles,$(TEXFILES))
-# Source directory
-PREFIX ?= $(PWD)
-
-.DEFAULT_GOAL := all
-
-
-
 ifneq ($(strip $(MAIN_SRC)),) # Do this only if MAIN_SRC is defined
 
 BUILD_DOCUMENT       = $(patsubst %.tex,%.$(FMT),$(MAIN_SRC))
@@ -291,8 +282,30 @@ PACKAGES_FILES_BUILD = $(patsubst $(PACKAGES_DIR)/%,$(BUILD_DIR)/%,$(PACKAGES_FI
 
 endif #MAIN_SRC exists
 
-FIGS_SUFFIXES        = %.pdf %.eps %.png %.jpg %.jpeg %.gif %.dvi %.bmp %.svg \
-                       %.ps
+
+$(AUX_FILE):
+	$(ECHO) $(call print-cmd-name,$(PDFLATEX)) $@
+	$(DBG_FLAG)$(PDFLATEX) $(BUILD_DIR_FLAG) $(MAIN_SRC) $(FD_OUTPUT)
+
+# Default dependencies for `BUILD_DOCUMENT`
+DEFAULT_DEPENDENCIES ?= \
+$(BUILD_DIR) \
+$(MAIN_SRC) \
+$(INCLUDES) \
+$(PACKAGES_FILES_BUILD) \
+$(FIGURES) \
+$(if $(call hasToc,$(MAIN_SRC)),$(TOC_FILE),$(AUX_FILE)) \
+$(if $(wildcard $(BIBTEX_FILES)),$(BIBITEM_FILES)) \
+$(if $(WITH_PYTHONTEX),$(PYTHONTEX_FILE)) \
+$(if $(CHECK_SPELL),spelling) \
+
+# General dependencies for `BUILD_DOCUMENT`
+DEPENDENCIES ?= $(DEFAULT_DEPENDENCIES)
+
+
+
+
+
 PURGE_SUFFIXES       = %.aux %.bbl %.blg %.fdb_latexmk %.fls %.log %.out \
                        %.ilg %.toc %.nav %.snm
 SUPPORTED_SUFFIXES   = %.pdf %.div %.ps %.eps %.1 %.html
@@ -395,21 +408,6 @@ $(BIBITEM_FILES): $(BIBTEX_FILES)
 
 
 
-# General dependencies for `BUILD_DOCUMENT`
-# Default dependencies for `BUILD_DOCUMENT`
-DEFAULT_DEPENDENCIES ?= \
-$(BUILD_DIR) \
-$(MAIN_SRC) \
-$(INCLUDES) \
-$(PACKAGES_FILES_BUILD) \
-$(FIGURES) \
-$(if $(call hasToc,$(MAIN_SRC)),$(TOC_FILE),$(AUX_FILE)) \
-$(if $(wildcard $(BIBTEX_FILES)),$(BIBITEM_FILES)) \
-$(if $(WITH_PYTHONTEX),$(PYTHONTEX_FILE)) \
-$(if $(CHECK_SPELL),spelling) \
-
-DEPENDENCIES ?= $(DEFAULT_DEPENDENCIES)
-
 .PHONY: view-pdf open-pdf $(PDF_VIEWER) todo help test force dist releases
 
 pdf: FMT=pdf ## Create pdf file
@@ -511,6 +509,7 @@ PYTHONTEX  ?= pythontex
 # File: figure-targets.m4
 
 
+FIGS_SUFFIXES = %.pdf %.eps %.png %.jpg %.jpeg %.gif %.dvi %.bmp %.svg %.ps
 # Eps to pdf converter
 EPS2PDF ?= epstopdf
 # For asymptote figures

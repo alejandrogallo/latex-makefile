@@ -54,6 +54,10 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `RM`(`rm`): `rm` command
   * `CXX`(`g++`): For creating tags
   * `CC`(`gcc`): For creating tags
+  * `BUILD_DIR`(`.`): Folder to build the project
+  * `LATEX`(`pdflatex`): Shell utilities
+  * `LATEXDIFF`(`latexdiff`): For creating differences
+  * `PDFLATEX`(`pdflatex`): Main pdflatex engine
   * `QUIET`(`0`): If secondary programs output is shown
   * `QQUIET`(`empty`): If the log messages should be also muted
   * `DEBUG`(`empty`): If the commands issued should be printed write `DEBUG=1` if you want to see all commands.
@@ -70,10 +74,6 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `ARROW`(`@echo "see`): 
   * `ARROW`(`@echo "===>"`): 
   * `ECHO`(`@echo`): 
-  * `BUILD_DIR`(`.`): Folder to build the project
-  * `LATEX`(`pdflatex`): Shell utilities
-  * `LATEXDIFF`(`latexdiff`): For creating differences
-  * `PDFLATEX`(`pdflatex`): Main pdflatex engine
   * `MAIN_SRC`(`see`): Main texfile in the current directory
   * `FMT`(`pdf`): Format to build to
   * `VIEW`(`1`): If `BUILD_DOCUMENT` should be previewed after building
@@ -82,13 +82,13 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `TEXFILES`(`see`): All `texfiles` in the project
   * `BIBTEX_FILES`(`see`): Bibtex files in the current directory
   * `PREFIX`(`see`): Source directory
+  * `DEFAULT_DEPENDENCIES`(`\`): Default dependencies for `BUILD_DOCUMENT`
+  * `DEPENDENCIES`(`see`): General dependencies for `BUILD_DOCUMENT`
   * `TOC_DEP`(`see`): These files  are to keep  track of the  dependencies for latex  or pdf includes, table of contents generation or figure recognition 
   * `FIGS_DEP`(`see`): 
   * `DEPS_DIR`(`.deps`): Folder to keep makefile dependencies
   * `FIGURES`(`empty`): Figures included in all texfiles
   * `BIBTEX`(`bibtex`): For converting document formats
-  * `DEFAULT_DEPENDENCIES`(`\`): General dependencies for `BUILD_DOCUMENT` Default dependencies for `BUILD_DOCUMENT`
-  * `DEPENDENCIES`(`see`): 
   * `BUILD_DIR`(`.`): Folder to build the project
   * `BUILD_DIR_FLAG`(`see`): Build dir flag for latex. If `BUILD_DIR = .` then `BUILD_DIR_FLAG` is not defined, else `BUILD_DIR = -output-directory $(BUILD_DIR)`
   * `PACKAGES_DIR`(`libtex`): Tex libraries directory
