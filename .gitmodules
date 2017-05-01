@@ -1,0 +1,3 @@
+[submodule "common-makefile"]
+	path = common-makefile
+	url = https://github.com/alejandrogallo/common-makefile.git
