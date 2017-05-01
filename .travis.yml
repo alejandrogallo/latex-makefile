@@ -11,5 +11,4 @@ before_install:
   - sudo apt-get install -y gnuplot
   - sudo apt-get install -y git
   - sudo apt-get install -y python3
-  - sudo apt-get install -y python3-pip
-  - sudo pip install matplotlib
+  - sudo pip3 install matplotlib
