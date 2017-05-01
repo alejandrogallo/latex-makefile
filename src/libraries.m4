@@ -15,6 +15,6 @@ $(PACKAGES_DIR)/*.clo \
 )
 
 $(BUILD_DIR)/%: $(PACKAGES_DIR)/%
-	$(ARROW) Copying TeX libraries: $@
+	$(ECHO) $(call print-cmd-name,CP) $@
 	$(DBG_FLAG)mkdir -p $(BUILD_DIR)
 	$(DBG_FLAG)cp $^ $@
