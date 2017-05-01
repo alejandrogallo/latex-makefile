@@ -1,5 +1,5 @@
-include_once(log.m4)dnl
-include_once(shell-utils.m4)dnl
+include_once(common-makefile/src/log.m4)dnl
+include_once(common-makefile/src/shell-utils.m4)dnl
 dnl
 RELEASES_DIR=releases
 RELEASES_FMT=tar

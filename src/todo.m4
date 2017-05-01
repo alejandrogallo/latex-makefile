@@ -1,5 +1,5 @@
-include_once(log.m4)dnl
-include_once(shell-utils.m4)dnl
+include_once(common-makefile/src/log.m4)dnl
+include_once(common-makefile/src/shell-utils.m4)dnl
 dnl
 todo: $(TEXFILES) ## Print the todos from the main document
 	$(ARROW) Parsing \\TODO{} in $(MAIN_SRC)

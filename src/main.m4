@@ -1,6 +1,5 @@
-include(include_once.m4)
-MAKEFILE_VERSION = syscmd(`git describe --tags')dnl
-MAKEFILE_DATE = syscmd(`date +"%d-%m-%Y %H:%M"')dnl
+include(common-makefile/src/include_once.m4)
+include_once(common-makefile/src/version.m4)
 
 ## <<HELP
 #
@@ -16,8 +15,8 @@ MAKEFILE_DATE = syscmd(`date +"%d-%m-%Y %H:%M"')dnl
 # Local configuration
 -include config.mk
 
-include_once(os.m4)
-include_once(shell-utils.m4)
+include_once(common-makefile/src/os.m4)
+include_once(common-makefile/src/shell-utils.m4)
 include_once(latex.m4)
 
 # Folder to build the project
@@ -29,7 +28,7 @@ LATEXDIFF ?= latexdiff
 # Main pdflatex engine
 PDFLATEX ?= pdflatex
 
-include_once(log.m4)
+include_once(common-makefile/src/log.m4)
 
 # Main texfile in the current directory
 MAIN_SRC ?= $(call discoverMain)
@@ -141,15 +140,15 @@ include_once(lint.m4)
 
 include_once(watch.m4)
 
-include_once(update.m4)
+MAKEFILE_UPDATE_URL = \
+ https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile
+include_once(common-makefile/src/update.m4)
 
 include_once(tags.m4)
 
-include_once(print-variable.m4)
-
-include_once(help.m4)
-
-include_once(help-target.m4)
+include_once(common-makefile/src/print-variable.m4)
+include_once(common-makefile/src/help.m4)
+include_once(common-makefile/src/help-target.m4)
 
 # vim: cc=80
 

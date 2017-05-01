@@ -33,6 +33,9 @@ variables for the project, like the verbosity `QUIET=1` and many more.
     omitted and a `see` is put in its place.  If there is no default value then
     the keyword `empty` appears.
     
+  * `AUTHOR`(`Unknown`): 
+  * `URL`(`Unknown`): 
+  * `LICENSE`(`GPLv3`): 
   * `SH`(`bash`): Shell used
   * `SHELL`(`see`): Alias for `SHELL'
   * `PY`(`python`): Python interpreter
@@ -50,12 +53,14 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `WHICH`(`which`): `which` program to use
   * `SORT`(`sort`): `sort` program to use
   * `UNIQ`(`uniq`): `uniq` program to use
+  * `MAKE`(`see`): `Makefile` binary
+  * `RM`(`rm`): `rm` command
   * `QUIET`(`0`): If secondary programs output is shown
   * `QQUIET`(`empty`): If the log messages should be also muted
   * `DEBUG`(`empty`): If the commands issued should be printed write `DEBUG=1` if you want to see all commands.
   * `TPUT`(`see`): For coloring
   * `WITH_COLOR`(`1`): If messages should have color
-  * `DBG_FILE`(`.tex_dbg`): 
+  * `DBG_FILE`(`.makefile-dbg`): 
   * `COLOR_R`(`see`): Red
   * `COLOR_G`(`see`): Green
   * `COLOR_Y`(`see`): Yellow
@@ -109,7 +114,7 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `SPELL_LANG`(`en`): 
   * `CHECK_SPELL`(`empty`): 
   * `TEX_LINTER`(`chktex`): For checking tex syntax
-  * `GH_REPO_FILE`(`https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile`): 
+  * `MAKEFILE_UPDATE_URL`(`https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile`): 
 
 
 
@@ -155,12 +160,12 @@ make open-pdf
 If the opened document is being viewed with `mupdf` this target uses the
 mupdf signal API to refresh the document.
 
-File: clean.m4
-Remove command
-Default clean file to be cleaned
-Files to be cleaned
-
-Main cleaning
+File: os.m4
+Recognise OS
+```bash 
+make LINUX
+```
+### Main cleaning ###
 
 
 This does a main cleaning of the produced auxiliary files.  Before using it
@@ -268,8 +273,8 @@ make lint
 ### Update the makefile from source ###
 
 
-You can always get the  last `latex-makefile` version using this target.
-You may override the `GH_REPO_FILE` to  any path where you save your own
+You can always get the  latest `Makefile` version using this target.  You may
+override the `MAKEFILE_UPDATE_URL` to  any path where you save your own
 personal makefile
 
 ```bash 
@@ -301,6 +306,3 @@ It prints a quick help in the terminal
 ```bash 
 make help
 ```
-<!--
-vim-run: pandoc -s -t html -o %.html %
--->

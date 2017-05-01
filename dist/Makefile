@@ -1,6 +1,13 @@
 
-MAKEFILE_VERSION = v1.5.7-50-gcdbb42f
-MAKEFILE_DATE = 30-04-2017 18:50
+# File: common-makefile/src/version.m4
+MAKEFILE_VERSION = v1.5.7-53-g0ccd2c2
+MAKEFILE_DATE = 01-05-2017 17:39
+AUTHOR ?= Unknown
+URL ?= Unknown
+LICENSE ?= GPLv3
+
+
+
 
 ## <<HELP
 #
@@ -16,7 +23,7 @@ MAKEFILE_DATE = 30-04-2017 18:50
 # Local configuration
 -include config.mk
 
-# File: os.m4
+# File: common-makefile/src/os.m4
 # Recognise OS
 ifeq ($(shell uname),Linux)
 LINUX := 1
@@ -29,47 +36,51 @@ endif
 
 
 
-# File: shell-utils.m4
+# File: common-makefile/src/shell-utils.m4
 
 # Shell used
-SH         ?= bash
+SH ?= bash
 # Alias for `SHELL'
-SHELL      ?= $(SH)
+SHELL ?= $(SH)
 # Python interpreter
-PY         ?= python
+PY ?= python
 # Alias for `PY'
-PYTHON     ?= $(PY)
+PYTHON ?= $(PY)
 # Perl command
-PERL       ?= perl
+PERL ?= perl
 # Grep program version
-GREP       ?= grep
+GREP ?= grep
 # Find utility
-FIND       ?= find
+FIND ?= find
 # `sed` program version
-SED        ?= $(if $(OSX),gsed,sed)
+SED ?= $(if $(OSX),gsed,sed)
 # `awk` program to use
-AWK        ?= $(if $(OSX),gawk,awk)
+AWK ?= $(if $(OSX),gawk,awk)
 # For creating tags
-CTAGS      ?= ctags
+CTAGS ?= ctags
 # To get complete paths
-READLINK   ?= $(if $(OSX),greadlink,readlink)
+READLINK ?= $(if $(OSX),greadlink,readlink)
 # `xargs` program to use
-XARGS      ?= xargs
+XARGS ?= xargs
 # `tr` program to use
-TR         ?= tr
+TR ?= tr
 # `git` version to use
-GIT        ?= git
+GIT ?= git
 # `which` program to use
-WHICH      ?= which
+WHICH ?= which
 # `sort` program to use
-SORT       ?= sort
+SORT ?= sort
 # `uniq` program to use
-UNIQ       ?= uniq
+UNIQ ?= uniq
+# `Makefile` binary
+MAKE ?= $(or $(MAKE),make)
+# `rm` command
+RM ?= rm
 
 
 
 # File: latex.m4
-# File: log.m4
+# File: common-makefile/src/log.m4
 
 # If secondary programs output is shown
 QUIET ?= 0
@@ -84,14 +95,14 @@ TPUT       ?= $(shell $(WHICH) tput 2> /dev/null)
 WITH_COLOR ?= 1
 
 ifneq ($(strip $(QUIET)),0)
-	FD_OUTPUT = 2>&1 > /dev/null
+FD_OUTPUT = 2>&1 > /dev/null
 else
-	FD_OUTPUT =
+FD_OUTPUT =
 endif
 
 ifdef DEBUG
 DBG_FLAG =
-DBG_FILE ?= .tex_dbg
+DBG_FILE ?= .makefile-dbg
 $(shell date | $(SED) "p; s/./=/g" > $(DBG_FILE))
 else
 DBG_FLAG = @
@@ -608,6 +619,17 @@ mupdf /usr/bin/mupdf: ## Refresh mupdf
 	| { read pid; test -z "$$pid" || kill -s HUP $$pid; }
 
 
+# File: os.m4
+# Recognise OS
+ifeq ($(shell uname),Linux)
+LINUX := 1
+OSX   :=
+else
+LINUX :=
+OSX   := 1
+endif
+
+
 
 
 
@@ -958,21 +980,24 @@ unwatch: ## Cancel Watching
 
 
 
-# File: update.m4
+MAKEFILE_UPDATE_URL = \
+ https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile
+# File: common-makefile/src/update.m4
 
+
+MAKEFILE_UPDATE_URL ?= https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile
 
 # ===============================
 # Update the makefile from source
 # ===============================
 #
-# You can always get the  last `latex-makefile` version using this target.
-# You may override the `GH_REPO_FILE` to  any path where you save your own
+# You can always get the  latest `Makefile` version using this target.  You may
+# override the `MAKEFILE_UPDATE_URL` to  any path where you save your own
 # personal makefile
 #
 update: ## Update the makefile from the repository
-	$(ARROW) "Getting makefile from $(GH_REPO_FILE)"
-	$(DBG_FLAG)wget $(GH_REPO_FILE) -O Makefile
-GH_REPO_FILE ?= https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile
+	$(ARROW) "Getting makefile from $(MAKEFILE_UPDATE_URL)"
+	$(DBG_FLAG)wget $(MAKEFILE_UPDATE_URL) -O Makefile
 
 
 
@@ -995,14 +1020,16 @@ tags: $(TEXFILES) ## Create TeX exhuberant ctags
 
 
 
-# File: print-variable.m4
+# File: common-makefile/src/print-variable.m4
 
 
 # This is used for printing defined variables from Some other scripts. For
-# instance if you want to know the value of the PDF_VIEWER defined in the
+# instance if you want to know the value of the `PDF_VIEWER` defined in the
 # Makefile, then you would do
+# ```
 #    make print-PDF_VIEWER
-# and this would output PDF_VIEWER=mupdf for instance.
+# ```
+# and this would output `PDF_VIEWER=mupdf` for instance.
 FORCE:
 print-%:
 	$(DBG_FLAG)echo '$*=$($*)'
@@ -1023,8 +1050,8 @@ print: ## Print a variable
 
 
 
+# File: common-makefile/src/help.m4
 
-# File: help.m4
 
 
 # ================
@@ -1047,15 +1074,14 @@ help: ## Prints help for targets with comments
 		$(MAKEFILE_LIST)
 	@echo ""
 	@echo "  $(MAKEFILE_VERSION)"
-	@echo "  https://github.com/alejandrogallo/latex-makefile"
-	@echo "  Copyright Alejandro Gallo GPLv3 $(MAKEFILE_DATE)"
+	@echo "  $(URL)"
+	@echo "  Copyright $(AUTHOR) $(LICENSE) $(MAKEFILE_DATE)"
 	@echo ""
 
 
 
 
-
-# File: help-target.m4
+# File: common-makefile/src/help-target.m4
 
 
 FORCE:
