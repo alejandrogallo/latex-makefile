@@ -1,10 +1,10 @@
 
 # File: common-makefile/src/version.m4
-MAKEFILE_VERSION = v1.5.7-54-gf4c9612
-MAKEFILE_DATE = 01-05-2017 17:53
-AUTHOR ?= Alejandro Gallo
-URL ?= https://github.com/alejandrogallo/latex-makefile
-LICENSE ?= GPLv3
+MAKEFILE_VERSION = v1.5.7-55-ge10c72a
+MAKEFILE_DATE = 01-05-2017 19:21
+MAKEFILE_AUTHOR = Alejandro Gallo
+MAKEFILE_URL = https://github.com/alejandrogallo/latex-makefile
+MAKEFILE_LICENSE = GPLv3
 
 
 
@@ -76,6 +76,10 @@ UNIQ ?= uniq
 MAKE ?= $(or $(MAKE),make)
 # `rm` command
 RM ?= rm
+# For creating tags
+CXX ?= g++
+# For creating tags
+CC ?= gcc
 
 
 
@@ -1073,8 +1077,8 @@ help: ## Prints help for targets with comments
 		$(MAKEFILE_LIST)
 	@echo ""
 	@echo "  $(MAKEFILE_VERSION)"
-	@echo "  $(URL)"
-	@echo "  Copyright $(AUTHOR) $(LICENSE) $(MAKEFILE_DATE)"
+	@echo "  $(MAKEFILE_URL)"
+	@echo "  Copyright $(MAKEFILE_AUTHOR) $(MAKEFILE_LICENSE) $(MAKEFILE_DATE)"
 	@echo ""
 
 
