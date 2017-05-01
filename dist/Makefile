@@ -1,7 +1,7 @@
 
 # File: common-makefile/src/version.m4
-MAKEFILE_VERSION = v1.6-3-g91aa56e
-MAKEFILE_DATE = 01-05-2017 19:33
+MAKEFILE_VERSION = v1.6-5-g1d6428d
+MAKEFILE_DATE = 01-05-2017 19:40
 MAKEFILE_AUTHOR = Alejandro Gallo
 MAKEFILE_URL = https://github.com/alejandrogallo/latex-makefile
 MAKEFILE_LICENSE = GPLv3
@@ -469,7 +469,7 @@ $(PACKAGES_DIR)/*.clo \
 )
 
 $(BUILD_DIR)/%: $(PACKAGES_DIR)/%
-	$(ARROW) Copying TeX libraries: $@
+	$(ECHO) $(call print-cmd-name,CP) $@
 	$(DBG_FLAG)mkdir -p $(BUILD_DIR)
 	$(DBG_FLAG)cp $^ $@
 
