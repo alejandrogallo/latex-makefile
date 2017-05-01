@@ -1,7 +1,7 @@
 
 # File: common-makefile/src/version.m4
-MAKEFILE_VERSION = v1.6-7-g60fd0d5
-MAKEFILE_DATE = 01-05-2017 20:04
+MAKEFILE_VERSION = v1.6-11-g824e36c
+MAKEFILE_DATE = 01-05-2017 20:18
 MAKEFILE_AUTHOR = Alejandro Gallo
 MAKEFILE_URL = https://github.com/alejandrogallo/latex-makefile
 MAKEFILE_LICENSE = GPLv3
@@ -468,7 +468,7 @@ BUILD_DIR_FLAG  ?= $(if \
                    .,$(strip $(BUILD_DIR))),-output-directory $(BUILD_DIR))
 
 $(BUILD_DIR):
-	$(ARROW) Creating the $@ directory
+	$(ECHO) $(call print-cmd-name,mkdir) $@
 	$(DBG_FLAG)mkdir -p $@ $(FD_OUTPUT)
 
 
