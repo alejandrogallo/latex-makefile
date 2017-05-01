@@ -75,7 +75,8 @@ include_once(deps.m4)
 include_once(bibliography.m4)
 
 # General dependencies for `BUILD_DOCUMENT`
-DEPENDENCIES ?= \
+# Default dependencies for `BUILD_DOCUMENT`
+DEFAULT_DEPENDENCIES ?= \
 $(BUILD_DIR) \
 $(MAIN_SRC) \
 $(INCLUDES) \
@@ -85,6 +86,8 @@ $(if $(call hasToc,$(MAIN_SRC)),$(TOC_FILE),$(AUX_FILE)) \
 $(if $(wildcard $(BIBTEX_FILES)),$(BIBITEM_FILES)) \
 $(if $(WITH_PYTHONTEX),$(PYTHONTEX_FILE)) \
 $(if $(CHECK_SPELL),spelling) \
+
+DEPENDENCIES ?= $(DEFAULT_DEPENDENCIES)
 
 .PHONY: view-pdf open-pdf $(PDF_VIEWER) todo help test force dist releases
 
