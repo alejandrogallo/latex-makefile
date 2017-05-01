@@ -12,7 +12,7 @@ BUILD_DIR_FLAG  ?= $(if \
                    .,$(strip $(BUILD_DIR))),-output-directory $(BUILD_DIR))
 
 $(BUILD_DIR):
-	$(ARROW) Creating the $@ directory
+	$(ECHO) $(call print-cmd-name,mkdir) $@
 	$(DBG_FLAG)mkdir -p $@ $(FD_OUTPUT)
 
 
