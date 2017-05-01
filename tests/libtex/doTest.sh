@@ -9,6 +9,7 @@ make_flags="--no-print-directory VIEW= QUIET=1 QQUIET=1 DEBUG="
 eval "$(make ${make_flags} print-TOC_FILE)"
 eval "$(make ${make_flags} print-TOC_DEP)"
 TEXFILES=($(sed s/.*=// <<<"$(make QUIET=1 QQUIET=1 --no-print-directory print-TEXFILES)"))
+PACKAGES_FILES_BUILD=($(sed s/.*=// <<<"$(make QUIET=1 QQUIET=1 --no-print-directory print-PACKAGES_FILES_BUILD)"))
 
 echo "${TOC_FILE}"
 echo "${TOC_DEP}"
@@ -16,20 +17,17 @@ echo "${TEXFILES[@]}"
 
 make ${make_flags}
 
-if [[ ! -f "${TOC_DEP}" ]]; then
-  echo "${TOC_DEP} file not found!"
+TEST_RESULT=0
+
+if [[ -f "${TOC_DEP}" ]]; then
+  echo "${TOC_DEP} file was found!"
   TEST_RESULT=1
 elif [[ ! -f "${TOC_FILE}" ]]; then
   echo "${TOC_FILE} file not found!"
   TEST_RESULT=1
-elif [[ ! -f "images/test.pdf" ]]; then
-  echo "images/test.pdf file not found!"
+elif [[ ! -f "main.pdf" ]]; then
+  echo "main.pdf file not found!"
   TEST_RESULT=1
-elif [[ ! -f "file.pdf" ]]; then
-  echo "file.pdf file not found!"
-  TEST_RESULT=1
-else
-  TEST_RESULT=0
 fi
 
 for texfile in ${TEXFILES[@]} ; do
@@ -39,5 +37,11 @@ for texfile in ${TEXFILES[@]} ; do
   fi
 done
 
+for package in ${PACKAGES_FILES_BUILD[@]} ; do
+  if [[ ! -f "${package}" ]]; then
+    echo "${package} was not found!!!"
+    TEST_RESULT=1
+  fi
+done
 
 #vim-run: bash %
