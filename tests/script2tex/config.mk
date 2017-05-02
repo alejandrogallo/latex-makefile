@@ -9,4 +9,5 @@ $(DEFAULT_CLEAN_FILES) \
 ./includes/whatever.tex \
 ./includes/uname.tex \
 ./includes/second/author.tex \
+./images/test.pdf \
 .dbg \
