@@ -104,7 +104,7 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `CLEAN_FILES`(`see`): Files to be cleaned
   * `PANDOC`(`pandoc`): 
   * `REVEALJS_SRC`(`https://github.com/hakimel/reveal.js/`): 
-  * `DIST_DIR`(`see`): Distribution directory
+  * `DIST_DIR`(`dist`): Distribution directory
   * `DIFF`(`HEAD HEAD~1`): 
   * `DIFF_BUILD_DIR_MAIN`(`diffs`): 
   * `DIFF_BUILD_DIR`(`see`): 

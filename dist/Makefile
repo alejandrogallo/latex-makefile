@@ -1,7 +1,7 @@
 
 # File: common-makefile/src/version.m4
-MAKEFILE_VERSION = v1.7-6-gfe6370d
-MAKEFILE_DATE = 07-05-2017 01:44
+MAKEFILE_VERSION = v1.7-7-g6958306
+MAKEFILE_DATE = 07-05-2017 01:56
 MAKEFILE_AUTHOR = Alejandro Gallo
 MAKEFILE_URL = https://github.com/alejandrogallo/latex-makefile
 MAKEFILE_LICENSE = GPLv3
@@ -817,7 +817,7 @@ releases: $(BUILD_DOCUMENT) ## Create all releases (according to tags)
 
 
 # Distribution directory
-DIST_DIR ?= $(PREFIX)/dist
+DIST_DIR ?= dist
 
 # ============
 # Distribution
