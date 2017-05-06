@@ -15,7 +15,7 @@ $(MERGE_FILE): $(TEXFILES)
 	$(DBG_FLAG)$(FD_OUTPUT)for texfile in $(TEXFILES); do\
 			cat $@ | \
 			$(removeTexComments) | \
-			$(SED) "s/[\\]in\(put\|clude\)\s*{\(.*\)}/include(\2)/" | \
+			$(SED) "s/[\\]in\(put\|clude\)\s*{\(.*\)}/`include'(\2)/" | \
 			m4 | tee $@; \
 		done
 

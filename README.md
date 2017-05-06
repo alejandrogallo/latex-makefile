@@ -229,6 +229,22 @@ Clean distribution files
 ```bash 
 make dist-clean
 ```
+### Merge ###
+
+
+Merge all include files into one single tex file
+
+```bash 
+make merge
+```
+### Merged distribution ###
+
+
+Create a distribution with only a tex file
+
+```bash 
+make merge-dist
+```
 ### Diff ###
 
 
