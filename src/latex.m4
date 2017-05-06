@@ -13,7 +13,7 @@ endef
 
 # Remove comments from some file, this variables is intended to be put
 # in a shell call for processing of TeX files
-removeTexComments=$(SED) "s/[^\\]%.*//g; s/^%.*//g"
+removeTexComments=$(SED) "s/\([^\\]\)%.*/\1/g; s/^%.*//g"
 
 TEX_INCLUDES_REGEX = \in\(clude\|put\)\s*[{]\s*
 define recursiveDiscoverIncludes
