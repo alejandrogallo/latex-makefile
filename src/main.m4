@@ -107,6 +107,8 @@ include_once(release.m4)
 
 include_once(dist.m4)
 
+include_once(merge.m4)
+
 include_once(diff.m4)
 
 include_once(spelling.m4)
