@@ -14,13 +14,13 @@ DIST_DIR ?= $(PREFIX)/dist
 # configuration.
 #
 dist: $(BUILD_DOCUMENT) ## Create a dist folder with the bare minimum to compile
-	$(ARROW) "Creating dist folder"
+	$(ECHO) $(call print-cmd-name,mkdir) $(DIST_DIR)
 	$(DBG_FLAG)mkdir -p $(DIST_DIR)
-	$(ARROW) "Copying the Makefile"
+	$(ECHO) $(call print-cmd-name,cp) $(DIST_DIR)/Makefile
 	$(DBG_FLAG)cp Makefile $(DIST_DIR)/
-	$(ARROW) "Copying the target document"
+	$(ECHO) $(call print-cmd-name,cp) $(DIST_DIR)/$(BUILD_DOCUMENT)
 	$(DBG_FLAG)cp $(BUILD_DOCUMENT) $(DIST_DIR)/
-	$(ARROW) "Copying .bib files"
+	$(ARROW) "Copying bib files"
 	$(DBG_FLAG)test -n "$(BIBTEX_FILES)" && {\
 		for bibfile in $(BIBTEX_FILES); do \
 			mkdir -p $(DIST_DIR)/$$(dirname $$bibfile); \
