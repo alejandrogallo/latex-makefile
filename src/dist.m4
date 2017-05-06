@@ -32,7 +32,7 @@ dist: $(BUILD_DOCUMENT) ## Create a dist folder with the bare minimum to compile
 		| $(XARGS) -n1 dirname\
 		| $(XARGS) -n1 -I FF mkdir -p $(DIST_DIR)/FF
 	$(ARROW) "Copying dependencies"
-	$(DBG_FLAG)echo $(DEPENDENCIES)\
+	-$(DBG_FLAG)echo $(DEPENDENCIES)\
 		| $(TR) " " "\n" \
 		| $(XARGS) -n1 -I FF cp -r FF $(DIST_DIR)/FF
 ifneq ($(strip $(PACKAGES_FILES)),)
