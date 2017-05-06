@@ -1,7 +1,7 @@
 
 # File: common-makefile/src/version.m4
-MAKEFILE_VERSION = v1.7-4-g931a89f
-MAKEFILE_DATE = 07-05-2017 01:28
+MAKEFILE_VERSION = v1.7-6-gfe6370d
+MAKEFILE_DATE = 07-05-2017 01:44
 MAKEFILE_AUTHOR = Alejandro Gallo
 MAKEFILE_URL = https://github.com/alejandrogallo/latex-makefile
 MAKEFILE_LICENSE = GPLv3
@@ -847,7 +847,7 @@ dist: $(BUILD_DOCUMENT) ## Create a dist folder with the bare minimum to compile
 		| $(XARGS) -n1 dirname\
 		| $(XARGS) -n1 -I FF mkdir -p $(DIST_DIR)/FF
 	$(ARROW) "Copying dependencies"
-	$(DBG_FLAG)echo $(DEPENDENCIES)\
+	-$(DBG_FLAG)echo $(DEPENDENCIES)\
 		| $(TR) " " "\n" \
 		| $(XARGS) -n1 -I FF cp -r FF $(DIST_DIR)/FF
 ifneq ($(strip $(PACKAGES_FILES)),)
