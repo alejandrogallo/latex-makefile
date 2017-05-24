@@ -1,7 +1,7 @@
 
 # File: common-makefile/src/version.m4
-MAKEFILE_VERSION = v1.7-7-g6958306
-MAKEFILE_DATE = 07-05-2017 01:56
+MAKEFILE_VERSION = v1.7-8-g44cdad4
+MAKEFILE_DATE = 09-05-2017 14:23
 MAKEFILE_AUTHOR = Alejandro Gallo
 MAKEFILE_URL = https://github.com/alejandrogallo/latex-makefile
 MAKEFILE_LICENSE = GPLv3
