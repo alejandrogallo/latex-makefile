@@ -3,6 +3,13 @@ language: bash
 script:
   - make test
 
+python:
+  - "3.2"
+  - "3.3"
+  - "3.4"
+  - "3.5"
+  - "3.6"
+
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -y texlive
@@ -12,6 +19,4 @@ before_install:
   - sudo apt-get install -y git
   - git submodule init
   - git submodule update
-  - sudo apt-get install -y python3
-  - sudo apt-get install -y python3-pip
-  - sudo pip3 install matplotlib
+  - sudo pip install matplotlib
