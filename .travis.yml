@@ -10,6 +10,8 @@ before_install:
   - sudo apt-get install -y asymptote
   - sudo apt-get install -y gnuplot
   - sudo apt-get install -y git
+  - git submodule init
+  - git submodule update
   - sudo apt-get install -y python3
   - sudo apt-get install -y python3-pip
   - sudo pip3 install matplotlib
