@@ -3,6 +3,23 @@
 
 # The ultimate TeX Makefile #
 
+## Building ##
+
+To build you have to initialize the submodules:
+
+```
+git submodule init
+git submodule update
+```
+
+and then just hit
+
+```
+make
+```
+You will need the macro processor `m4`.
+
+
 ## Quick start ##
 
 Just drop the Makefile in your project directory and hit make.  The makefile
