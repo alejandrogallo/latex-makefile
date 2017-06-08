@@ -1,7 +1,7 @@
 
 # File: common-makefile/src/version.m4
-MAKEFILE_VERSION = v1.5.7-84-gce22fde
-MAKEFILE_DATE = 08-06-2017 10:35
+MAKEFILE_VERSION = v1.5.7-85-g97c1c09
+MAKEFILE_DATE = 08-06-2017 10:48
 MAKEFILE_AUTHOR = Alejandro Gallo
 MAKEFILE_URL = https://github.com/alejandrogallo/latex-makefile
 MAKEFILE_LICENSE = GPLv3
@@ -222,6 +222,30 @@ PREFIX ?= $(PWD)
 .DEFAULT_GOAL := all
 
 # File: libraries.m4
+# File: src/build-dir.m4
+
+
+# Folder to build the project
+BUILD_DIR ?= .
+
+# Build dir flag for latex.
+# If `BUILD_DIR = .` then `BUILD_DIR_FLAG` is not defined,
+# else `BUILD_DIR = -output-directory $(BUILD_DIR)`
+BUILD_DIR_FLAG  ?= $(if \
+                   $(filter-out \
+                   .,$(strip $(BUILD_DIR))),-output-directory $(BUILD_DIR))
+
+$(BUILD_DIR):
+	$(ECHO) $(call print-cmd-name,mkdir) $@
+	$(DBG_FLAG)mkdir -p $@ $(FD_OUTPUT)
+	$(DBG_FLAG)for i in $(TEXFILES); do \
+		mkdir -p $@/$$(dirname $$i); \
+	done $(FD_OUTPUT)
+
+
+
+
+
 
 
 # Tex libraries directory

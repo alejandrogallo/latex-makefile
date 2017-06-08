@@ -99,6 +99,8 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `TEXFILES`(`see`): All `texfiles` in the project
   * `BIBTEX_FILES`(`see`): Bibtex files in the current directory
   * `PREFIX`(`see`): Source directory
+  * `BUILD_DIR`(`.`): Folder to build the project
+  * `BUILD_DIR_FLAG`(`see`): Build dir flag for latex. If `BUILD_DIR = .` then `BUILD_DIR_FLAG` is not defined, else `BUILD_DIR = -output-directory $(BUILD_DIR)`
   * `PACKAGES_DIR`(`libtex`): Tex libraries directory
   * `PACKAGES_FILES`(`see`): Which files are tex libraries
   * `DEFAULT_DEPENDENCIES`(`\`): Default dependencies for `BUILD_DOCUMENT`
