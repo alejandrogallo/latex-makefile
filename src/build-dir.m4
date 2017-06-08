@@ -14,6 +14,10 @@ BUILD_DIR_FLAG  ?= $(if \
 $(BUILD_DIR):
 	$(ECHO) $(call print-cmd-name,mkdir) $@
 	$(DBG_FLAG)mkdir -p $@ $(FD_OUTPUT)
+	$(DBG_FLAG)for i in $(TEXFILES); do \
+		mkdir -p $@/$$(dirname $$i); \
+	done $(FD_OUTPUT)
+
 
 
 dnl vim: noexpandtab

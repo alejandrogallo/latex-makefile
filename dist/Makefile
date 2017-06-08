@@ -1,7 +1,7 @@
 
 # File: common-makefile/src/version.m4
-MAKEFILE_VERSION = v1.7-8-g44cdad4
-MAKEFILE_DATE = 09-05-2017 14:23
+MAKEFILE_VERSION = v1.5.7-84-gce22fde
+MAKEFILE_DATE = 08-06-2017 10:35
 MAKEFILE_AUTHOR = Alejandro Gallo
 MAKEFILE_URL = https://github.com/alejandrogallo/latex-makefile
 MAKEFILE_LICENSE = GPLv3
@@ -470,6 +470,10 @@ BUILD_DIR_FLAG  ?= $(if \
 $(BUILD_DIR):
 	$(ECHO) $(call print-cmd-name,mkdir) $@
 	$(DBG_FLAG)mkdir -p $@ $(FD_OUTPUT)
+	$(DBG_FLAG)for i in $(TEXFILES); do \
+		mkdir -p $@/$$(dirname $$i); \
+	done $(FD_OUTPUT)
+
 
 
 
