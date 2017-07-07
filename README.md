@@ -69,8 +69,9 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `UNIQ`(`uniq`): `uniq` program to use
   * `MAKE`(`see`): `Makefile` binary
   * `RM`(`rm`): `rm` command
-  * `CXX`(`g++`): For creating tags
-  * `CC`(`gcc`): For creating tags
+  * `CXX`(`g++`): C++ compiler
+  * `CC`(`gcc`): C compiler
+  * `FC`(`gfortran`): Fortran compiler
   * `BUILD_DIR`(`.`): Folder to build the project
   * `LATEX`(`pdflatex`): Shell utilities
   * `LATEXDIFF`(`latexdiff`): For creating differences

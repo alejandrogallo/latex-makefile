@@ -1,7 +1,7 @@
 
 # File: common-makefile/src/version.m4
-MAKEFILE_VERSION = v1.5.7-85-g97c1c09
-MAKEFILE_DATE = 08-06-2017 10:48
+MAKEFILE_VERSION = v1.5.7-87-g7670eeb
+MAKEFILE_DATE = 07-07-2017 14:59
 MAKEFILE_AUTHOR = Alejandro Gallo
 MAKEFILE_URL = https://github.com/alejandrogallo/latex-makefile
 MAKEFILE_LICENSE = GPLv3
@@ -76,10 +76,14 @@ UNIQ ?= uniq
 MAKE ?= $(or $(MAKE),make)
 # `rm` command
 RM ?= rm
-# For creating tags
+# C++ compiler
 CXX ?= g++
-# For creating tags
+# C compiler
 CC ?= gcc
+# Fortran compiler
+FC ?= gfortran
+# M4 compiler
+M4 ?= m4
 
 
 
@@ -751,11 +755,17 @@ PANDOC ?= pandoc
 # This creates a revealjs presentation using the the pandoc program stored in
 # the make variable PANDOC.
 #
-revealjs: $(MAIN_SRC)
+revealjs: reveal.js $(TEXFILES)
 	$(ARROW) Creating revealjs presentation...
+	$(DBG_FLAG)$(PANDOC) --mathjax -s -f latex -t revealjs \
+		$(MAIN_SRC) -o $(BUILD_DOCUMENT)
+
+reveal.js:
 	$(ARROW) Gettin revealjs from $(REVEALJS_SRC)
-	$(GIT) clone --depth=1 $(REVEALJS_SRC) && rm -rf reveal.js/.git
-	$(PANDOC) --mathjax -s -f latex -t revealjs $(MAIN_SRC) -o $(BUILD_DOCUMENT)
+	$(DBG_FLAG)$(GIT) clone --depth=1 $(REVEALJS_SRC) && \
+		rm -rf reveal.js/.git && \
+		cp reveal.js/js/reveal.js reveal.js/js/reveal.min.js
+
 REVEALJS_SRC ?= https://github.com/hakimel/reveal.js/
 
 # =================

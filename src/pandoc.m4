@@ -15,11 +15,17 @@ PANDOC ?= pandoc
 # This creates a revealjs presentation using the the pandoc program stored in
 # the make variable PANDOC.
 #
-revealjs: $(MAIN_SRC)
+revealjs: reveal.js $(TEXFILES)
 	$(ARROW) Creating revealjs presentation...
+	$(DBG_FLAG)$(PANDOC) --mathjax -s -f latex -t revealjs \
+		$(MAIN_SRC) -o $(BUILD_DOCUMENT)
+
+reveal.js:
 	$(ARROW) Gettin revealjs from $(REVEALJS_SRC)
-	$(GIT) clone --depth=1 $(REVEALJS_SRC) && rm -rf reveal.js/.git
-	$(PANDOC) --mathjax -s -f latex -t revealjs $(MAIN_SRC) -o $(BUILD_DOCUMENT)
+	$(DBG_FLAG)$(GIT) clone --depth=1 $(REVEALJS_SRC) && \
+		rm -rf reveal.js/.git && \
+		cp reveal.js/js/reveal.js reveal.js/js/reveal.min.js
+
 REVEALJS_SRC ?= https://github.com/hakimel/reveal.js/
 
 # =================
