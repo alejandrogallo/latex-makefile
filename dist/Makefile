@@ -1,7 +1,7 @@
 
 # File: common-makefile/src/version.m4
-MAKEFILE_VERSION = v1.5.7-87-g7670eeb
-MAKEFILE_DATE = 07-07-2017 14:59
+MAKEFILE_VERSION = v1.5.7-88-gf93b58c
+MAKEFILE_DATE = 07-07-2017 15:29
 MAKEFILE_AUTHOR = Alejandro Gallo
 MAKEFILE_URL = https://github.com/alejandrogallo/latex-makefile
 MAKEFILE_LICENSE = GPLv3
@@ -757,15 +757,25 @@ PANDOC ?= pandoc
 #
 revealjs: reveal.js $(TEXFILES)
 	$(ARROW) Creating revealjs presentation...
-	$(DBG_FLAG)$(PANDOC) --mathjax -s -f latex -t revealjs \
+	$(DBG_FLAG)$(PANDOC) \
+		--mathjax -s \
+		-f latex -t revealjs \
+		--section-divs \
+		--variable theme=$(REVEALJS_THEME) \
+		--variable transition="$(REVEALJS_TRANSITION)" \
 		$(MAIN_SRC) -o $(BUILD_DOCUMENT)
 
 reveal.js:
 	$(ARROW) Gettin revealjs from $(REVEALJS_SRC)
 	$(DBG_FLAG)$(GIT) clone --depth=1 $(REVEALJS_SRC) && \
 		rm -rf reveal.js/.git && \
-		cp reveal.js/js/reveal.js reveal.js/js/reveal.min.js
+		cp reveal.js/js/reveal.js reveal.js/js/reveal.min.js && \
+		cp reveal.js/css/reveal.css reveal.js/css/reveal.min.css
 
+
+# beige black blood league moon night serif simple sky solarized white
+REVEALJS_THEME ?= solarized
+REVEALJS_TRANSITION ?= linear
 REVEALJS_SRC ?= https://github.com/hakimel/reveal.js/
 
 # =================
