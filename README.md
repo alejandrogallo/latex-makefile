@@ -123,7 +123,7 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `RM_FLAGS`(`-rf`): 
   * `CLEAN_FILES`(`see`): Files to be cleaned
   * `PANDOC`(`pandoc`): 
-  * `REVEALJS_THEME`(`solarized`): beige black blood league moon night serif simple sky solarized white
+  * `REVEALJS_THEME`(`solarized`): (beige black blood league moon night serif simple sky solarized white)
   * `REVEALJS_TRANSITION`(`linear`): 
   * `REVEALJS_SRC`(`https://github.com/hakimel/reveal.js/`): 
   * `DIST_DIR`(`dist`): Distribution directory

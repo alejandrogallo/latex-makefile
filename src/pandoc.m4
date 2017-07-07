@@ -21,7 +21,7 @@ revealjs: reveal.js $(TEXFILES)
 		--mathjax -s \
 		-f latex -t revealjs \
 		--section-divs \
-		--variable theme=$(REVEALJS_THEME) \
+		--variable theme="$(REVEALJS_THEME)" \
 		--variable transition="$(REVEALJS_TRANSITION)" \
 		$(MAIN_SRC) -o $(BUILD_DOCUMENT)
 
@@ -33,7 +33,7 @@ reveal.js:
 		cp reveal.js/css/reveal.css reveal.js/css/reveal.min.css
 
 
-# beige black blood league moon night serif simple sky solarized white
+# (beige black blood league moon night serif simple sky solarized white)
 REVEALJS_THEME ?= solarized
 REVEALJS_TRANSITION ?= linear
 REVEALJS_SRC ?= https://github.com/hakimel/reveal.js/
