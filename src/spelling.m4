@@ -1,9 +1,13 @@
 include_once(common-makefile/src/log.m4)dnl
 include_once(common-makefile/src/shell-utils.m4)dnl
 dnl
+# Speller program to use
 SPELLER ?= aspell
+# Directory to store spelling related information
 SPELL_DIR ?= .spell
+# Language for the spelling program
 SPELL_LANG ?= en
+# Wether or not spelling should be checked
 CHECK_SPELL ?=
 
 # ==============
@@ -17,6 +21,13 @@ CHECK_SPELL ?=
 # SPELL_LANG = fr
 # ```
 # if you happen to write in french.
+#
+# Wether to check spelling or not is controlled by the `CHECK_SPELL`
+# variable, so if you want to check spelling set it to one
+# ```make
+# CHECK_SPELL = 1
+# ```
+# otherwise do not set it.
 #
 spelling: $(TEXFILES) ## Check spelling of latex sources
 	$(ARROW) Checking the spelling in $(SPELL_LANG)

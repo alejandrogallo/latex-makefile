@@ -74,7 +74,6 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `FC`(`gfortran`): Fortran compiler
   * `BUILD_DIR`(`.`): Folder to build the project
   * `LATEX`(`pdflatex`): Shell utilities
-  * `LATEXDIFF`(`latexdiff`): For creating differences
   * `PDFLATEX`(`pdflatex`): Main pdflatex engine
   * `QUIET`(`0`): If secondary programs output is shown
   * `QQUIET`(`empty`): If the log messages should be also muted
@@ -127,14 +126,15 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `REVEALJS_TRANSITION`(`linear`): 
   * `REVEALJS_SRC`(`https://github.com/hakimel/reveal.js/`): 
   * `DIST_DIR`(`dist`): Distribution directory
-  * `DIFF`(`HEAD HEAD~1`): 
+  * `LATEXDIFF`(`latexdiff-git`): For creating differences in a repository
+  * `DIFF`(`HEAD HEAD~1`): Commits to compute the difference from
   * `DIFF_BUILD_DIR_MAIN`(`diffs`): 
   * `DIFF_BUILD_DIR`(`see`): 
   * `DIFF_SRC_NAME`(`diff.tex`): 
-  * `SPELLER`(`aspell`): 
-  * `SPELL_DIR`(`.spell`): 
-  * `SPELL_LANG`(`en`): 
-  * `CHECK_SPELL`(`empty`): 
+  * `SPELLER`(`aspell`): Speller program to use
+  * `SPELL_DIR`(`.spell`): Directory to store spelling related information
+  * `SPELL_LANG`(`en`): Language for the spelling program
+  * `CHECK_SPELL`(`empty`): Wether or not spelling should be checked
   * `TEX_LINTER`(`chktex`): For checking tex syntax
   * `MAKEFILE_UPDATE_URL`(`https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile`): 
 
@@ -281,7 +281,7 @@ If you want to compare the HEAD commit with the commit three times older than
 HEAD. You can also provide a *commit hash*. The default value is `HEAD HEAD~1`.
 
 The target creates a distribution folder located in the variable
-DIFF_BUILD_DIR. *Warning*: It only works for single document tex projects.
+`DIFF_BUILD_DIR`.
 ```bash 
 make diff
 ```
@@ -295,6 +295,13 @@ change it by setting in your `config.mk` file
 SPELL_LANG = fr
 ```
 if you happen to write in french.
+
+Wether to check spelling or not is controlled by the `CHECK_SPELL`
+variable, so if you want to check spelling set it to one
+```make
+CHECK_SPELL = 1
+```
+otherwise do not set it.
 
 ```bash 
 make spelling
