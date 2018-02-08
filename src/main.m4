@@ -24,8 +24,6 @@ include_once(common-makefile/src/shell-utils.m4)
 BUILD_DIR ?= .
 # Shell utilities
 LATEX ?= pdflatex
-# For creating differences
-LATEXDIFF ?= latexdiff
 # Main pdflatex engine
 PDFLATEX ?= pdflatex
 
@@ -131,4 +129,4 @@ include_once(common-makefile/src/help-target.m4)
 
 # vim: cc=80
 
-dnl vim: noexpandtab
+dnl vim: noexpandtab ft=make
