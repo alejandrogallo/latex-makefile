@@ -1,7 +1,7 @@
 
 # File: common-makefile/src/version.m4
-MAKEFILE_VERSION = v1.5.7-90-g9aee12c
-MAKEFILE_DATE = 07-07-2017 16:37
+MAKEFILE_VERSION = v1.5.8
+MAKEFILE_DATE = 08-02-2018 13:22
 MAKEFILE_AUTHOR = Alejandro Gallo
 MAKEFILE_URL = https://github.com/alejandrogallo/latex-makefile
 MAKEFILE_LICENSE = GPLv3
@@ -92,8 +92,6 @@ M4 ?= m4
 BUILD_DIR ?= .
 # Shell utilities
 LATEX ?= pdflatex
-# For creating differences
-LATEXDIFF ?= latexdiff
 # Main pdflatex engine
 PDFLATEX ?= pdflatex
 
@@ -964,6 +962,10 @@ merge-dist: merge ## Create a merged file distribution
 # File: diff.m4
 
 
+.PHONY: diff
+# For creating differences in a repository
+LATEXDIFF ?= latexdiff-git
+# Commits to compute the difference from
 DIFF ?=HEAD HEAD~1
 NEW_COMMIT = $(word 1,$(DIFF))
 OLD_COMMIT = $(word 2,$(DIFF))
@@ -985,24 +987,25 @@ DIFF_SRC_NAME  ?= diff.tex
 # HEAD. You can also provide a *commit hash*. The default value is `HEAD HEAD~1`.
 #
 # The target creates a distribution folder located in the variable
-# DIFF_BUILD_DIR. *Warning*: It only works for single document tex projects.
+# `DIFF_BUILD_DIR`.
 diff: ## Create a latexdiff using git versions
 	$(ARROW) Creating diff between $(NEW_COMMIT) and $(OLD_COMMIT)
-	$(DBG_FLAG)mkdir -p $(DIFF_BUILD_DIR)
-	git checkout $(NEW_COMMIT) $(MAIN_SRC)
-	cp $(MAIN_SRC) $(DIFF_BUILD_DIR)/$(strip $(MAIN_SRC)).$(NEW_COMMIT)
-	git checkout $(OLD_COMMIT) $(MAIN_SRC)
-	cp $(MAIN_SRC) $(DIFF_BUILD_DIR)/$(strip $(MAIN_SRC)).$(OLD_COMMIT)
-	$(LATEXDIFF) \
-		$(DIFF_BUILD_DIR)/$(strip $(MAIN_SRC)).$(OLD_COMMIT) \
-		$(DIFF_BUILD_DIR)/$(strip $(MAIN_SRC)).$(NEW_COMMIT) \
-		> $(DIFF_SRC_NAME)
-	$(MAKE) dist \
+	$(DBG_FLAG){ \
+		temp=$$(mktemp -d); \
+		$(LATEXDIFF) \
+			-r $(NEW_COMMIT) \
+			-r $(OLD_COMMIT) $(MAIN_SRC) -d $${temp} $(FD_OUTPUT); \
+		cp $${temp}/$(MAIN_SRC) $(DIFF_SRC_NAME); \
+	} $(FD_OUTPUT)
+	$(ARROW) Building in $(DIFF_BUILD_DIR)
+	$(DBG_FLAG)$(MAKE) dist \
 		BUILD_DIR=$(DIFF_BUILD_DIR) \
 		MAIN_SRC=$(DIFF_SRC_NAME) \
 		DIST_DIR=$(DIFF_BUILD_DIR)
-	rm $(DIFF_SRC_NAME) $(patsubst %.tex,%.pdf,$(DIFF_SRC_NAME))
-	git checkout HEAD $(MAIN_SRC)
+
+
+
+
 
 
 
@@ -1011,9 +1014,13 @@ diff: ## Create a latexdiff using git versions
 # File: spelling.m4
 
 
+# Speller program to use
 SPELLER ?= aspell
+# Directory to store spelling related information
 SPELL_DIR ?= .spell
+# Language for the spelling program
 SPELL_LANG ?= en
+# Wether or not spelling should be checked
 CHECK_SPELL ?=
 
 # ==============
@@ -1027,6 +1034,13 @@ CHECK_SPELL ?=
 # SPELL_LANG = fr
 # ```
 # if you happen to write in french.
+#
+# Wether to check spelling or not is controlled by the `CHECK_SPELL`
+# variable, so if you want to check spelling set it to one
+# ```make
+# CHECK_SPELL = 1
+# ```
+# otherwise do not set it.
 #
 spelling: $(TEXFILES) ## Check spelling of latex sources
 	$(ARROW) Checking the spelling in $(SPELL_LANG)
