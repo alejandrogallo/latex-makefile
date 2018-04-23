@@ -1,7 +1,7 @@
 
 # File: common-makefile/src/version.m4
-MAKEFILE_VERSION = v1.5.8
-MAKEFILE_DATE = 08-02-2018 13:22
+MAKEFILE_VERSION = v1.5.8-1-g6cd8de7
+MAKEFILE_DATE = 23-04-2018 16:14
 MAKEFILE_AUTHOR = Alejandro Gallo
 MAKEFILE_URL = https://github.com/alejandrogallo/latex-makefile
 MAKEFILE_LICENSE = GPLv3
@@ -1112,6 +1112,10 @@ update: ## Update the makefile from the repository
 # File: tags.m4
 
 
+
+# Options for ctags command
+CTAGS_OPTIONS ?= --language-force=latex -R *
+
 # ====================================
 # Ctags generation for latex documents
 # ====================================
@@ -1120,7 +1124,7 @@ update: ## Update the makefile from the repository
 # compatible editors such as emacs or (n)vi(m).
 #
 tags: $(TEXFILES) ## Create TeX exhuberant ctags
-	$(CTAGS) --language-force=tex -R *
+	$(CTAGS) $(CTAGS_OPTIONS)
 
 
 

@@ -1,5 +1,9 @@
 include_once(common-makefile/src/log.m4)dnl
 include_once(common-makefile/src/shell-utils.m4)dnl
+
+# Options for ctags command
+CTAGS_OPTIONS ?= --language-force=latex -R *
+
 dnl
 # ====================================
 # Ctags generation for latex documents
@@ -9,6 +13,6 @@ dnl
 # compatible editors such as emacs or (n)vi(m).
 #
 tags: $(TEXFILES) ## Create TeX exhuberant ctags
-	$(CTAGS) --language-force=tex -R *
+	$(CTAGS) $(CTAGS_OPTIONS)
 
 dnl vim: noexpandtab
