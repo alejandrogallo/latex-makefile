@@ -7,3 +7,4 @@ LINUX :=
 OSX   := 1
 endif
 
+dnl vim:ft=make:noexpandtab:

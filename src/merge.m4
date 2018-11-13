@@ -32,3 +32,4 @@ merge-dist: merge ## Create a merged file distribution
 	$(DBG_FLAG)$(MAKE) --no-print-directory \
 		dist MAIN_SRC=$(MERGE_FILE) DIST_DIR=$(MERGE_DIST_DIR)
 
+dnl vim:ft=make:noexpandtab:

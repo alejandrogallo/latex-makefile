@@ -5,3 +5,4 @@ BROWSER ?= firefox
 view-html: $(BUILD_DOCUMENT)
 	$(DBG_FLAG)($(BROWSER) $(BUILD_DOCUMENT) &)&
 
+dnl vim:ft=make:noexpandtab:

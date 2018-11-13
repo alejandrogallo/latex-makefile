@@ -19,3 +19,4 @@ $(BUILD_DIR)/%: $(PACKAGES_DIR)/%
 	$(ECHO) $(call print-cmd-name,CP) $@
 	$(DBG_FLAG)mkdir -p $(BUILD_DIR)
 	$(DBG_FLAG)cp $^ $@
+dnl vim:ft=make:noexpandtab:

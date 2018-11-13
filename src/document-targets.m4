@@ -13,3 +13,4 @@ dnl
 	$(ECHO) $(call print-cmd-name,$(PERL)) $@
 	$(DBG_FLAG)cd $(dir $<) && $(PERL) $(notdir $<) $(FD_OUTPUT)
 
+dnl vim:ft=make:noexpandtab:

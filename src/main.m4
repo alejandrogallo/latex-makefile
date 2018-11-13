@@ -128,3 +128,4 @@ include_once(common-makefile/src/help.m4)
 include_once(common-makefile/src/help-target.m4)
 
 
+dnl vim:ft=make:noexpandtab:

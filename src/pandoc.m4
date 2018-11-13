@@ -58,3 +58,4 @@ html: $(MAIN_SRC)
 	$(ARROW) $(call print-cmd-name,$(PANDOC)) $(BUILD_DOCUMENT)
 	$(PANDOC) --mathjax -s -f latex -t html5 $(MAIN_SRC) -o $(BUILD_DOCUMENT)
 
+dnl vim:ft=make:noexpandtab:

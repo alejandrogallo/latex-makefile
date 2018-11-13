@@ -37,3 +37,4 @@ spelling: $(TEXFILES) ## Check spelling of latex sources
 		-l $(SPELL_LANG) -t -c $$file; \
 	done
 
+dnl vim:ft=make:noexpandtab:

@@ -48,3 +48,4 @@ $(FIGS_DEP): $(TEXFILES)
 figs: $(FIGURES) ## Make figures
 deps: $(FIGS_DEP) ## Parse dependencies for the main texfile
 
+dnl vim:ft=make:noexpandtab:

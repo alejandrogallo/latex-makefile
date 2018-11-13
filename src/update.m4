@@ -14,3 +14,4 @@ update: ## Update the makefile from the repository
 	$(DBG_FLAG)wget $(GH_REPO_FILE) -O Makefile
 GH_REPO_FILE ?= https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile
 
+dnl vim:ft=make:noexpandtab:

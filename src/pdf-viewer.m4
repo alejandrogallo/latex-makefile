@@ -53,3 +53,4 @@ mupdf /usr/bin/mupdf: ## Refresh mupdf
 
 
 include_once(os.m4)
+dnl vim:ft=make:noexpandtab:

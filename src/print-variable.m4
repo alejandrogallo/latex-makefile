@@ -23,3 +23,4 @@ print: ## Print a variable
 	$(DBG_FLAG)read -p "Variable to print: " variable && \
 		$(MAKE) --no-print-directory print-$$variable
 
+dnl vim:ft=make:noexpandtab:

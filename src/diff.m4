@@ -46,3 +46,4 @@ diff: ## Create a latexdiff using git versions
 
 
 
+dnl vim:ft=make:noexpandtab:

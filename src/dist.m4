@@ -55,3 +55,4 @@ endif
 dist-clean: CLEAN_FILES=$(DIST_DIR) ## Clean distribution files
 dist-clean: clean
 
+dnl vim:ft=make:noexpandtab:

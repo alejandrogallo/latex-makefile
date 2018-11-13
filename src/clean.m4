@@ -41,3 +41,4 @@ clean: ## Remove build and temporary files
 		done \
 	}
 
+dnl vim:ft=make:noexpandtab:
