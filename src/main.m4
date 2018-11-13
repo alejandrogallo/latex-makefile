@@ -127,6 +127,4 @@ include_once(common-makefile/src/print-variable.m4)
 include_once(common-makefile/src/help.m4)
 include_once(common-makefile/src/help-target.m4)
 
-# vim: cc=80
 
-dnl vim: noexpandtab ft=make

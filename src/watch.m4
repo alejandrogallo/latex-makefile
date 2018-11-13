@@ -7,4 +7,3 @@ watch: ## Build if changes
 unwatch: ## Cancel Watching
 	killall entr
 
-dnl vim: noexpandtab

@@ -13,4 +13,3 @@ PYTHONTEX  ?= pythontex
 	$(ARROW) "Creating pythontex"
 	$(PYTHONTEX) $<
 
-dnl vim: noexpandtab

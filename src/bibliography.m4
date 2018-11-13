@@ -39,4 +39,3 @@ $(BIBITEM_FILES): $(BIBTEX_FILES)
 	$(ARROW) Compiling again $(BUILD_DOCUMENT) to update refs
 	$(DBG_FLAG)$(MAKE) --no-print-directory force
 
-dnl vim: noexpandtab

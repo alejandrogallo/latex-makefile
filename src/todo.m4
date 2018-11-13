@@ -11,4 +11,3 @@ todo: $(TEXFILES) ## Print the todos from the main document
 		p\
 	}" $(TEXFILES)
 
-dnl vim: noexpandtab

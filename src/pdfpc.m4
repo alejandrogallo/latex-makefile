@@ -35,4 +35,3 @@ $(PDFPC_FILE): $(TEXFILES)
 		END { print frame } \
 	' | tee -a $@
 
-dnl vim: noexpandtab

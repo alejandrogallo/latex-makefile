@@ -41,4 +41,3 @@ clean: ## Remove build and temporary files
 		done \
 	}
 
-dnl vim: noexpandtab

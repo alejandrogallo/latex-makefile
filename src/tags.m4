@@ -15,4 +15,3 @@ dnl
 tags: $(TEXFILES) ## Create TeX exhuberant ctags
 	$(CTAGS) $(CTAGS_OPTIONS)
 
-dnl vim: noexpandtab

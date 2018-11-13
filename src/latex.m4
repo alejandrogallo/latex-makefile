@@ -79,4 +79,3 @@ $(if $(CHECK_SPELL),spelling) \
 # General dependencies for `BUILD_DOCUMENT`
 DEPENDENCIES ?= $(DEFAULT_DEPENDENCIES)
 
-dnl vim: noexpandtab

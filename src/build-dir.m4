@@ -20,4 +20,3 @@ $(BUILD_DIR):
 
 
 
-dnl vim: noexpandtab

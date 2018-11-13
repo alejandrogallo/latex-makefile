@@ -12,4 +12,3 @@ releases: $(BUILD_DOCUMENT) ## Create all releases (according to tags)
 		--prefix=$$tag/ $$tag > $(RELEASES_DIR)/$$tag.$(RELEASES_FMT); \
 	done
 
-dnl vim: noexpandtab

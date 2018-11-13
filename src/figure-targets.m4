@@ -40,4 +40,3 @@ endif
 	$(ECHO) $(call print-cmd-name,$(EPS2PDF)) $@
 	$(DBG_FLAG)cd $(dir $< ) && $(EPS2PDF) $(notdir $< ) $(FD_OUTPUT)
 
-dnl vim: noexpandtab

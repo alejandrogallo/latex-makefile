@@ -52,5 +52,4 @@ mupdf /usr/bin/mupdf: ## Refresh mupdf
 	| { read pid; test -z "$$pid" || kill -s HUP $$pid; }
 
 
-dnl vim: noexpandtab
 include_once(os.m4)
