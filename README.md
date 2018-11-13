@@ -110,8 +110,6 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `DEPS_DIR`(`.deps`): Folder to keep makefile dependencies
   * `FIGURES`(`empty`): Figures included in all texfiles
   * `BIBTEX`(`bibtex`): For converting document formats
-  * `BUILD_DIR`(`.`): Folder to build the project
-  * `BUILD_DIR_FLAG`(`see`): Build dir flag for latex. If `BUILD_DIR = .` then `BUILD_DIR_FLAG` is not defined, else `BUILD_DIR = -output-directory $(BUILD_DIR)`
   * `BROWSER`(`firefox`): 
   * `WITH_PYTHONTEX`(`empty`): If pythontex is being used
   * `PYTHONTEX`(`pythontex`): 
