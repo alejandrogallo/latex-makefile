@@ -1,22 +1,28 @@
 language: bash
-
 script:
-  - make test
-
+- make
+- make test
 python:
-  - "3.2"
-  - "3.3"
-  - "3.4"
-  - "3.5"
-  - "3.6"
-
+- '3.2'
+- '3.3'
+- '3.4'
+- '3.5'
+- '3.6'
 before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -y texlive
-  - sudo apt-get install -y latexdiff
-  - sudo apt-get install -y asymptote
-  - sudo apt-get install -y gnuplot
-  - sudo apt-get install -y git
-  - git submodule init
-  - git submodule update
-  - sudo pip install matplotlib
+- sudo apt-get update -qq
+- sudo apt-get install -y texlive
+- sudo apt-get install -y latexdiff
+- sudo apt-get install -y asymptote
+- sudo apt-get install -y gnuplot
+- sudo apt-get install -y git
+- git submodule init
+- git submodule update
+- sudo pip install matplotlib
+deploy:
+  provider: releases
+  api_key:
+    secure: P35ZSTPian7o9iza2ncobqjVH3u3zQ3VNLX1Yy4v/19is+zABxoynqnABztSEIkbTjMUcOLcjsQchK9IJm6vxmODJ4aUGKk4BD/BP8MXVyIL7ibeM4YSraLq32nSVFqq0rT15DxPBbqtkpO5sRCzfIk8eI95AlSugR7dnl0Bga0KSz9KQt6HiyuMfqQYWskdbhI/Ta+vFcNzOTccYgzIRTRRkEEShd4zjxicvlKYu+v5QK6o7usg0vgemNyzpADINdbWQ/Mj01+LZFBFvW4/wZK0sjm4U5kl8K2ouI4v+Mq7vrSmBAVnSSHpHHxGnzsVnYB6ePG+SkHt9fNsCwpaj+/uh1OmbwCVlSUKrvWyShH0ugKxGDsA4TEaCDj9u/yGYk3jkuSgIexlvbtpNgGbjwKYEZLYqOvtQ5BDzp2WcpEx0F1Eq7+GRud8tY3Sgegumrs28SsE1gmUQfxCdROIaA9qPpT4PpzOHnTSnhOQFTA6Q006PrzyxYSg5OIAy9QYUgwSyQ1/xR90CLQtrAhd/UzJ868Uq4WR0tQxERbOh0H0Xrm5UL6Tm6QZQ6sdXnQDyB1AyOj6rAaNyt3NWFV2vCHLD0j6g6az455fTX5R6bFW6rBnIJDjxtplx4QgqtLjoRiQUxe6jz49QBmnFsqvRBNWVyZ1y0Sk9Qy2GOTfEUM=
+  file: dist/Makefile
+  skip_cleanup: true
+  on:
+    repo: alejandrogallo/latex-makefile
