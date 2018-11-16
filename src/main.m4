@@ -117,7 +117,10 @@ include_once(watch.m4)
 
 define(
 _MAKEFILE_UPDATE_URL,
- https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile
+$(shell \
+curl https://api.github.com/repos/alejandrogallo/latex-makefile/releases/latest | \
+sed -n 's/.*browser_download_url":.*"\(.*\)"/\1/p' \
+)
 )dnl
 include_once(common-makefile/src/update.m4)
 

@@ -134,7 +134,7 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `SPELL_LANG`(`en`): Language for the spelling program
   * `CHECK_SPELL`(`empty`): Wether or not spelling should be checked
   * `TEX_LINTER`(`chktex`): For checking tex syntax
-  * `MAKEFILE_UPDATE_URL`(`https://raw.githubusercontent.com/alejandrogallo/latex-makefile/master/dist/Makefile`): 
+  * `MAKEFILE_UPDATE_URL`(`see`): 
   * `CTAGS_OPTIONS`(`--language-force=latex -R *`): Options for ctags command
 
 
