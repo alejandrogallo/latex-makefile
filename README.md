@@ -3,6 +3,13 @@
 
 # The ultimate TeX Makefile #
 
+## Installing ##
+
+Just get a built makefile from
+[the latest release](
+https://github.com/alejandrogallo/latex-makefile/releases/latest
+) and put it in your TeX project folder.
+
 ## Building ##
 
 To build you have to initialize the submodules:
