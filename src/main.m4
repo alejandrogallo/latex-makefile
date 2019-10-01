@@ -99,8 +99,6 @@ include_once(todo.m4)
 
 include_once(pandoc.m4)
 
-include_once(pdfpc.m4)
-
 include_once(release.m4)
 
 include_once(dist.m4)
