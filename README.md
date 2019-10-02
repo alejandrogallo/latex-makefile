@@ -1,7 +1,7 @@
 
 [![Build Status](https://travis-ci.org/alejandrogallo/latex-makefile.svg?branch=master)](https://travis-ci.org/alejandrogallo/latex-makefile)
 
-# The ultimate TeX Makefile #
+# A latex makefile
 
 ## Installing ##
 
