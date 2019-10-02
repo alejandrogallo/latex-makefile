@@ -125,10 +125,6 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `RM`(`rm`): Remove command
   * `RM_FLAGS`(`-rf`): 
   * `CLEAN_FILES`(`see`): Files to be cleaned
-  * `PANDOC`(`pandoc`): 
-  * `REVEALJS_THEME`(`solarized`): (beige black blood league moon night serif simple sky solarized white)
-  * `REVEALJS_TRANSITION`(`linear`): 
-  * `REVEALJS_SRC`(`https://github.com/hakimel/reveal.js/`): 
   * `DIST_DIR`(`dist`): Distribution directory
   * `LATEXDIFF`(`latexdiff-git`): For creating differences in a repository
   * `DIFF`(`HEAD HEAD~1`): Commits to compute the difference from
@@ -200,31 +196,6 @@ check which files are going to be cleaned up.
 
 ```bash 
 make clean
-```
-### Reveal.js presentation ###
-
-
-This creates a revealjs presentation using the the pandoc program stored in
-the make variable PANDOC.
-
-```bash 
-make revealjs
-```
-### Unix man document ###
-
-
-This creates a man page using `pandoc`.
-
-```bash 
-make man
-```
-### HTML document ###
-
-
-This creates an html page using `pandoc`.
-
-```bash 
-make html
 ```
 ### Distribution ###
 

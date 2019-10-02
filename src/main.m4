@@ -93,10 +93,6 @@ include_once(pdf-viewer.m4)
 
 include_once(clean.m4)
 
-include_once(todo.m4)
-
-include_once(pandoc.m4)
-
 include_once(release.m4)
 
 include_once(dist.m4)
