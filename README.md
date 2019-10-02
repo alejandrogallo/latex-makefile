@@ -117,8 +117,6 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `DEPS_DIR`(`.deps`): Folder to keep makefile dependencies
   * `FIGURES`(`empty`): Figures included in all texfiles
   * `BIBTEX`(`bibtex`): For converting document formats
-  * `WITH_PYTHONTEX`(`empty`): If pythontex is being used
-  * `PYTHONTEX`(`pythontex`): 
   * `ASYMPTOTE`(`asy`): For asymptote figures
   * `GNUPLOT`(`gnuplot`): Gnuplot interpreter
   * `PDF_VIEWER`(`see`): Recognise pdf viewer automagically

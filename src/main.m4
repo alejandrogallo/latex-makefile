@@ -83,8 +83,6 @@ force: ## Force creation of BUILD_DOCUMENT
 
 include_once(build-dir.m4)
 
-include_once(pythontex.m4)
-
 include_once(figure-targets.m4)
 
 include_once(document-targets.m4)
