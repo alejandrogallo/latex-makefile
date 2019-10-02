@@ -117,7 +117,6 @@ variables for the project, like the verbosity `QUIET=1` and many more.
   * `DEPS_DIR`(`.deps`): Folder to keep makefile dependencies
   * `FIGURES`(`empty`): Figures included in all texfiles
   * `BIBTEX`(`bibtex`): For converting document formats
-  * `BROWSER`(`firefox`): 
   * `WITH_PYTHONTEX`(`empty`): If pythontex is being used
   * `PYTHONTEX`(`pythontex`): 
   * `ASYMPTOTE`(`asy`): For asymptote figures
@@ -188,12 +187,12 @@ make open-pdf
 If the opened document is being viewed with `mupdf` this target uses the
 mupdf signal API to refresh the document.
 
-File: os.m4
-Recognise OS
-```bash 
-make LINUX
-```
-### Main cleaning ###
+File: clean.m4
+Remove command
+Default clean file to be cleaned
+Files to be cleaned
+
+Main cleaning
 
 
 This does a main cleaning of the produced auxiliary files.  Before using it
@@ -227,17 +226,6 @@ This creates an html page using `pandoc`.
 ```bash 
 make html
 ```
-### Presenter console generator ###
-
-
-`pdfpc` is a nice program for presenting beamer presentations with notes
-and a speaker clock. This target implements a simple script to convert
-the standard `\notes{ }` beamer  command into `pdfpc` compatible files, so
-that you can also see your beamer notes inside the `pdfpc` program.
-
-```bash 
-make pdf-presenter-console
-```
 ### Distribution ###
 
 
@@ -256,22 +244,6 @@ Clean distribution files
 
 ```bash 
 make dist-clean
-```
-### Merge ###
-
-
-Merge all include files into one single tex file
-
-```bash 
-make merge
-```
-### Merged distribution ###
-
-
-Create a distribution with only a tex file
-
-```bash 
-make merge-dist
 ```
 ### Diff ###
 

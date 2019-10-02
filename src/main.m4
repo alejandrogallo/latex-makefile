@@ -83,8 +83,6 @@ force: ## Force creation of BUILD_DOCUMENT
 
 include_once(build-dir.m4)
 
-include_once(html.m4)
-
 include_once(pythontex.m4)
 
 include_once(figure-targets.m4)
@@ -103,15 +101,11 @@ include_once(release.m4)
 
 include_once(dist.m4)
 
-include_once(merge.m4)
-
 include_once(diff.m4)
 
 include_once(spelling.m4)
 
 include_once(lint.m4)
-
-include_once(watch.m4)
 
 define(
 _MAKEFILE_UPDATE_URL,
